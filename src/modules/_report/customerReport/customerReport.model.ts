@@ -1,18 +1,30 @@
 import { model, Schema } from 'mongoose';
 import { IcustomerReport, IcustomerReportModel } from './customerReport.interface';
 import paginate from '../../common/plugins/paginate';
+import { Roles } from '../../../middlewares/roles';
 
 
 const customerReportSchema = new Schema<IcustomerReport>(
   {
-    userId: {
+    personId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
+      required: [true, 'customerId is required'],
     },
-    message: {
+    reportId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Report',
+      required: [true, 'reportId is required'],
+    },
+    role: {
       type: String,
-      required: [true, 'dateOfBirth is required'],
+      enum: {
+        values: Roles,
+        message: '${VALUE} is not a valid role', // 🔥 fix korte hobe .. 
+      },
+      required: [true, 'Role is required'],
     },
+
     isDeleted: {
       type: Boolean,
       required: [false, 'isDeleted is not required'],

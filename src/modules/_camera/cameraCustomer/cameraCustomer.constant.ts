@@ -1,5 +1,4 @@
-export enum cameraCustomerType {
-  document = 'document',
-  image = 'image',
-  unknown = 'unknown',
+export enum ICustomersPermission {
+  enable = 'enable',
+  disable = 'disable'
 }

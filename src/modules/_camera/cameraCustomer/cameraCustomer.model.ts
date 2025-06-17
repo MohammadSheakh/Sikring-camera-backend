@@ -1,18 +1,51 @@
 import { model, Schema } from 'mongoose';
 import { IcameraCustomer, IcameraCustomerModel } from './cameraCustomer.interface';
 import paginate from '../../common/plugins/paginate';
+import { Roles } from '../../../middlewares/roles';
+import { ICustomersPermission } from './cameraCustomer.constant';
 
 
 const cameraCustomerSchema = new Schema<IcameraCustomer>(
   {
-    userId: {
+    cameraId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Camera',
+      required: [true, 'cameraId is required'],
+    },
+    personId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
+      required: [true, 'customerId is required'],
     },
-    message: {
+
+    // TODO : need to think about this siteId required  true false
+    siteId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Site',
+      required: [true, 'siteId is required'],
+    },
+
+    status : {
       type: String,
-      required: [true, 'dateOfBirth is required'],
+      enum:  [ICustomersPermission.disable, ICustomersPermission.enable],
+      required: [
+        false,
+        `Status is required it can be ${Object.values(
+          ICustomersPermission
+        ).join(', ')}`,
+      ],
+      default: ICustomersPermission.disable,
     },
+
+    role: {
+      type: String,
+      enum: {
+        values: Roles,
+        message: '${VALUE} is not a valid role', // 🔥 fix korte hobe .. 
+      },
+      required: [true, 'Role is required'],
+    },
+
     isDeleted: {
       type: Boolean,
       required: [false, 'isDeleted is not required'],

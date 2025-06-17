@@ -1,18 +1,93 @@
 import { model, Schema } from 'mongoose';
 import { Ireport, IreportModel } from './report.interface';
 import paginate from '../../../common/plugins/paginate';
+import { TIncidentSevearity, TReportType, TStatus } from './report.constant';
 
 
 const reportSchema = new Schema<Ireport>(
   {
-    userId: {
+    // userId: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'User',
+    // },
+
+    siteId: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Site',
     },
-    message: {
+    
+    reportType : {
+          type: String,
+          enum:  [TReportType.alarmPatrol, TReportType.patrolReport, TReportType.service, TReportType.emergency_call_out],
+          required: [
+            false,
+            `reportType is required it can be ${Object.values(
+              TReportType
+            ).join(', ')}`,
+          ],
+          // default: TReportType.alarmPatrol, // INFO : no default value for reportType
+    },
+
+    incidentSevearity : {
+          type: String,
+          enum:  [TIncidentSevearity.low, TIncidentSevearity.medium, TIncidentSevearity.high],
+          required: [
+            false,
+            `incidentSevearity is required it can be ${Object.values(
+              TIncidentSevearity
+            ).join(', ')}`,
+          ],
+          // default: TReportType.alarmPatrol, // INFO : no default value for reportType
+    },
+
+    title : {
       type: String,
-      required: [true, 'dateOfBirth is required'],
+      required: [true, 'title is required'],
     },
+
+    description: {
+      type: String,
+      required: [true, 'description is required'],
+    },
+
+    // TODO : Location koi thke ashbe .. bujhi nai eita 
+    // TODO  : UI er kas theke bujhe nite hobe ... 
+    location : {
+      type: String,
+      required: [false, 'location is not required'],
+    },
+
+    personName : {
+      type: String,
+      required: [false, 'personName is required'],
+    },
+
+    status : {
+          type: String,
+          enum:  [TStatus.accept, TStatus.deny],
+          required: [
+            false,
+            `status is required it can be ${Object.values(
+              TStatus
+            ).join(', ')}`,
+          ],
+          // default: TReportType.alarmPatrol, // INFO : no default value for reportType
+    },
+
+    attachments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Attachment',
+        required: [true, 'Attachments is required'],
+      }
+    ],
+
+    // tenant_id :{
+
+    // },
+
+    
+
     isDeleted: {
       type: Boolean,
       required: [false, 'isDeleted is not required'],

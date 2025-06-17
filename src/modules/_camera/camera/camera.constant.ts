@@ -1,5 +1,4 @@
-export enum cameraType {
-  document = 'document',
-  image = 'image',
-  unknown = 'unknown',
+export enum TStatus {
+  working = 'working',
+  offline = 'offline',
 }

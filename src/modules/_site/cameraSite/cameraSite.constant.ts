@@ -1,4 +1,4 @@
-export enum DemoType {
+export enum cameraSiteType {
   document = 'document',
   image = 'image',
   unknown = 'unknown',

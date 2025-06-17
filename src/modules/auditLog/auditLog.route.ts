@@ -1,10 +1,10 @@
 import express from 'express';
-import * as validation from './demo.validation';
-import { DemoController} from './demo.controller';
-import { IDemo } from './demo.interface';
-import { validateFiltersForQuery } from '../../../middlewares/queryValidation/paginationQueryValidationMiddleware';
-import validateRequest from '../../../shared/validateRequest';
-import auth from '../../../middlewares/auth';
+import * as validation from './auditLog.validation';
+import { auditLogController} from './auditLog.controller';
+import { IauditLog } from './auditLog.interface';
+import { validateFiltersForQuery } from '../../middlewares/queryValidation/paginationQueryValidationMiddleware';
+import validateRequest from '../../shared/validateRequest';
+import auth from '../../middlewares/auth';
 
 const multer = require('multer');
 const storage = multer.memoryStorage();
@@ -12,14 +12,14 @@ const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-export const optionValidationChecking = <T extends keyof IDemo>(
+export const optionValidationChecking = <T extends keyof IauditLog>(
   filters: T[]
 ) => {
   return filters;
 };
 
 // const taskService = new TaskService();
-const controller = new DemoController();
+const controller = new auditLogController();
 
 //info : pagination route must be before the route with params
 router.route('/paginate').get(
@@ -71,4 +71,4 @@ router.route('/softDelete/:id').put(
 //[🚧][🧑‍💻✅][🧪] // 🆗
 
 
-export const DemoRoute = router;
+export const auditLogRoute = router;

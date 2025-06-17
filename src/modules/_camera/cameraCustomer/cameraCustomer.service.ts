@@ -1,14 +1,14 @@
 import { StatusCodes } from 'http-status-codes';
-import { Demo } from './demo.model';
-import { IDemo } from './demo.interface';
+import { cameraCustomer } from './cameraCustomer.model';
+import { IcameraCustomer } from './cameraCustomer.interface';
 import { GenericService } from '../__Generic/generic.services';
 
 
-export class DemoService extends GenericService<
-  typeof Demo,
-  IDemo
+export class cameraCustomerService extends GenericService<
+  typeof cameraCustomer,
+  IcameraCustomer
 > {
   constructor() {
-    super(Demo);
+    super(cameraCustomer);
   }
 }

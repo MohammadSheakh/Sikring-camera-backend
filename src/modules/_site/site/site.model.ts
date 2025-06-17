@@ -2,7 +2,6 @@ import { model, Schema } from 'mongoose';
 import { Isite, IsiteModel } from './site.interface';
 import paginate from '../../../common/plugins/paginate';
 
-
 const siteSchema = new Schema<Isite>(
   {
     userId: {

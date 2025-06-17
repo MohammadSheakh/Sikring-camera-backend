@@ -18,9 +18,14 @@ const profileImageSchema = new Schema<TProfileImage>({
 // User Schema Definition
 const userSchema = new Schema<TUser, UserModal>(
   {
-    personalize_Journey_Id: {
-      type: Schema.Types.ObjectId,
-      ref: 'PersonalizeJourney', // Reference to the personalizeJourney schema
+    // personalize_Journey_Id: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'PersonalizeJourney', // Reference to the personalizeJourney schema
+    // },
+    user_custom_id: {
+      type: String,
+      required: [false, 'User custom ID is not required'],
+      trim: true,
     },
     name :{
       type: String,
@@ -37,29 +42,31 @@ const userSchema = new Schema<TUser, UserModal>(
         'Please provide a valid email address',
       ],
     },
-    password: {
+    phoneNumber : {
       type: String,
-      required: [true, 'Password is required'],
-      select: false,
-      minlength: [8, 'Password must be at least 8 characters long'],
     },
+    //> What is site_forman ?? 
+
     profileImage: {
       type: profileImageSchema,
       required: false,
       default: { imageUrl: '/uploads/users/user.png' },
     },
-
-    fcmToken: { type: String, default: null }, // Store Firebase Token
-
-
-    accessPinCode : {
+    companyLogoImage: {
       type: String,
-      required: [false, 'Access Pin Code is not required']
+      required: false,
     },
 
-    lastProvideAccessPinCode:{
-      type : Date,
-      required: [false, 'Last Access Pin Code is not required']
+    status : {
+      type: String,
+      enum:  [TStatusType.active, TStatusType.inactive],
+      required: [
+        false,
+        `Status is required it can be ${Object.values(
+          TStatusType
+        ).join(', ')}`,
+      ],
+      default: TStatusType.active,
     },
 
     role: {
@@ -70,6 +77,17 @@ const userSchema = new Schema<TUser, UserModal>(
       },
       required: [true, 'Role is required'],
     },
+
+    password: {
+      type: String,
+      required: [true, 'Password is required'],
+      select: false,
+      minlength: [8, 'Password must be at least 8 characters long'],
+    },
+    
+
+    fcmToken: { type: String, default: null }, // Store Firebase Token
+
 
     subscriptionType: {
       type: String,
@@ -84,25 +102,13 @@ const userSchema = new Schema<TUser, UserModal>(
       default: TSubscriptionType.free,
     },
     
-    status : {
-      type: String,
-      enum:  [TStatusType.active, TStatusType.inactive],
-      required: [
-        false,
-        `Status is required it can be ${Object.values(
-          TStatusType
-        ).join(', ')}`,
-      ],
-      default: TStatusType.active,
-    },
+    
 
     isEmailVerified: {
       type: Boolean,
       default: false,
     },
-    phoneNumber : {
-      type: String,
-    },
+    
     isDeleted: {
       type: Boolean,
       default: false,

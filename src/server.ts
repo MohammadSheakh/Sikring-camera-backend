@@ -102,9 +102,12 @@ process.on('uncaughtException', error => {
 
   // ------ Cron Job .. 
 
+  /*
   initConversationCronJobs();
   initUserSubscriptionCron();
   initNotificationCron();
+  */
+
 
   //SIGTERM
   // process.on('SIGTERM', () => {

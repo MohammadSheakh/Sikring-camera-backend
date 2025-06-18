@@ -5,13 +5,13 @@ import paginate from '../../common/plugins/paginate';
 
 const cameraSiteSchema = new Schema<IcameraSite>(
   {
-    userId: {
+    cameraId: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Camera',
     },
-    message: {
-      type: String,
-      required: [true, 'dateOfBirth is required'],
+    siteId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Site',
     },
     isDeleted: {
       type: Boolean,

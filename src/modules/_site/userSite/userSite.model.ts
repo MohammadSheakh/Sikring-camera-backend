@@ -1,18 +1,37 @@
 import { model, Schema } from 'mongoose';
 import { IuserSite, IuserSiteModel } from './userSite.interface';
 import paginate from '../../common/plugins/paginate';
+import { Roles } from '../../../middlewares/roles';
 
 
 const userSiteSchema = new Schema<IuserSite>(
   {
-    userId: {
+    personId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
+    },
+    siteId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Site',
     },
     message: {
       type: String,
       required: [true, 'dateOfBirth is required'],
     },
+    role: {
+          type: String,
+          enum: {
+            values: Roles,
+            message: '${VALUE} is not a valid role', // 🔥 fix korte hobe .. 
+          },
+          required: [true, 'Role is required'],
+    },
+    workHours: {
+      type: Number,
+      required: [true, 'Work hours is required'],
+      default: 0,
+    },
+
     isDeleted: {
       type: Boolean,
       required: [false, 'isDeleted is not required'],

@@ -4,9 +4,9 @@ import { PaginateOptions, PaginateResult } from '../../types/paginate';
 export interface IcameraSite {
   // _taskId: undefined | Types.ObjectId;
   _id?: Types.ObjectId; // undefined |  Types.ObjectId |
-  userId: Types.ObjectId;
-  message : String;
-
+  cameraId: Types.ObjectId;
+  siteId: Types.ObjectId;
+  
   isDeleted : Boolean;  
   createdAt?: Date;
   updatedAt?: Date;

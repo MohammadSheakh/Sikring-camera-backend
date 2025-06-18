@@ -1,5 +1,6 @@
-export enum auditLogType {
-  document = 'document',
-  image = 'image',
-  unknown = 'unknown',
+export enum TStatus {
+  success = 'success',
+  pending = 'pending',
+  active = 'active',
+  failed = 'failed',
 }

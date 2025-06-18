@@ -80,7 +80,10 @@ const cameraSchema = new Schema<Icamera>(
       type: String,
       required: [true, 'cameraPort is required'],
     },
-
+    cameraUsername: {
+      type: String,
+      required: [true, 'cameraUsername is required'],
+    },
     cameraPassword : {
       type: String,
       required: [true, 'cameraPassword is required'],

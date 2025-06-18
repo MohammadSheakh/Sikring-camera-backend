@@ -1,6 +1,8 @@
 import { model, Schema } from 'mongoose';
 import { IauditLog, IauditLogModel } from './auditLog.interface';
 import paginate from '../../common/plugins/paginate';
+import { Roles } from '../../middlewares/roles';
+import { TStatus } from './auditLog.constant';
 
 
 const auditLogSchema = new Schema<IauditLog>(
@@ -9,10 +11,35 @@ const auditLogSchema = new Schema<IauditLog>(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    message: {
+    role: {
       type: String,
-      required: [true, 'dateOfBirth is required'],
+      enum: {
+        values: Roles,
+        message: '${VALUE} is not a valid role', // 🔥 fix korte hobe .. 
+      },
+      required: [true, 'Role is required'],
     },
+
+    actionPerformed : {
+      type: String,
+      required: [true, 'actionPerformed is required'],
+    },
+
+    status : {
+      type: String,
+      enum:  [TStatus.active, TStatus.pending, TStatus.success, TStatus.failed],
+      required: [
+        true,
+        `Status is required it can be ${Object.values(
+          TStatus
+        ).join(', ')}`,
+      ],
+    },
+
+    // tenant_id: {
+    //   type: String,
+    //   required: [true, 'tenant_id is required'],
+    // },
     isDeleted: {
       type: Boolean,
       required: [false, 'isDeleted is not required'],

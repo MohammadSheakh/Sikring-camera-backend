@@ -1,11 +1,15 @@
 import { Model, Types } from 'mongoose';
 import { PaginateOptions, PaginateResult } from '../../types/paginate';
+import { Role } from '../../user/user.constant';
 
 export interface IuserSite {
   // _taskId: undefined | Types.ObjectId;
   _id?: Types.ObjectId; // undefined |  Types.ObjectId |
-  userId: Types.ObjectId;
+  personId: Types.ObjectId;
+  siteId: Types.ObjectId;
   message : String;
+  role: Role;
+  workHours: Number;
 
   isDeleted : Boolean;  
   createdAt?: Date;

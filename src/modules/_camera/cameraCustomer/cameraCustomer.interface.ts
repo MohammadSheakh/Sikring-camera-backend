@@ -1,7 +1,8 @@
 import { Model, Types } from 'mongoose';
-import { PaginateOptions, PaginateResult } from '../../types/paginate';
+
 import { ICustomersPermission } from './cameraCustomer.constant';
 import { Role } from '../../user/user.constant';
+import { PaginateOptions, PaginateResult } from '../../../types/paginate';
 
 export interface IcameraCustomer {
   // _taskId: undefined | Types.ObjectId;

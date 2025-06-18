@@ -1,10 +1,9 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-
-import { GenericController } from '../__Generic/generic.controller';
 import { cameraCustomer } from './cameraCustomer.model';
 import { IcameraCustomer } from './cameraCustomer.interface';
 import { cameraCustomerService } from './cameraCustomer.service';
+import { GenericController } from '../../__Generic/generic.controller';
 
 
 // let conversationParticipantsService = new ConversationParticipentsService();

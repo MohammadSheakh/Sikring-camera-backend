@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-import { GenericController } from '../__Generic/generic.controller';
+import { GenericController } from '../../__Generic/generic.controller';
 import { customerReport } from './customerReport.model';
 import { IcustomerReport } from './customerReport.interface';
 import { customerReportService } from './customerReport.service';

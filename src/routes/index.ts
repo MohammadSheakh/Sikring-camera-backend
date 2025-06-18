@@ -2,8 +2,6 @@ import express from 'express';
 import { UserRoutes } from '../modules/user/user.route';
 import { AuthRoutes } from '../modules/auth/auth.routes';
 import { AdminRoutes } from '../modules/admin/admin.routes';
-import { HelpMessageRoute } from '../modules/helpMessage/helpMessage.route';
-import { LabRoute } from '../modules/lab/lab.route';
 import { ConversationRoute } from '../modules/_chatting/conversation/conversation.route';
 import { SubscriptionPlanRoute } from '../modules/_subscription/subscriptionPlan/subscriptionPlan.route';
 import { NotificationRoutes } from '../modules/notification/notification.routes';
@@ -29,16 +27,6 @@ const apiRoutes = [
 
   ////////////////////// Created By Mohammad Sheakh
 
-  {
-    // 🌀
-    path: '/help-message',
-    route: HelpMessageRoute,
-  },
-  {
-    // 🌀
-    path: '/lab',
-    route: LabRoute,
-  },
   {
     // 🌀
     path: '/conversation',

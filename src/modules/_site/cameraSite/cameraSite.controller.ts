@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-import { GenericController } from '../__Generic/generic.controller';
+import { GenericController } from '../../__Generic/generic.controller';
 import { cameraSite } from './cameraSite.model';
 import { IcameraSite } from './cameraSite.interface';
 import { cameraSiteService } from './cameraSite.service';

@@ -2,9 +2,10 @@ import express from 'express';
 import * as validation from './camera.validation';
 import { cameraController} from './camera.controller';
 import { Icamera } from './camera.interface';
-import { validateFiltersForQuery } from '../../middlewares/queryValidation/paginationQueryValidationMiddleware';
-import validateRequest from '../../shared/validateRequest';
-import auth from '../../middlewares/auth';
+import { validateFiltersForQuery } from '../../../middlewares/queryValidation/paginationQueryValidationMiddleware';
+import auth from '../../../middlewares/auth';
+import validateRequest from '../../../shared/validateRequest';
+
 
 const multer = require('multer');
 const storage = multer.memoryStorage();
@@ -12,19 +13,28 @@ const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-export const optionValidationChecking = <T extends keyof Icamera>(
+export const optionValidationChecking = <T extends keyof Icamera | 'sortBy' | 'page' | 'limit' | 'populate'>(
   filters: T[]
 ) => {
   return filters;
 };
 
+
 // const taskService = new TaskService();
 const controller = new cameraController();
+
+
+const paginationOptions: Array<'sortBy' | 'page' | 'limit' | 'populate'> = [
+  'sortBy',
+  'page',
+  'limit',
+  'populate',
+];
 
 //info : pagination route must be before the route with params
 router.route('/paginate').get(
   //auth('common'),
-  validateFiltersForQuery(optionValidationChecking(['_id'])),
+  validateFiltersForQuery(optionValidationChecking(['_id', ...paginationOptions])),
   controller.getAllWithPagination
 );
 

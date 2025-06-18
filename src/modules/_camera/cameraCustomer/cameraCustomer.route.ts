@@ -2,10 +2,9 @@ import express from 'express';
 import * as validation from './cameraCustomer.validation';
 import { cameraCustomerController} from './cameraCustomer.controller';
 import { IcameraCustomer } from './cameraCustomer.interface';
-import { validateFiltersForQuery } from '../../middlewares/queryValidation/paginationQueryValidationMiddleware';
-import validateRequest from '../../shared/validateRequest';
-import auth from '../../middlewares/auth';
-
+import { validateFiltersForQuery } from '../../../middlewares/queryValidation/paginationQueryValidationMiddleware';
+import auth from '../../../middlewares/auth';
+import validateRequest from '../../../shared/validateRequest';
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });

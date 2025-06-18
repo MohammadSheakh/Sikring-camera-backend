@@ -2,9 +2,9 @@ import express from 'express';
 import * as validation from './customerReport.validation';
 import { customerReportController} from './customerReport.controller';
 import { IcustomerReport } from './customerReport.interface';
-import { validateFiltersForQuery } from '../../middlewares/queryValidation/paginationQueryValidationMiddleware';
-import validateRequest from '../../shared/validateRequest';
-import auth from '../../middlewares/auth';
+import { validateFiltersForQuery } from '../../../middlewares/queryValidation/paginationQueryValidationMiddleware';
+import auth from '../../../middlewares/auth';
+import validateRequest from '../../../shared/validateRequest';
 
 const multer = require('multer');
 const storage = multer.memoryStorage();

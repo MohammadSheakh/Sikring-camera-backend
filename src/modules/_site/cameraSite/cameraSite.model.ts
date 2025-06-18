@@ -1,6 +1,7 @@
 import { model, Schema } from 'mongoose';
 import { IcameraSite, IcameraSiteModel } from './cameraSite.interface';
-import paginate from '../../common/plugins/paginate';
+import paginate from '../../../common/plugins/paginate';
+
 
 
 const cameraSiteSchema = new Schema<IcameraSite>(

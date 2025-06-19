@@ -391,3 +391,50 @@ const socketForChat = (io: Server) => {
 };
 
 export const socketHelper = { socketForChat };
+
+/***********************
+
+    Key Improvements Made:
+    1. Authentication & Security
+
+    Added Socket.IO middleware for authentication
+    Better token validation
+    Added CORS configuration from environment variables
+    Added connection timeouts
+
+    2. Error Handling
+
+    Centralized error emission function
+    Proper try-catch blocks everywhere
+    Meaningful error messages with timestamps
+    Graceful error responses
+
+    3. Data Structures
+
+    Used Set for online users (better performance)
+    Added maps for socket-user relationships
+    Better type definitions with interfaces
+
+    4. Code Organization
+
+    Extracted helper functions
+    Reduced code duplication
+    Better separation of concerns
+    Cleaner event handlers
+
+    5. Performance & Memory
+
+    Better data structures
+    Proper cleanup on disconnect
+    Avoided memory leaks
+    More efficient online user management
+
+    6. Features & UX
+
+    Added timestamps to messages
+    Better typing indicators
+    User join/leave notifications
+    Read receipt improvements
+    Personal user rooms for notifications
+
+******************** */

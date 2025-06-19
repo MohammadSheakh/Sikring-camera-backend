@@ -1,0 +1,393 @@
+import colors from 'colors';
+import { Server, Socket } from 'socket.io';
+import { logger } from '../shared/logger';
+import getUserDetailsFromToken from './getUesrDetailsFromToken';
+
+declare module 'socket.io' {
+  interface Socket {
+    userId?: string;
+  }
+}
+/***********************
+const socketForChat = (io: Server) => {
+  io.on('connection', (socket: Socket) => {
+    logger.info(colors.blue('🔌🟢 A user connected'));
+    socket.on('user-connected', (userId: string) => {
+      socket.userId = userId;
+      socket.join(userId); // Join the room for the specific user
+      logger.info(
+        colors.green(`User ${userId} joined their notification room`)
+      );
+    });
+
+    // Join a room for a specific conversation
+    socket.on('joinRoom', (conversationId) => {
+      console.log(`User joined room: ${conversationId}`);
+      socket.join(conversationId);  // Join a room based on conversationId
+    });
+
+    // Leave a room when a user disconnects or leaves
+    socket.on('leaveRoom', (conversationId) => {
+      console.log(`User left room: ${conversationId}`);
+      socket.leave(conversationId);
+    });
+
+    socket.on('disconnect', () => {
+      logger.info(colors.red('🔌🔴 A user disconnected'));
+    });
+  });
+};
+
+******************* */
+
+// Types for better type safety
+interface SocketUser {
+  _id: string;
+  name: string;
+  // Add other user properties as needed
+}
+
+interface MessageData {
+  chat: string;
+  sender: string;
+  content: string;
+  // Add other message properties as needed
+}
+
+interface TypingData {
+  chatId: string;
+  status: boolean;
+  users: Array<{ _id: string }>;
+}
+
+// Helper function to emit errors
+function emitError(socket: any, message: string, disconnect: boolean = false) {
+  socket.emit('io-error', {
+    success: false,
+    message,
+    timestamp: new Date().toISOString()
+  });
+  if (disconnect) {
+    socket.disconnect();
+  }
+}
+
+const socketForChat = (io: Server) => {
+  // io.on('connection', (socket: Socket) => {
+    
+  // });
+
+  // Better data structures for managing connections
+  const onlineUsers = new Set<string>();
+  const userSocketMap = new Map<string, string>(); // userId -> socketId
+  const socketUserMap = new Map<string, string>(); // socketId -> userId
+
+  // Authentication middleware
+  io.use(async (socket, next) => {
+    try {
+      const token = socket.handshake.auth.token || 
+                   socket.handshake.headers.token as string;
+
+      if (!token) {
+        return next(new Error('Authentication token required'));
+      }
+
+      const user = await getUserDetailsFromToken(token);
+      if (!user) {
+        return next(new Error('Invalid authentication token'));
+      }
+
+      // Attach user to socket
+      socket.data.user = user;
+      next();
+    } catch (error) {
+      console.error('Socket authentication error:', error);
+      next(new Error('Authentication failed'));
+    }
+  });
+
+  io.on('connection', (socket: Socket) => {
+    const user = socket.data.user as SocketUser;
+    const userId = user._id;
+
+    logger.info(colors.blue(`🔌🟢 User connected: :userId: ${userId} :userName: ${user.name} :socketId: ${socket.id}`));
+
+    try{
+      // get user profile once at connection // 🔴 i dont need user profile here 
+      // const userProfile = await getUserProfile(userId);
+      // socket.data.userProfile = userProfile;
+
+      /***********
+       * 
+       *   Update Online Status 
+       * 
+       * ********** */
+
+      onlineUsers.add(userId);
+      userSocketMap.set(userId, socket.id);
+      socketUserMap.set(socket.id, userId);
+
+      // Emit updated online users list
+      io.emit('online-users-updated', Array.from(onlineUsers));
+
+      // Join user to their personal room for direct notifications
+      socket.join(userId);
+
+
+      /***********
+       * 
+       *   Handle joining chat rooms
+       * 
+       * ********** */
+
+      socket.on('join', (chatId: string) => {
+        if (!chatId) {
+          return emitError(socket, 'Chat ID is required');
+        }
+        
+        console.log(`User ${user.name} joining chat ${chatId}`);
+        socket.join(chatId);
+        
+        // Notify others in the chat
+        socket.to(chatId).emit('user-joined-chat', {
+          userId,
+          userName: userProfile?.name || user.name,
+          chatId
+        });
+      });
+
+      /***********
+       * 
+       *   Handle new messages
+       * 
+       * ********** */
+
+      socket.on('send-new-message', async (messageData: MessageData, callback) => {
+        try {
+          console.log('New message received:', messageData);
+
+          if (!messageData.chat || !messageData.content?.trim()) {
+            const error = 'Chat ID and message content are required';
+            callback?.({ success: false, message: error });
+            return emitError(socket, error);
+          }
+
+          // Get chat details
+          const chat = await getChatById(messageData.chat);
+          
+          // Check if user is blocked
+          if (chat.blockedUsers?.includes(userId)) {
+            const error = "You have been blocked. You can't send messages.";
+            callback?.({ success: false, message: error });
+            return emitError(socket, error);
+          }
+
+          // Create message
+          const newMessage = await Message.create({
+            ...messageData,
+            sender: userId,
+            timestamp: new Date()
+          });
+
+          // Update chat's last message and handle deletedFor logic
+          let receiver: string | null = null;
+          if (chat.users.length === 2) {
+            receiver = chat.users.find((u: any) => 
+              u._id.toString() !== userId
+            )?._id.toString() || null;
+          }
+
+          let deletedFor = chat.deletedFor || [];
+          if (receiver) {
+            deletedFor = deletedFor.filter(id => id.toString() !== receiver);
+          }
+
+          await Chat.findByIdAndUpdate(messageData.chat, {
+            lastMessage: newMessage._id,
+            deletedFor,
+            updatedAt: new Date()
+          });
+
+          // Prepare message data for emission
+          const messageToEmit = {
+            ...messageData,
+            _id: newMessage._id,
+            name: userProfile?.name || user.name,
+            image: userProfile?.image,
+            timestamp: newMessage.timestamp || new Date()
+          };
+
+          // Emit to chat room
+          const eventName = `new-message-received::${messageData.chat}`;
+          socket.to(messageData.chat).emit(eventName, messageToEmit);
+          socket.emit(eventName, messageToEmit);
+
+          callback?.({
+            success: true,
+            message: "Message sent successfully",
+            messageId: newMessage._id
+          });
+
+        } catch (error) {
+          console.error('Error sending message:', error);
+          const errorMessage = 'Failed to send message';
+          callback?.({ success: false, message: errorMessage });
+          emitError(socket, errorMessage);
+        }
+      });
+
+      /***********
+       * 
+       *   Handle chat bloking 
+       * 
+       * ********** */
+
+      socket.on("isChatBlocked", (data: { chatId: string; userId: string }, callback) => {
+        try {
+          if (!data.chatId || !data.userId) {
+            return callback?.({ success: false, message: 'Invalid data provided' });
+          }
+
+          const message = {
+            success: true,
+            message: 'Chat is blocked',
+            data: data.chatId,
+            timestamp: new Date().toISOString()
+          };
+
+          callback?.(message);
+
+          // Emit to specific user and chat
+          io.emit(`needRefresh::${data.userId}`, {
+            success: true,
+            message: `User ${data.userId} needs refresh`
+          });
+          io.emit(`isChatBlocked::${data.chatId}`, message);
+
+        } catch (error) {
+          console.error('Error handling chat block:', error);
+          callback?.({ success: false, message: 'Failed to block chat' });
+        }
+      });
+
+      /*************
+       * 
+       * Handle leaving chat
+       * 
+       * ************* */
+      socket.on('leave', (chatId: string, callback) => {
+        if (!chatId) {
+          return callback?.({ success: false, message: 'Chat ID is required' });
+        }
+
+        socket.leave(chatId);
+        socket.to(chatId).emit(`user-left-chat`, {
+          userId,
+          userName: userProfile?.name || user.name,
+          chatId,
+          message: `${userProfile?.name || user.name} left the chat`
+        });
+
+        callback?.({ success: true, message: 'Left chat successfully' });
+      });
+
+
+      /*************
+       * 
+       * Handle read receipts
+       * 
+       * ************* */
+
+      socket.on('read-all-messages', ({ chatId, users, readByUserId }) => {
+        if (!chatId || !Array.isArray(users) || !readByUserId) {
+          return emitError(socket, 'Invalid read receipt data');
+        }
+
+        users.forEach((targetUserId: string) => {
+          if (targetUserId !== userId) { // Don't emit to sender
+            io.to(targetUserId).emit('user-read-all-chat-messages', {
+              chatId,
+              readByUserId,
+              timestamp: new Date().toISOString()
+            });
+          }
+        });
+      });
+
+      /*************
+       * 
+       * Handle typing indicators
+       * 
+       * ************* */
+      socket.on('typing', (data: TypingData, callback) => {
+        try {
+          if (!data.chatId || !Array.isArray(data.users)) {
+            return callback?.({ success: false, message: 'Invalid typing data' });
+          }
+
+          const userName = userProfile?.name || user.name;
+          const message = data.status ? `${userName} is typing...` : '';
+
+          // Emit to other users in the chat
+          data.users.forEach((chatUser: any) => {
+            if (chatUser._id !== userId) {
+              io.to(chatUser._id).emit(`typing::${data.chatId}`, {
+                status: data.status,
+                writeId: userId,
+                message,
+                timestamp: new Date().toISOString()
+              });
+            }
+          });
+
+          callback?.({
+            success: true,
+            writeId: userId,
+            message,
+            status: data.status
+          });
+
+        } catch (error) {
+          console.error('Error handling typing indicator:', error);
+          callback?.({ success: false, message: 'Failed to update typing status' });
+        }
+      });
+
+
+      /*************
+       * 
+       * Handle user logout
+       * 
+       * ************* */
+
+      socket.on('logout', () => {
+        handleUserDisconnection(userId, socket.id);
+      }); 
+
+      /*************
+       * 
+       * Handle disconnection
+       * 
+       * ************* */
+
+      socket.on('disconnect', (reason) => {
+        console.log(`User ${user.name} disconnected: ${reason}`);
+        handleUserDisconnection(userId, socket.id);
+      });
+
+
+    }catch(error){
+      console.error('Socket connection setup error:', error);
+      emitError(socket, 'Connection setup failed', true);
+    }
+  });
+
+  // Error handling for the server
+  io.on('error', (error) => {
+    console.error('Socket.IO server error:', error);
+  });
+
+  return io;
+};
+
+export const socketHelper = { socketForChat };

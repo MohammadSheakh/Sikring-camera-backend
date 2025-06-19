@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { Server } from 'socket.io';
 import app from './app';
 import { errorLogger, logger } from './shared/logger';
-import { socketHelper } from './helpers/socket';
+import { socketHelper } from './helpers/socketForChat';
 import { config } from './config';
 import os from 'os';
 import cluster from 'cluster';
@@ -77,10 +77,12 @@ process.on('uncaughtException', error => {
       // // Use Redis adapter for socket communication between workers
       // io.adapter(socketIORedis({ pubClient, subClient }));
 
-      // Setup socket helper
-      socketHelper.socket(io);
+      // Setup socket helper for chatting .. 
+      socketHelper.socketForChat(io);
+
       // @ts-ignore
-      global.io = io;
+      // global.io = io;
+      // TODO : global.io is not a good practice, consider using a better approach to manage socket connections
     } catch (error) {
       errorLogger.error(colors.red('🤢 Failed to connect Database'));
     }

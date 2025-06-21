@@ -24,70 +24,39 @@ const conversationSchema = new Schema<IConversation>(
         ).join(', ')}`,
       ],
     },
-    /*
-      attachedToId: {
-        // 🔥 fix korte hobe ... eita 
-        type: String,
-        required: [false, 'attachedToId is not required'],
-      },
-      attachedToCategory : {
-        // 🔥 fix korte hobe ... eita 
-        type: String,
-        enum: [
-          'VirtualWorkoutClass', 
-        ],
-        required: [false, 'attachedToCategory is not required'],
-      },
-      // isGroup: {
-      //   type: Boolean,
-      //   required: [false, 'isGroup is not required'],
-      //   default: false,
-      // },
-    */
-
-      // Add month and year fields to organize conversations by month
-    month: {
+  
+    groupName: {
       type: String,
-      required: [true, 'Month is required'],
+      default: null, // Optional group name
     },
-    year: {
-      type: Number,
-      required: [true, 'Year is required'],
-      min: 2023 // Set minimum year as needed
-    },
-  // You might want to add a title field for better organization
-    title: {
+    groupProfilePicture: {
       type: String,
-      required: [false, 'Title is not required'],
-      // default: function() {
-      //   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-      //                     'July', 'August', 'September', 'October', 'November', 'December'];
-      //   return `${monthNames[this.month - 1]} ${this.year}`;
-      // }
-
-      // default: function(this: any): string {
-      //     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-      //                       'July', 'August', 'September', 'October', 'November', 'December'];
-      //     return `${monthNames[this.month - 1]} ${this.year}`;
-      // }
+      default: null, // Optional group profile picture
     },
-
-    lastMessageSenderRole: {
-          type: String,
-          enum: [
-            RoleType.botReply,
-            RoleType.botAuto,
-            RoleType.user,
-            
-          ],
-          required: [
-            false,
-            `lastMessageSenderRole is required it can be ${Object.values(
-              RoleType
-            ).join(', ')}`,
-          ],
-        },
-        // test
+    groupBio: {
+      type: String,
+      default: null, // Optional group bio
+    },
+    groupAdmins: {
+      type: [Schema.Types.ObjectId],
+      default: [],
+      ref: 'User', // Reference to User model
+    },
+    unreadCountes: {
+      type: Object, // Dynamic structure for unread counts
+      default: {}, // Initialize as an empty object
+    },
+    blockedUsers: {
+      type: [Schema.Types.ObjectId], // Users who are blocked
+      default: [],
+      ref: 'User',
+    },
+    deletedFor: {
+      type: [Schema.Types.ObjectId], // Users who have deleted the chat
+      default: [],
+      ref: 'User',
+    },
+    // test
     isDeleted: {
       type: Boolean,
       required: [false, 'isDeleted is not required'],

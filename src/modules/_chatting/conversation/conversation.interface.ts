@@ -8,13 +8,13 @@ export interface IConversation {
   _id?: Types.ObjectId; // undefined |  Types.ObjectId |
   creatorId : Types.ObjectId;
   type: ConversationType.direct | ConversationType.group;
-  //attachedToId? : String,
-  //attachedToCategory? : 'TrainingProgram' | ''; // 🔗
-  ///////////////////////////////////////
-  month: string;
-  year: number;
-  title?: string;
-  lastMessageSenderRole? : RoleType.botAuto | RoleType.user | RoleType.botReply; //  Types.ObjectId 🔗
+  groupName?: string; // Optional group name
+  groupProfilePicture?: string; // Optional group profile picture
+  groupBio?: string; // Optional group bio
+  groupAdmins?: Types.ObjectId[]; // Array of user IDs who are admins in the group
+  unreadCountes?: Record<string, number>; // Dynamic structure for unread counts
+  blockedUsers?: Types.ObjectId[]; // Users who are blocked
+  deletedFor?: Types.ObjectId[]; // Users who have deleted the chat
   
   ///////////////////////////////////////
   isDeleted? : boolean;

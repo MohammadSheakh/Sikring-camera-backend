@@ -2,6 +2,8 @@ import colors from 'colors';
 import { Server, Socket } from 'socket.io';
 import { logger } from '../shared/logger';
 import getUserDetailsFromToken from './getUesrDetailsFromToken';
+import { Message } from '../modules/_chatting/message/message.model';
+import { Conversation } from '../modules/_chatting/conversation/conversation.model';
 
 declare module 'socket.io' {
   interface Socket {
@@ -55,7 +57,7 @@ interface MessageData {
 }
 
 interface TypingData {
-  chatId: string;
+  conversationId: string;
   status: boolean;
   users: Array<{ _id: string }>;
 }
@@ -140,19 +142,19 @@ const socketForChat = (io: Server) => {
        * 
        * ********** */
 
-      socket.on('join', (chatId: string) => {
-        if (!chatId) {
+      socket.on('join', (conversationId: string) => {
+        if (!conversationId) {
           return emitError(socket, 'Chat ID is required');
         }
         
-        console.log(`User ${user.name} joining chat ${chatId}`);
-        socket.join(chatId);
+        console.log(`User ${user.name} joining chat ${conversationId}`);
+        socket.join(conversationId);
         
         // Notify others in the chat
-        socket.to(chatId).emit('user-joined-chat', {
+        socket.to(conversationId).emit('user-joined-chat', {
           userId,
           userName: userProfile?.name || user.name,
-          chatId
+          conversationId
         });
       });
 
@@ -202,7 +204,7 @@ const socketForChat = (io: Server) => {
             deletedFor = deletedFor.filter(id => id.toString() !== receiver);
           }
 
-          await Chat.findByIdAndUpdate(messageData.chat, {
+          await Conversation.findByIdAndUpdate(messageData.chat, {
             lastMessage: newMessage._id,
             deletedFor,
             updatedAt: new Date()
@@ -242,16 +244,16 @@ const socketForChat = (io: Server) => {
        * 
        * ********** */
 
-      socket.on("isChatBlocked", (data: { chatId: string; userId: string }, callback) => {
+      socket.on("isChatBlocked", (data: { conversationId: string; userId: string }, callback) => {
         try {
-          if (!data.chatId || !data.userId) {
+          if (!data.conversationId || !data.userId) {
             return callback?.({ success: false, message: 'Invalid data provided' });
           }
 
           const message = {
             success: true,
             message: 'Chat is blocked',
-            data: data.chatId,
+            data: data.conversationId,
             timestamp: new Date().toISOString()
           };
 
@@ -262,7 +264,7 @@ const socketForChat = (io: Server) => {
             success: true,
             message: `User ${data.userId} needs refresh`
           });
-          io.emit(`isChatBlocked::${data.chatId}`, message);
+          io.emit(`isChatBlocked::${data.conversationId}`, message);
 
         } catch (error) {
           console.error('Error handling chat block:', error);
@@ -275,16 +277,16 @@ const socketForChat = (io: Server) => {
        * Handle leaving chat
        * 
        * ************* */
-      socket.on('leave', (chatId: string, callback) => {
-        if (!chatId) {
+      socket.on('leave', (conversationId: string, callback) => {
+        if (!conversationId) {
           return callback?.({ success: false, message: 'Chat ID is required' });
         }
 
-        socket.leave(chatId);
-        socket.to(chatId).emit(`user-left-chat`, {
+        socket.leave(conversationId);
+        socket.to(conversationId).emit(`user-left-chat`, {
           userId,
           userName: userProfile?.name || user.name,
-          chatId,
+          conversationId,
           message: `${userProfile?.name || user.name} left the chat`
         });
 
@@ -298,15 +300,15 @@ const socketForChat = (io: Server) => {
        * 
        * ************* */
 
-      socket.on('read-all-messages', ({ chatId, users, readByUserId }) => {
-        if (!chatId || !Array.isArray(users) || !readByUserId) {
+      socket.on('read-all-messages', ({ conversationId, users, readByUserId }) => {
+        if (!conversationId || !Array.isArray(users) || !readByUserId) {
           return emitError(socket, 'Invalid read receipt data');
         }
 
         users.forEach((targetUserId: string) => {
           if (targetUserId !== userId) { // Don't emit to sender
             io.to(targetUserId).emit('user-read-all-chat-messages', {
-              chatId,
+              conversationId,
               readByUserId,
               timestamp: new Date().toISOString()
             });
@@ -321,7 +323,7 @@ const socketForChat = (io: Server) => {
        * ************* */
       socket.on('typing', (data: TypingData, callback) => {
         try {
-          if (!data.chatId || !Array.isArray(data.users)) {
+          if (!data.conversationId || !Array.isArray(data.users)) {
             return callback?.({ success: false, message: 'Invalid typing data' });
           }
 
@@ -331,7 +333,7 @@ const socketForChat = (io: Server) => {
           // Emit to other users in the chat
           data.users.forEach((chatUser: any) => {
             if (chatUser._id !== userId) {
-              io.to(chatUser._id).emit(`typing::${data.chatId}`, {
+              io.to(chatUser._id).emit(`typing::${data.conversationId}`, {
                 status: data.status,
                 writeId: userId,
                 message,
@@ -374,7 +376,6 @@ const socketForChat = (io: Server) => {
         console.log(`User ${user.name} disconnected: ${reason}`);
         handleUserDisconnection(userId, socket.id);
       });
-
 
     }catch(error){
       console.error('Socket connection setup error:', error);

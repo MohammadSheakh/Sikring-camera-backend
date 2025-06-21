@@ -140,10 +140,12 @@ export class ConversationV2Controller extends GenericController<typeof Conversat
             senderRole: RoleType.bot,
           });
 
+          // TODO :  there is nothing called lastMessageSenderRole in conversation model ..
+          
           // also update the last message of the conversation 
           await Conversation.findByIdAndUpdate(
             result?._id,
-            { lastMessageSenderRole: RoleType.bot}, // FIX ME : last message sender role fix korte hobe .. 
+            { lastMessageSenderRole: RoleType.bot}, // FIX ME : last message sender role bolte kichui nai .. 
             { new: true }
           ).select('-isDeleted -updatedAt -createdAt -__v');
         }

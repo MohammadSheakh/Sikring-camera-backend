@@ -5,7 +5,7 @@ import ApiError from '../errors/ApiError';
 import { User } from '../modules/user/user.model';
 
 const getUserDetailsFromToken = async (token: string) => {
-  console.log("token from getUserDetails -> ", token)
+  // console.log("token from getUserDetails -> ", token)
   if (!token) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'you are not authorized!');
   }

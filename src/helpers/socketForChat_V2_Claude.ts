@@ -139,7 +139,7 @@ const socketForChat_V2_Claude = (io: Server) => {
       }
 
       const user = await getUserDetailsFromToken(token);
-      console.log("user from socketForChat_V2_Claude -> ", user);
+      // console.log("user from socketForChat_V2_Claude -> ", user);
       if (!user) {
         return next(new Error('Invalid authentication token'));
       }
@@ -199,20 +199,32 @@ const socketForChat_V2_Claude = (io: Server) => {
        * 
        * ********** */
 
-      socket.on('join', (conversationId: string) => {
-        if (!conversationId) {
-          return emitError(socket, 'Chat ID is required');
+      socket.on('join', async(conversationData: {conversationId: string}) => {
+        if (!conversationData.conversationId) {
+          return emitError(socket, 'conversationId is required');
         }
         
-        console.log(`User ${user.name} joining chat ${conversationId}`);
-        socket.join(conversationId);
+        console.log(`User ${user.name} joining chat ${conversationData.conversationId}`);
+        
+        // Debug: Check room membership //------- from claude
+        const roomSockets = await io.in(conversationData.conversationId).fetchSockets();
+        console.log(`Room ${conversationData.conversationId} now has ${roomSockets.length+1} sockets`);
+        console.log(`Current online users: ${Array.from(onlineUsers).join(', ')}`);  
+        // console.log(`Current userSocketMap: ${Array.from(userSocketMap.entries()).map(([k, v]) => `${k}:${v}`).join(', ')}`);
+        // console.log(`Current socketUserMap: ${Array.from(socketUserMap.entries()).map(([k, v]) => `${k}:${v}`).join(', ')}`);
+        // console.log(`------------------`);
+        // console.log(roomSockets.map((s: any) => `${s.id} (${s.data.user.name})`).join(', '));
+
+        socket.join(conversationData.conversationId);
         
         // Notify others in the chat
-        socket.to(conversationId).emit('user-joined-chat', {
+        socket.to(conversationData.conversationId).emit('user-joined-chat', {
           userId,
           userName: userProfile?.name || user.name,
-          conversationId
+          conversationId: conversationData.conversationId
         });
+
+
       });
 
       /***********
@@ -234,6 +246,9 @@ const socketForChat_V2_Claude = (io: Server) => {
           // Get chat details
           const {conversationData, conversationParticipants} = await getConversationById(messageData.conversationId);
           
+          // console.log('Conversation data:', conversationData);
+          // console.log('Conversation participants:', conversationParticipants);
+
           // Check if user is blocked
           if (conversationData.blockedUsers?.includes(userId)) {
             const error = "You have been blocked. You can't send messages.";
@@ -267,8 +282,6 @@ const socketForChat_V2_Claude = (io: Server) => {
 
           await Conversation.findByIdAndUpdate(messageData.conversationId, {
             lastMessage: newMessage._id,
-            // deletedFor,
-            updatedAt: new Date()
           });
 
           // Prepare message data for emission
@@ -282,10 +295,24 @@ const socketForChat_V2_Claude = (io: Server) => {
 
           // Emit to chat room
           const eventName = `new-message-received::${messageData.conversationId}`; // ${messageData.conversationId}
+          
+
+          console.log(`Emitting event: ${eventName}`, messageToEmit);
+          /***************
+          // Emit to recipient if online
+          if (onlineUsers.has(to)) {
+            const sockeId = onlineUsers.get(to);
+            io?.to(to).emit('private-message', messageResult);
+          }
+          ********* */
+          
+          
           //io.to(messageData.conversationId).emit(eventName, messageToEmit);//💡
           socket.to(messageData.conversationId).emit(eventName, messageToEmit);
-          socket.emit(eventName, messageToEmit);
+          // socket.emit(eventName, messageToEmit);
 
+         
+          /// / Emit to sender's personal room 
           callback?.({
             success: true,
             message: "Message sent successfully",
@@ -297,9 +324,10 @@ const socketForChat_V2_Claude = (io: Server) => {
               timestamp: newMessage.createdAt || new Date(),
               name: userProfile?.name || user.name,
               image: userProfile?.profileImage || null
-              
+
             },
           });
+          
 
         } catch (error) {
           console.error('Error sending message:', error);

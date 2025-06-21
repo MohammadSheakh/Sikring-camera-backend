@@ -248,6 +248,8 @@ const socketForChat_V2_Claude = (io: Server) => {
             senderId: userId,
           });
 
+          /**************************************
+
           // Update chat's last message and handle deletedFor logic
           let receiver: string | null = null;
           if (conversationParticipants.length === 2) {
@@ -261,9 +263,11 @@ const socketForChat_V2_Claude = (io: Server) => {
             deletedFor = deletedFor.filter((id: any) => id.toString() !== receiver);
           }
 
+          ****************************************/
+
           await Conversation.findByIdAndUpdate(messageData.conversationId, {
             lastMessage: newMessage._id,
-            deletedFor,
+            // deletedFor,
             updatedAt: new Date()
           });
 
@@ -277,15 +281,24 @@ const socketForChat_V2_Claude = (io: Server) => {
           };
 
           // Emit to chat room
-          const eventName = `new-message-received::`; // ${messageData.conversationId}
-          //socket.to(messageData.conversationId).emit(eventName, messageToEmit);//💡
-          io.to(messageData.conversationId).emit(eventName, messageToEmit);
+          const eventName = `new-message-received::${messageData.conversationId}`; // ${messageData.conversationId}
+          //io.to(messageData.conversationId).emit(eventName, messageToEmit);//💡
+          socket.to(messageData.conversationId).emit(eventName, messageToEmit);
           socket.emit(eventName, messageToEmit);
 
           callback?.({
             success: true,
             message: "Message sent successfully",
-            messageId: newMessage._id
+            messageDetails: { 
+              messageId : newMessage._id,
+              conversationId: messageData.conversationId,
+              senderId: userId,
+              text: messageData.text,
+              timestamp: newMessage.createdAt || new Date(),
+              name: userProfile?.name || user.name,
+              image: userProfile?.profileImage || null
+              
+            },
           });
 
         } catch (error) {

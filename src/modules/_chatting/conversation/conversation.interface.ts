@@ -15,7 +15,7 @@ export interface IConversation {
   unreadCountes?: Record<string, number>; // Dynamic structure for unread counts
   blockedUsers?: Types.ObjectId[]; // Users who are blocked
   deletedFor?: Types.ObjectId[]; // Users who have deleted the chat
-  
+  lastMessage ?: Types.ObjectId; // Reference to the last message in the conversation
   ///////////////////////////////////////
   isDeleted? : boolean;
   createdAt?: Date;

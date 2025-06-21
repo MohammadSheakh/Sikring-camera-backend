@@ -56,6 +56,12 @@ const conversationSchema = new Schema<IConversation>(
       default: [],
       ref: 'User',
     },
+
+    lastMessage : {
+      type: Schema.Types.ObjectId,
+      ref: 'Message',
+      default: null, // Optional last message reference
+    },
     // test
     isDeleted: {
       type: Boolean,

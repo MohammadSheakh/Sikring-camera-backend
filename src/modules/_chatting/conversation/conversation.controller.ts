@@ -202,17 +202,11 @@ export class ConversationController extends GenericController<typeof Conversatio
       const conversationData: IConversation = {
         creatorId: req.user.userId,
         type,
-        month: format(new Date(), 'LLLL'), // format(new Date(), 'LLLL')
-        year: new Date().getFullYear() //2026 , // new Date().getFullYear()
-        // attachedToId,
-        // attachedToCategory,
       };
 
       // check if the conversation already exists
       const existingConversation = await Conversation.findOne({
         creatorId: conversationData.creatorId,
-        month: conversationData.month,
-        year: conversationData.year,
       }).select('-isDeleted -updatedAt -createdAt -__v');
 
       if (!existingConversation){
@@ -242,8 +236,7 @@ export class ConversationController extends GenericController<typeof Conversatio
 
           const res1 = await conversationParticipantsService.create({
             userId: participant,
-            conversationId: result?._id,
-            role: user?.role === RoleType.user ? RoleType.user : RoleType.bot, // 🔴 ekhane jhamela ase .. 
+            conversationId: result._id 
           });
 
           if (!res1) {
@@ -312,6 +305,8 @@ export class ConversationController extends GenericController<typeof Conversatio
           }
         }
 
+        
+
       sendResponse(res, {
         code: StatusCodes.OK,
         data: existingConversation ? existingConversation : result,
@@ -321,6 +316,8 @@ export class ConversationController extends GenericController<typeof Conversatio
     }
   });
 
+/********************
+ * 
   // this trigger Cron Job is For Manual Testing:
   triggerCronJob = catchAsync(async (req: Request, res: Response) => {
   try {
@@ -338,6 +335,8 @@ export class ConversationController extends GenericController<typeof Conversatio
     );
   }
   });
+
+******************** */
 
   addParticipantsToExistingConversation = catchAsync(
     async (req: Request, res: Response) => {

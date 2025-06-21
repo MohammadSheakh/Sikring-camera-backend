@@ -232,7 +232,7 @@ const socketForChat_V2_Claude = (io: Server) => {
           }
 
           // Get chat details
-          const {conversationData, conversationParticipants} = await getConversationById(messageData.chat);
+          const {conversationData, conversationParticipants} = await getConversationById(messageData.conversationId);
           
           // Check if user is blocked
           if (conversationData.blockedUsers?.includes(userId)) {
@@ -277,8 +277,9 @@ const socketForChat_V2_Claude = (io: Server) => {
           };
 
           // Emit to chat room
-          const eventName = `new-message-received::${messageData.conversationId}`;
-          socket.to(messageData.conversationId).emit(eventName, messageToEmit);
+          const eventName = `new-message-received::`; // ${messageData.conversationId}
+          //socket.to(messageData.conversationId).emit(eventName, messageToEmit);//💡
+          io.to(messageData.conversationId).emit(eventName, messageToEmit);
           socket.emit(eventName, messageToEmit);
 
           callback?.({

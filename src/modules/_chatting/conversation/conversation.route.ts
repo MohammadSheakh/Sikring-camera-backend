@@ -97,10 +97,12 @@ router.route('/participants/all').get(
   controller.showParticipantsOfExistingConversation
 );
 
-//[🚧][🧑‍💻✅][🧪] // 🆗
+/*************
+//[🚧][🧑‍💻][🧪] // ✅🆗
 router.route('trigger-cron').get(
   controller.triggerCronJob
 );
+************ */
 
 // 🟢 this route is already available at messsage route
 // router.route('/get-all-message/:conversationId').get(

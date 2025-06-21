@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { Server } from 'socket.io';
 import app from './app';
 import { errorLogger, logger } from './shared/logger';
-import { socketHelper } from './helpers/socketForChat';
+// import { socketHelper } from './helpers/socketForChat_V1_Rasel_Vai_Modified';
 import { config } from './config';
 import os from 'os';
 import cluster from 'cluster';
@@ -12,6 +12,7 @@ import socketIORedis from '@socket.io/redis-adapter';
 import { initConversationCronJobs } from './modules/_chatting/conversation/conversation.cron';
 import { initUserSubscriptionCron } from './modules/_subscription/userSubscription/userSubscription.cron';
 import { initNotificationCron } from './modules/notification/notification.cron';
+import { socketHelper } from './helpers/socketForChat_V2_Claude';
 // test 
 // Number of CPU cores
 const numCPUs = os.cpus().length;
@@ -78,10 +79,12 @@ process.on('uncaughtException', error => {
       // io.adapter(socketIORedis({ pubClient, subClient }));
 
       // Setup socket helper for chatting .. 
-      socketHelper.socketForChat(io);
+      //socketHelper.socketForChat(io);
+
+      socketHelper.socketForChat_V2_Claude(io);
 
       // @ts-ignore
-      // global.io = io;
+      //global.io = io;
       // TODO : global.io is not a good practice, consider using a better approach to manage socket connections
     } catch (error) {
       errorLogger.error(colors.red('🤢 Failed to connect Database'));

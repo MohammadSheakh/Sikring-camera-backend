@@ -8,7 +8,6 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 import * as validation from './conversation.validation';
 import validateRequest from '../../../shared/validateRequest';
-import { ConversationV2Controller } from './conversationv2.controller';
 const router = express.Router();
 
 export const optionValidationChecking = <T extends keyof IConversation | 'sortBy' | 'page' | 'limit' | 'populate'>(
@@ -19,7 +18,6 @@ export const optionValidationChecking = <T extends keyof IConversation | 'sortBy
 
 // const taskService = new TaskService();
 const controller = new ConversationController();
-const controllerV2 = new ConversationV2Controller();
 
 const paginationOptions: Array<'sortBy' | 'page' | 'limit' | 'populate'> = [
   'sortBy',
@@ -60,7 +58,7 @@ router.route('/create').post(
   // ],
   auth('user'),
   validateRequest(validation.createConversationValidationSchema),
-  controllerV2.create // 2️⃣
+  controller.create // 2️⃣
 );
 
 router.route('/delete/:id').delete(
@@ -101,7 +99,7 @@ router.route('/participants/all').get(
 
 //[🚧][🧑‍💻✅][🧪] // 🆗
 router.route('trigger-cron').get(
-  controllerV2.triggerCronJob
+  controller.triggerCronJob
 );
 
 // 🟢 this route is already available at messsage route

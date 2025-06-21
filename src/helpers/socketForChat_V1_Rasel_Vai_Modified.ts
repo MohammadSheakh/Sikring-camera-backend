@@ -4,6 +4,9 @@ import { logger } from '../shared/logger';
 import getUserDetailsFromToken from './getUesrDetailsFromToken';
 import { Message } from '../modules/_chatting/message/message.model';
 import { Conversation } from '../modules/_chatting/conversation/conversation.model';
+import { handle } from 'i18next-http-middleware';
+import { User } from '../modules/user/user.model';
+import { ConversationParticipents } from '../modules/_chatting/conversationParticipents/conversationParticipents.model';
 
 declare module 'socket.io' {
   interface Socket {
@@ -74,6 +77,28 @@ function emitError(socket: any, message: string, disconnect: boolean = false) {
   }
 }
 
+async function getConversationById(conversationId: string) {
+  try {
+    const conversationData = await Conversation.findById(conversationId).populate('users').exec();
+    
+  
+    const conversationParticipants = await ConversationParticipents.find({
+      conversationId: conversationId
+    })
+
+    if (!conversationData) {
+      throw new Error(`Conversation with ID ${conversationId} not found`);
+    }
+    return { 
+      conversationData: conversationData,
+      conversationParticipants : conversationParticipants
+    };
+  } catch (error) {
+    console.error('Error fetching chat:', error);
+    throw error; // Rethrow to handle it in the calling function
+  }
+}
+
 const socketForChat = (io: Server) => {
   // io.on('connection', (socket: Socket) => {
     
@@ -108,7 +133,7 @@ const socketForChat = (io: Server) => {
     }
   });
 
-  io.on('connection', (socket: Socket) => {
+  io.on('connection', async(socket: Socket) => {
     const user = socket.data.user as SocketUser;
     const userId = user._id;
 
@@ -116,8 +141,10 @@ const socketForChat = (io: Server) => {
 
     try{
       // get user profile once at connection // 🔴 i dont need user profile here 
-      // const userProfile = await getUserProfile(userId);
-      // socket.data.userProfile = userProfile;
+      //const userProfile = await getUserProfile(userId);
+      // TODO : test korte hobe userProfile get kora lagbe kina .. 
+      const userProfile = await User.findById(userId, 'name image'); // Fetch only necessary fields
+      socket.data.userProfile = userProfile;
 
       /***********
        * 
@@ -175,10 +202,10 @@ const socketForChat = (io: Server) => {
           }
 
           // Get chat details
-          const chat = await getChatById(messageData.chat);
+          const {conversationData, conversationParticipants} = await getConversationById(messageData.chat); // FIX ME : ekhane thik jinish send kora hoy nai 
           
           // Check if user is blocked
-          if (chat.blockedUsers?.includes(userId)) {
+          if (conversationData.blockedUsers?.includes(userId)) {
             const error = "You have been blocked. You can't send messages.";
             callback?.({ success: false, message: error });
             return emitError(socket, error);
@@ -193,13 +220,15 @@ const socketForChat = (io: Server) => {
 
           // Update chat's last message and handle deletedFor logic
           let receiver: string | null = null;
-          if (chat.users.length === 2) {
-            receiver = chat.users.find((u: any) => 
+          if (conversationParticipants.length === 2) {
+            receiver = conversationParticipants.find((u: any) => 
+              // TODO : ekhane logic fix korte hobe 
+              // FIX ME : ekhane logic fix korte hobe ..  
               u._id.toString() !== userId
             )?._id.toString() || null;
           }
 
-          let deletedFor = chat.deletedFor || [];
+          let deletedFor = conversationData.deletedFor || [];
           if (receiver) {
             deletedFor = deletedFor.filter(id => id.toString() !== receiver);
           }
@@ -215,8 +244,8 @@ const socketForChat = (io: Server) => {
             ...messageData,
             _id: newMessage._id,
             name: userProfile?.name || user.name,
-            image: userProfile?.image,
-            timestamp: newMessage.timestamp || new Date()
+            image: userProfile?.profileImage,
+            createdAt: newMessage.createdAt || new Date()
           };
 
           // Emit to chat room
@@ -355,7 +384,6 @@ const socketForChat = (io: Server) => {
         }
       });
 
-
       /*************
        * 
        * Handle user logout
@@ -363,7 +391,8 @@ const socketForChat = (io: Server) => {
        * ************* */
 
       socket.on('logout', () => {
-        handleUserDisconnection(userId, socket.id);
+        //handleUserDisconnection(userId, socket.id);
+        handleUserDisconnection(userId, socket.id, onlineUsers, userSocketMap, socketUserMap, io);
       }); 
 
       /*************
@@ -374,7 +403,8 @@ const socketForChat = (io: Server) => {
 
       socket.on('disconnect', (reason) => {
         console.log(`User ${user.name} disconnected: ${reason}`);
-        handleUserDisconnection(userId, socket.id);
+        // handleUserDisconnection(userId, socket.id);
+        handleUserDisconnection(userId, socket.id, onlineUsers, userSocketMap, socketUserMap, io);
       });
 
     }catch(error){
@@ -392,6 +422,28 @@ const socketForChat = (io: Server) => {
 };
 
 export const socketHelper = { socketForChat };
+
+
+/*****************
+ * 
+ * This is from Qwen Chat .. 
+ * 
+ * *************** */
+
+const handleUserDisconnection = (
+  userId: string,
+  socketId: string,
+  onlineUsers: Set<string>,
+  userSocketMap: Map<string, string>,
+  socketUserMap: Map<string, string>,
+  io: Server
+) => {
+  logger.info(`User disconnected: ${userId}`);
+  onlineUsers.delete(userId);
+  userSocketMap.delete(userId);
+  socketUserMap.delete(socketId);
+  io.emit('online-users-updated', Array.from(onlineUsers));
+};
 
 /***********************
 

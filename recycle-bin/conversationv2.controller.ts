@@ -1,22 +1,22 @@
 import { Request, Response } from 'express';
-import catchAsync from '../../../shared/catchAsync';
-import sendResponse from '../../../shared/sendResponse';
-import { GenericController } from '../../__Generic/generic.controller';
-import { Conversation } from './conversation.model';
-import { ConversationService } from './conversation.service';
+import catchAsync from '../src/shared/catchAsync';
+import sendResponse from '../src/shared/sendResponse';
+import { GenericController } from '../src/modules/__Generic/generic.controller';
+import { Conversation } from '../src/modules/_chatting/conversation/conversation.model';
+import { ConversationService } from '../src/modules/_chatting/conversation/conversation.service';
 import { StatusCodes } from 'http-status-codes';
-import { ConversationParticipentsService } from '../conversationParticipents/conversationParticipents.service';
-import ApiError from '../../../errors/ApiError';
-import { IConversation } from './conversation.interface';
-import { ConversationType } from './conversation.constant';
-import { MessagerService } from '../message/message.service';
-import { IMessage } from '../message/message.interface';
-import { RoleType } from '../conversationParticipents/conversationParticipents.constant';
-import { User } from '../../user/user.model';
+import { ConversationParticipentsService } from '../src/modules/_chatting/conversationParticipents/conversationParticipents.service';
+import ApiError from '../src/errors/ApiError';
+import { IConversation } from '../src/modules/_chatting/conversation/conversation.interface';
+import { ConversationType } from '../src/modules/_chatting/conversation/conversation.constant';
+import { MessagerService } from '../src/modules/_chatting/message/message.service';
+import { IMessage } from '../src/modules/_chatting/message/message.interface';
+import { RoleType } from '../src/modules/_chatting/conversationParticipents/conversationParticipents.constant';
+import { User } from '../src/modules/user/user.model';
 import { format } from 'date-fns';
 import mongoose from 'mongoose';
-import { sendDailyMessageToAllConversations } from './conversation.cron';
-import { Message } from '../message/message.model';
+import { sendDailyMessageToAllConversations } from '../src/modules/_chatting/conversation/conversation.cron';
+import { Message } from '../src/modules/_chatting/message/message.model';
 
 let conversationParticipantsService = new ConversationParticipentsService();
 let messageService = new MessagerService();
@@ -198,29 +198,6 @@ export class ConversationV2Controller extends GenericController<typeof Conversat
   });
 
 
-  // 🟢 this is already available in message module 
-  getAllMessagesOfAConversation = catchAsync(
-  async (req: Request, res: Response) => {
-    const { conversationId } = req.params;
-
-    if (!conversationId) {
-      throw new ApiError(
-        StatusCodes.BAD_REQUEST,
-        'Conversation ID is required'
-      );
-    }
-
-    const previousMessageHistory: IMessage[] | null =
-          await Message.find({
-            conversationId
-    }).select('-conversationId -__v -updatedAt') /*.populate("text senderRole conversationId") */;
-
-    sendResponse(res, {
-      code: StatusCodes.OK,
-      data: previousMessageHistory,
-      message: 'Messages retrieved successfully',
-      success: true,
-    });
-  })
+  
   // add more methods here if needed or override the existing ones
 }

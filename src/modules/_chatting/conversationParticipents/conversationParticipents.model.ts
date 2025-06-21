@@ -20,19 +20,23 @@ const conversationParticipentsSchema = new Schema<IConversationParticipents>(
       required: [true, 'joinedAt is required'],
       default: Date.now,
     },
-    role: {
-          type: String,
-          enum: [
-            RoleType.bot,
-            RoleType.user,
-          ],
-          required: [
-            true,
-            `RoleType is required it can be ${Object.values(
-              RoleType
-            ).join(', ')}`,
-          ],
-        },
+    
+    // TODO : role jodi thake .. taile user er role e jeno thake ekhane .. 
+
+    // role: {
+    //       type: String,
+    //       enum: [
+    //         RoleType.bot,
+    //         RoleType.user,
+    //       ],
+    //       required: [
+    //         true,
+    //         `RoleType is required it can be ${Object.values(
+    //           RoleType
+    //         ).join(', ')}`,
+    //       ],
+    //     },
+    
     isDeleted: {
       type: Boolean,
       required: [false, 'isDeleted is not required'],

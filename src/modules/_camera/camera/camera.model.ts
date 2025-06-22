@@ -10,10 +10,7 @@ const cameraSchema = new Schema<Icamera>(
     //   type: Schema.Types.ObjectId,
     //   ref: 'User',
     // },
-    cameraName : {
-      type: String,
-      required: [true, 'cameraName is required'],
-    },
+    
     siteName : {
       type: String,
       required: [false, 'siteName is not required'],
@@ -36,15 +33,15 @@ const cameraSchema = new Schema<Icamera>(
     },
 
     status : {
-          type: String,
-          enum:  [TStatus.offline, TStatus.working],
-          required: [
-            false,
-            `Status is required it can be ${Object.values(
-              TStatus
-            ).join(', ')}`,
-          ],
-          default: TStatus.offline, // TODO : change to proper status .. 
+      type: String,
+      enum:  [TStatus.offline, TStatus.working],
+      required: [
+        false,
+        `Status is required it can be ${Object.values(
+          TStatus
+        ).join(', ')}`,
+      ],
+      default: TStatus.offline, // TODO : change to proper status .. 
     },
 
     attachments: [
@@ -71,14 +68,9 @@ const cameraSchema = new Schema<Icamera>(
       type: String,
       required: [true, 'description is required'],
     },
-
-    cameraIp : {
+    cameraName : {
       type: String,
-      required: [true, 'cameraIp is required'],
-    },
-    cameraPort : {
-      type: String,
-      required: [true, 'cameraPort is required'],
+      required: [true, 'cameraName is required'],
     },
     cameraUsername: {
       type: String,
@@ -88,6 +80,15 @@ const cameraSchema = new Schema<Icamera>(
       type: String,
       required: [true, 'cameraPassword is required'],
     },
+    cameraIp : {
+      type: String,
+      required: [true, 'cameraIp is required'],
+    },
+    cameraPort : {
+      type: String,
+      required: [true, 'cameraPort is required'],
+    },
+    
 
     isDeleted: {
       type: Boolean,

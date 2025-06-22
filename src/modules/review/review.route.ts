@@ -1,10 +1,10 @@
 import express from 'express';
-import * as validation from './report.validation';
-import { reportController} from './report.controller';
-import { Ireport } from './report.interface';
-import { validateFiltersForQuery } from '../../../middlewares/queryValidation/paginationQueryValidationMiddleware';
-import validateRequest from '../../../shared/validateRequest';
-import auth from '../../../middlewares/auth';
+import * as validation from './demo.validation';
+import { DemoController} from './demo.controller';
+import { IDemo } from './demo.interface';
+import { validateFiltersForQuery } from '../../middlewares/queryValidation/paginationQueryValidationMiddleware';
+import validateRequest from '../../shared/validateRequest';
+import auth from '../../middlewares/auth';
 
 const multer = require('multer');
 const storage = multer.memoryStorage();
@@ -12,25 +12,22 @@ const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-export const optionValidationChecking = <T extends keyof Ireport>(
+export const optionValidationChecking = <T extends keyof IDemo>(
   filters: T[]
 ) => {
   return filters;
 };
 
 // const taskService = new TaskService();
-const controller = new reportController();
+const controller = new DemoController();
 
 //info : pagination route must be before the route with params
-// get all report organized by category 💡
-// get all todays report 💡 
 router.route('/paginate').get(
   //auth('common'),
-  validateFiltersForQuery(optionValidationChecking(['_id', 'reportType', 'createdAt'])),
+  validateFiltersForQuery(optionValidationChecking(['_id'])),
   controller.getAllWithPagination
 );
 
-// get report details by id 💡
 router.route('/:id').get(
   // auth('common'),
   controller.getById
@@ -49,7 +46,6 @@ router.route('/').get(
 );
 
 //[🚧][🧑‍💻✅][🧪] // 🆗
-// create report 💡
 router.route('/create').post(
   // [
   //   upload.fields([
@@ -75,4 +71,4 @@ router.route('/softDelete/:id').put(
 //[🚧][🧑‍💻✅][🧪] // 🆗
 
 
-export const reportRoute = router;
+export const DemoRoute = router;

@@ -22,12 +22,14 @@ export const optionValidationChecking = <T extends keyof Isite>(
 const controller = new siteController();
 
 //info : pagination route must be before the route with params
+
 router.route('/paginate').get(
   //auth('common'),
   validateFiltersForQuery(optionValidationChecking(['_id'])),
   controller.getAllWithPagination
 );
 
+// get site details by site id 💡
 router.route('/:id').get(
   // auth('common'),
   controller.getById

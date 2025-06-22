@@ -22,9 +22,10 @@ export const optionValidationChecking = <T extends keyof IuserSite>(
 const controller = new userSiteController();
 
 //info : pagination route must be before the route with params
+// get all site by userId and type customer 💡
 router.route('/paginate').get(
   //auth('common'),
-  validateFiltersForQuery(optionValidationChecking(['_id'])),
+  validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role'])),
   controller.getAllWithPagination
 );
 

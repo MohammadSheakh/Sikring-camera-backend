@@ -22,9 +22,10 @@ export const optionValidationChecking = <T extends keyof IcameraSite>(
 const controller = new cameraSiteController();
 
 //info : pagination route must be before the route with params
+// get all camera by siteId 💡
 router.route('/paginate').get(
   //auth('common'),
-  validateFiltersForQuery(optionValidationChecking(['_id'])),
+  validateFiltersForQuery(optionValidationChecking(['_id', 'siteId'])),
   controller.getAllWithPagination
 );
 

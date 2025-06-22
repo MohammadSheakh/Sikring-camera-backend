@@ -4,6 +4,10 @@ import { SettingsController } from './settings.controllers';
 
 const router = Router();
 
+// getTermsOfServiceByType 💡
+// getPrivacyPolicyByType 💡
+// contactUs 🔴 Dashboard design missing by UI 
+// getAboutUsByType 💡
 router
   .route('/')
   .get(auth('common'), SettingsController.getDetailsByType)

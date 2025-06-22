@@ -195,9 +195,9 @@ const socketForChat_V2_Claude = (io: Server) => {
 
       /***********
        * 
-       *   Handle joining chat rooms
+       *   Handle joining chat rooms  🟢working perfectly
        * 
-       * ********** */
+       * ********** */  
 
       socket.on('join', async(conversationData: {conversationId: string}) => {
         if (!conversationData.conversationId) {
@@ -233,7 +233,7 @@ const socketForChat_V2_Claude = (io: Server) => {
 
       /***********
        * 
-       *   Handle new messages
+       *   Handle new messages  🟢working perfectly
        * 
        * ********** */
 
@@ -310,12 +310,14 @@ const socketForChat_V2_Claude = (io: Server) => {
           }
           ********* */
           
+          // when you send everyone include the sender//💡
+          //io.to(messageData.conversationId).emit(eventName, messageToEmit);//💡
           
-          io.to(messageData.conversationId).emit(eventName, messageToEmit);//💡
+          // when you send everyone exclude the sender
           socket.to(messageData.conversationId).emit(eventName, messageToEmit);
+          
           // socket.emit(eventName, messageToEmit);
 
-         
           /// / Emit to sender's personal room 
           callback?.({
             success: true,
@@ -377,7 +379,7 @@ const socketForChat_V2_Claude = (io: Server) => {
 
       /*************
        * 
-       * Handle leaving conversation
+       * Handle leaving conversation 🟢working perfectly 
        * 
        * ************* */
       socket.on('leave', async(conversationData: {conversationId: string}, callback) => {

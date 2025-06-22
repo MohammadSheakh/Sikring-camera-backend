@@ -1,0 +1,25 @@
+flowchart LR
+  
+   subgraph Description
+      
+        direction LR
+
+        A1D[d]
+         Ad[To Join a conversation]
+         Bd[To leave a conversation]
+        
+  end
+
+    
+
+  subgraph Event
+      
+        direction LR
+        A1[create conversation manullay pass participants which is arrayOfUserId and message] --> A1D
+
+        A[join] --pass {conversationId}--> Ad
+        B[leave] --pass {conversationId}--> Bd
+        C[send-new-message] --pass {conversationId, message}--> D
+  end
+
+ 

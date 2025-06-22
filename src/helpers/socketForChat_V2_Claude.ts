@@ -206,10 +206,6 @@ const socketForChat_V2_Claude = (io: Server) => {
         
         console.log(`User ${user.name} joining chat ${conversationData.conversationId}`);
         
-        // Debug: Check room membership //------- from claude
-        const roomSockets = await io.in(conversationData.conversationId).fetchSockets();
-        console.log(`Room ${conversationData.conversationId} now has ${roomSockets.length+1} sockets`);
-        console.log(`Current online users: ${Array.from(onlineUsers).join(', ')}`);  
         // console.log(`Current userSocketMap: ${Array.from(userSocketMap.entries()).map(([k, v]) => `${k}:${v}`).join(', ')}`);
         // console.log(`Current socketUserMap: ${Array.from(socketUserMap.entries()).map(([k, v]) => `${k}:${v}`).join(', ')}`);
         // console.log(`------------------`);
@@ -217,6 +213,14 @@ const socketForChat_V2_Claude = (io: Server) => {
 
         socket.join(conversationData.conversationId);
         
+
+        // Debug: Check room membership //------- from claude
+        const roomSockets = await io.in(conversationData.conversationId).fetchSockets();
+        console.log(`Room 💡 ${conversationData.conversationId} now has ${roomSockets.length} socket or user`); // 💡 how many users are joined in this conversation
+        console.log(roomSockets.map((s: any) => `${s.id} (${s.data.user.name})`).join(', '));
+        console.log(`--------------------- All current online users: ${Array.from(onlineUsers).join(', ')}`); // 💡 how many users are online 
+        
+
         // Notify others in the chat
         socket.to(conversationData.conversationId).emit('user-joined-chat', {
           userId,
@@ -307,7 +311,7 @@ const socketForChat_V2_Claude = (io: Server) => {
           ********* */
           
           
-          //io.to(messageData.conversationId).emit(eventName, messageToEmit);//💡
+          io.to(messageData.conversationId).emit(eventName, messageToEmit);//💡
           socket.to(messageData.conversationId).emit(eventName, messageToEmit);
           // socket.emit(eventName, messageToEmit);
 
@@ -376,16 +380,25 @@ const socketForChat_V2_Claude = (io: Server) => {
        * Handle leaving conversation
        * 
        * ************* */
-      socket.on('leave', (conversationId: string, callback) => {
-        if (!conversationId) {
+      socket.on('leave', async(conversationData: {conversationId: string}, callback) => {
+        if (!conversationData.conversationId) {
           return callback?.({ success: false, message: 'conversationId is required' });
         }
 
-        socket.leave(conversationId);
-        socket.to(conversationId).emit(`user-left-conversation`, {
+        socket.leave(conversationData.conversationId);
+
+        // Debug: Check room membership //------- from claude
+        const roomSockets = await io.in(conversationData.conversationId).fetchSockets();
+        console.log(`Room 💡 ${conversationData.conversationId} now has ${roomSockets.length} sockets or user`);
+        console.log(roomSockets.map((s: any) => `${s.id} (${s.data.user.name})`).join(', '));
+        
+        // console.log(`--------------------- All current online users: ${Array.from(onlineUsers).join(', ')}`); // 💡 how many users are online 
+        
+
+        socket.to(conversationData.conversationId).emit(`user-left-conversation`, {
           userId,
           userName: userProfile?.name || user.name,
-          conversationId,
+          conversationId: conversationData.conversationId,
           message: `${userProfile?.name || user.name} left the conversation`
         });
 

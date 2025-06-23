@@ -20,6 +20,7 @@ export const optionValidationChecking = <T extends keyof Ireport>(
 
 // const taskService = new TaskService();
 const controller = new reportController();
+// TODO : Report template thing
 
 //info : pagination route must be before the route with params
 // get all report organized by category 💡
@@ -74,6 +75,6 @@ router.route('/softDelete/:id').put(
 ////////////
 //[🚧][🧑‍💻✅][🧪] // 🆗
 
-
+// TODO : change report status ..  try korte hobe update by id diye e jeno kore fela jay .. 
 
 export const reportRoute = router;

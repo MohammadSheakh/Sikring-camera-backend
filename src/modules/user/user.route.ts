@@ -68,7 +68,6 @@ router.post('/delete/:collectionName',
  *
  */
 
-
 //[🚧][🧑‍💻✅][🧪🆗] // query :: userId
 // TODO : update profile image by user id 
 

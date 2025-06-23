@@ -1,10 +1,10 @@
 import express from 'express';
-import * as validation from './Review.validation';
-import { ReviewController} from './Review.controller';
-import { IReview } from './Review.interface';
 import { validateFiltersForQuery } from '../../middlewares/queryValidation/paginationQueryValidationMiddleware';
 import validateRequest from '../../shared/validateRequest';
 import auth from '../../middlewares/auth';
+import { ReviewController } from './review.controller';
+import { IReview } from './review.interface';
+import * as validation from './review.validation';
 
 const multer = require('multer');
 const storage = multer.memoryStorage();

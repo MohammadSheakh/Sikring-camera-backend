@@ -22,6 +22,9 @@ export const optionValidationChecking = <T extends keyof IauditLog>(
 const controller = new auditLogController();
 
 //info : pagination route must be before the route with params
+
+// get all audit log [pagination] 💡
+
 router.route('/paginate').get(
   //auth('common'),
   validateFiltersForQuery(optionValidationChecking(['_id'])),

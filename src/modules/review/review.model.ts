@@ -1,7 +1,6 @@
 import { model, Schema } from 'mongoose';
-import { IReview, IReviewModel } from './Review.interface';
 import paginate from '../../common/plugins/paginate';
-
+import { IReview, IReviewModel } from './review.interface';
 
 const ReviewSchema = new Schema<IReview>(
   {

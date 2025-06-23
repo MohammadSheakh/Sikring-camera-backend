@@ -38,6 +38,7 @@ router.route('/:id').get(
   controller.getById
 );
 
+// update a site by site id 💡
 router.route('/update/:id').put(
   //auth('common'),
   // validateRequest(UserValidation.createUserValidationSchema),
@@ -75,7 +76,9 @@ router.route('/softDelete/:id').put(
 ////////////
 //[🚧][🧑‍💻✅][🧪] // 🆗
 
-// get all location of site 
+// get all location of site 💡
 
+// TODO: update location of a site by site id
+// INFO :  try korte hobe .. location update korar api ta update site er maddhome korar try korte hobe..  
 
 export const siteRoute = router;

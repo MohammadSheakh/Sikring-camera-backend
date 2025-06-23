@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
-import { Review } from './Review.model';
-import { IReview } from './Review.interface';
 import { GenericService } from '../__Generic/generic.services';
+import { Review } from './review.model';
+import { IReview } from './review.interface';
 
 
 export class ReviewService extends GenericService<

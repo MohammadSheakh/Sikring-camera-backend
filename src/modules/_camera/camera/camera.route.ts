@@ -82,6 +82,9 @@ router.route('/softDelete/:id').put(
 ////////////
 //[🚧][🧑‍💻✅][🧪] // 🆗
 // TODO : get camera preview by camera id
+// TODO : view live preview by camera id 
+// TODO : update location of a camera by camera id
+
 //////////////////////////////////////////💡💡
 
 

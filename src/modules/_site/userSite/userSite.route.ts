@@ -49,6 +49,8 @@ router.route('/').get(
 );
 
 //[🚧][🧑‍💻✅][🧪] // 🆗
+// add work hour for a user to a site 💡
+
 router.route('/create').post(
   // [
   //   upload.fields([
@@ -72,6 +74,10 @@ router.route('/softDelete/:id').put(
 
 ////////////
 //[🚧][🧑‍💻✅][🧪] // 🆗
+
+// TODO : assign multiple users to a site 
+//                                        💡
+
 
 
 export const userSiteRoute = router;

@@ -23,6 +23,8 @@ const controller = new userSiteController();
 
 //info : pagination route must be before the route with params
 // get all site by userId and type customer 💡
+// get all site by userId and type user 💡
+// get all user where role is customer [pagination ] 💡 show siteId, userName, siteName, cusName, address 
 router.route('/paginate').get(
   //auth('common'),
   validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role'])),

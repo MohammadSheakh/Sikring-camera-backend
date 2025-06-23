@@ -49,6 +49,7 @@ router.post('/resend-otp',
   AuthController.resendOtp);
 
 //[🚧][🧑‍💻✅][🧪] // 🆗 
+// we need reset password and verify otp 💡💡
 router.post(
   '/reset-password',
   validateRequest(AuthValidation.resetPasswordValidationSchema),
@@ -68,8 +69,6 @@ router.post(
   validateRequest(AuthValidation.verifyEmailValidationSchema),
   AuthController.verifyEmail,
 );
-
-
 
 router.post('/logout', AuthController.logout);
 

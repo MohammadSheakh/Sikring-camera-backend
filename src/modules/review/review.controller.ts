@@ -2,22 +2,22 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
 import { GenericController } from '../__Generic/generic.controller';
-import { Demo } from './demo.model';
-import { IDemo } from './demo.interface';
-import { DemoService } from './demo.service';
+import { Review } from './Review.model';
+import { IReview } from './Review.interface';
+import { ReviewService } from './Review.service';
 
 
 // let conversationParticipantsService = new ConversationParticipentsService();
 // let messageService = new MessagerService();
 
-export class DemoController extends GenericController<
-  typeof Demo,
-  IDemo
+export class ReviewController extends GenericController<
+  typeof Review,
+  IReview
 > {
-  demoService = new DemoService();
+  ReviewService = new ReviewService();
 
   constructor() {
-    super(new DemoService(), 'Demo');
+    super(new ReviewService(), 'Review');
   }
 
   // add more methods here if needed or override the existing ones 

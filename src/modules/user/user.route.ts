@@ -25,9 +25,13 @@ export const optionValidationChecking = <T extends keyof IUser>(
 /*
  🚧 // TODO: name and email er jonno regex add korte hobe ..  
 */
+// get all users where role is customer [pagination ]  sure na .. eta user site relation e hoite pare .. 
+// Admin:  get all user where role is user [pagination ] 
+// Admin: get all user where role is manager [pagination ] 
+
 router.route('/paginate').get(
   auth('commonAdmin'),
- validateFiltersForQuery(optionValidationChecking(['_id', 'name', 'email', 'subscriptionType', 'status', 'role'])),
+ validateFiltersForQuery(optionValidationChecking(['_id', 'role'])),
   UserController.getAllUserForAdminDashboard
 );
 
@@ -46,48 +50,6 @@ router.post(
   UserController.sendInvitationLinkToAdminEmail
 );
 
-/**
- * 
- * Access Pin Related End Points 
- */
-
-// set new pin
-router.post('/access-pin/set-new', 
-  auth('common'),
-  validateRequest(UserValidation.createAccessPinCodeValidationSchema),
-  UserController.setNewAccessPin
-)
-
-/**
- * remove pin totally
- */
-
-router.post('/access-pin/remove-pin', 
-  auth('common'),
-  validateRequest(UserValidation.createAccessPinCodeValidationSchema),
-  UserController.removeAccessPin
-)
-
-/**
- * 
- * Change Current Pin code  
- */
-
-router.post('/access-pin/give-permission-to-change-current-pin', 
-  auth('common'),
-  validateRequest(UserValidation.createAccessPinCodeValidationSchema),
-  UserController.givePermissionToChangeCurrentPin
-)
-
-/**
- * 
- * Match Access Pin
- */
-router.post('/access-pin/match',
-  auth('common'),
-  validateRequest(UserValidation.createAccessPinCodeValidationSchema),
-  UserController.matchAccessPin
-) 
 
 // TODO:  Forgot Pin and Verify Email Develop korte hobe .. access Pin related 
 
@@ -99,62 +61,32 @@ router.post('/access-pin/match',
 router.post('/delete/:collectionName',
   auth('superAdmin'),
   UserController.deleteAllDataFromCollection
-) 
-
-//[🚧][🧑‍💻✅][🧪🆗] // query :: userId
-router.get('/status/change',
-  auth('commonAdmin'),
-  UserController.changeUserStatus
 )
 
+/**
+ * App: Under Profile Section User Module Related End Points 
+ *
+ */
+
+
 //[🚧][🧑‍💻✅][🧪🆗] // query :: userId
-router.get('/subscriptionType/change',
-  auth('commonAdmin'),
-  UserController.changeUserSubscriptionType
-)
+// TODO : update profile image by user id 
+
+//[🚧][🧑‍💻✅][🧪🆗] // query :: userId
+
+// TODO : update users basic info by user id 
+
+// TODO : Admin : edit customer by id 
 
 ////////////////////////////////////////////////
 
-//[🚧][🧑‍💻✅][🧪🆗] //  
 
-router
-  .route('/profile-image')
-  .post(
-    auth('common'),
-    upload.single('profile_image'),
-    convertHeicToPngMiddleware(UPLOADS_FOLDER),
-    UserController.updateProfileImage
-  );
 
 // sub routes must be added after the main routes
 //[🚧][🧑‍💻✅][🧪🆗]
-router
-  .route('/profile')
-  .get(auth('common'), UserController.getMyProfile) // 🟢
-  .patch(
-    auth('common'),
-    validateRequest(UserValidation.updateUserValidationSchema),
-    upload.single('profile_image'),
-    convertHeicToPngMiddleware(UPLOADS_FOLDER),
-    UserController.updateMyProfile
-  )
-  .delete(auth('common'), UserController.deleteMyProfile);
 
-router.route('/profile/requiredField').get(auth('common'), UserController.getMyProfileOnlyRequiredField);
 
-router
-  .route('/:userId')
-  .get(auth('common'), UserController.getSingleUser)
-  .put(
-    auth('common'),
-    validateRequest(UserValidation.updateUserValidationSchema),
-    UserController.updateUserProfile
-  )
-  .patch(
-    auth('admin'),
-    validateRequest(UserValidation.changeUserStatusValidationSchema),
-    UserController.updateUserStatus
-  );
+
 
   ///////////////////////////////////////////////
   

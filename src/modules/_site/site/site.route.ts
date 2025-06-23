@@ -23,6 +23,9 @@ const controller = new siteController();
 
 //info : pagination route must be before the route with params
 
+// Admin: get all site 💡
+// Admin : get all location of all site  💡
+
 router.route('/paginate').get(
   //auth('common'),
   validateFiltersForQuery(optionValidationChecking(['_id'])),
@@ -71,6 +74,8 @@ router.route('/softDelete/:id').put(
 
 ////////////
 //[🚧][🧑‍💻✅][🧪] // 🆗
+
+// get all location of site 
 
 
 export const siteRoute = router;

@@ -17,6 +17,14 @@ const siteSchema = new Schema<Isite>(
       type: String,
       required: [true, 'address is required'],
     },
+    lat: {
+      type: String,
+      required: [false, 'lat is not required'],
+    },
+    long: {
+      type: String,
+      required: [false, 'long is not required'],
+    },
     phoneNumber: {
       type: String,
       required: [true, 'phoneNumber is required'],
@@ -48,6 +56,8 @@ const siteSchema = new Schema<Isite>(
     // tenant_id: {
 
     // }
+
+
 
     isDeleted: {
       type: Boolean,

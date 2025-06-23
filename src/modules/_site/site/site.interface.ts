@@ -5,9 +5,11 @@ import { TStatusType } from '../../user/user.constant';
 export interface Isite {
   // _taskId: undefined | Types.ObjectId;
   _id?: Types.ObjectId; // undefined |  Types.ObjectId |
-  userId: Types.ObjectId;
+  // userId: Types.ObjectId;
   name : String;
-  address : String;
+  address? : String;
+  lat? : String;
+  long? : String;
   phoneNumber : String;
   customerName? : String;
   status: TStatusType.active | TStatusType.inactive;

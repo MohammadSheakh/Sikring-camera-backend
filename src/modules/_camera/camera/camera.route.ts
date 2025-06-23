@@ -32,6 +32,8 @@ const paginationOptions: Array<'sortBy' | 'page' | 'limit' | 'populate'> = [
 ];
 
 //info : pagination route must be before the route with params
+// admin: get all camera status 💡
+// admin : get all camera  💡
 router.route('/paginate').get(
   //auth('common'),
   validateFiltersForQuery(optionValidationChecking(['_id', ...paginationOptions])),
@@ -79,6 +81,8 @@ router.route('/softDelete/:id').put(
 
 ////////////
 //[🚧][🧑‍💻✅][🧪] // 🆗
+// TODO : get camera preview by camera id
+//////////////////////////////////////////💡💡
 
 
 export const cameraRoute = router;

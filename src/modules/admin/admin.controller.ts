@@ -1,5 +1,7 @@
-// admin.controller.ts
-import { StatusCodes } from 'http-status-codes';
-import catchAsync from '../../shared/catchAsync';
-import sendResponse from '../../shared/sendResponse';
+import { adminService } from "./admin.service";
 
+export class adminController {
+  adminService = new adminService();
+
+  getAllKeyMetricsWithReportCountByMonths =   
+}

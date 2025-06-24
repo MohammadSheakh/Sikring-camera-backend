@@ -32,7 +32,7 @@ export const uploadFileToSpace = async (
     Bucket: process.env.AWS_BUCKET_NAME,
     Key: fileName,
     Body: file.buffer, // file.stream
-    ACL: ObjectCannedACL.public_read,
+    // ACL: ObjectCannedACL.public_read,
     ContentType: file.mimetype,
   };
 
@@ -47,8 +47,8 @@ export const uploadFileToSpace = async (
     
     return fileUrl;
   } catch (error) {
-    console.error("Error uploading to DigitalOcean Space:", error);
-    throw new Error("Failed to upload file to DigitalOcean Space");
+    console.error("Error uploading to AWS:", error);
+    throw new Error("Failed to upload file to AWS");
   }
 };
 

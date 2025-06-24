@@ -15,7 +15,7 @@ export interface Isite {
   status: TStatusType.active | TStatusType.inactive;
   attachments: Types.ObjectId[];
   
-  isDeleted : Boolean;  
+  isDeleted? : Boolean;  
   createdAt?: Date;
   updatedAt?: Date;
 }

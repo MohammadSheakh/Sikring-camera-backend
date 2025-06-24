@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
 import paginate from '../../common/plugins/paginate';
 import { IAttachment, IAttachmentModel } from './attachment.interface';
-import { AttachedToType, AttachmentType } from './attachment.constant';
+import { TAttachedToType, AttachmentType } from './attachment.constant';
 
 const attachmentSchema = new Schema<IAttachment>(
   {
@@ -33,14 +33,13 @@ const attachmentSchema = new Schema<IAttachment>(
     // 🟢 must needed 
     attachedToType : {
       enum: [
-        AttachedToType.user,
-        AttachedToType.lab,
+        TAttachedToType.site,
       ],
       type: String,
       required: [
         false,
         `AttachedToType is required. It can be ${Object.values(
-          AttachedToType
+          TAttachedToType
         ).join(', ')}`,
       ],
     },

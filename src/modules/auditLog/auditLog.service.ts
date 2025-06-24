@@ -2,7 +2,34 @@ import { StatusCodes } from 'http-status-codes';
 import { auditLog } from './auditLog.model';
 import { IauditLog } from './auditLog.interface';
 import { GenericService } from '../__Generic/generic.services';
+import EventEmitter from 'events';
+import { TStatus } from './auditLog.constant';
+const eventEmitterForAuditLog = new EventEmitter(); // functional way
 
+
+eventEmitterForAuditLog.on('eventEmitForAuditLog', (valueFromRequest: IauditLog) => {
+ 
+  // console.log('event fired for audit log!  ', valueFromRequest); // TODO: must removed this line .. 
+
+  try {
+      auditLog.create({
+        userId: valueFromRequest.userId,
+        role: valueFromRequest.role,
+        actionPerformed: valueFromRequest.actionPerformed,
+        status: valueFromRequest.status,
+      });
+    }catch (error) {
+      auditLog.create({
+        userId: valueFromRequest.userId,
+        role: valueFromRequest.role,
+        actionPerformed: "Error occurred 🌋 while creating audit log :: "+valueFromRequest.actionPerformed,
+        status: TStatus.failed,
+      });
+    }
+  
+});
+
+export default eventEmitterForAuditLog;
 
 export class auditLogService extends GenericService<
   typeof auditLog,
@@ -11,4 +38,8 @@ export class auditLogService extends GenericService<
   constructor() {
     super(auditLog);
   }
+
+
+  
+
 }

@@ -11,7 +11,7 @@ export interface IauditLog {
   actionPerformed : String;
   status : TStatus.active | TStatus.failed | TStatus.pending | TStatus.success;
 
-  isDeleted : Boolean;  
+  isDeleted? : Boolean;  
   createdAt?: Date;
   updatedAt?: Date;
 }

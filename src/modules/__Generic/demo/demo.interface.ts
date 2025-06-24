@@ -1,5 +1,6 @@
 import { Model, Types } from 'mongoose';
-import { PaginateOptions, PaginateResult } from '../../types/paginate';
+import { PaginateOptions, PaginateResult } from '../../../types/paginate';
+
 
 export interface IDemo {
   // _taskId: undefined | Types.ObjectId;
@@ -7,7 +8,7 @@ export interface IDemo {
   userId: Types.ObjectId;
   message : String;
 
-  isDeleted : Boolean;  
+  isDeleted? : Boolean;  
   createdAt?: Date;
   updatedAt?: Date;
 }

@@ -27,25 +27,70 @@ export class adminService {
       return null;
     }
 
-    const [totalSite, totalCustomers, recentReport, recentClientMessage]
+    async function getReportCountByMonths() {
+        const reportsByMonth = await report.aggregate([
+            {
+                $match: {
+                    isDeleted: false,
+                    createdAt: {
+                        $gte: new Date(new Date().getFullYear(), 0, 1), // Start of current year
+                        $lt: new Date(new Date().getFullYear() + 1, 0, 1) // Start of next year
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        month: { $month: "$createdAt" },
+                        year: { $year: "$createdAt" }
+                    },
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { "_id.month": 1 }
+            }
+        ]);
+
+        // Create array with all 12 months initialized to 0
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                           'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        
+        const result = monthNames.map((name, index) => ({
+            month: name,
+            count: 0
+        }));
+
+        // Fill in actual counts
+        reportsByMonth.forEach(item => {
+            const monthIndex = item._id.month - 1; // MongoDB months are 1-indexed
+            result[monthIndex].count = item.count;
+        });
+
+        return result;
+    }
+
+    const [totalSite, totalCustomers, recentReport, recentClientMessage, reportCountByMonth]
      = await Promise.all([
       // Assuming these methods are defined in your service
       await site.countDocuments({ isDeleted: false }),
       await User.countDocuments({ isDeleted: false, role: 'customer' }),
       await getReportCountOfLastTwentyFourHours(),
       
-      await getRecentClientMessage() // TODO : we have to implement this .. 
-     ])
+      await getRecentClientMessage(),  // TODO : we need to implement this 
+      
+      await getReportCountByMonths()  // TODO: eta test korte hobe thik result dicche kina
+    ])
 
      return {
       totalSite,
       totalCustomers,
       recentReport,
-      recentClientMessage
+      recentClientMessage,
+      reportCountByMonth
      };
   } 
 
   // add more methods here if needed 
   
-
 }

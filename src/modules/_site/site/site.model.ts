@@ -35,29 +35,26 @@ const siteSchema = new Schema<Isite>(
     },
 
     status : {
-          type: String,
-          enum:  [TStatusType.active, TStatusType.inactive],
-          required: [
-            false,
-            `Status is required it can be ${Object.values(
-              TStatusType
-            ).join(', ')}`,
-          ],
-          default: TStatusType.active,
+      type: String,
+      enum:  [TStatusType.active, TStatusType.inactive],
+      required: [
+        false,
+        `Status is required it can be ${Object.values(
+          TStatusType
+        ).join(', ')}`,
+      ],
+      default: TStatusType.active,
     },
-
     attachments: [
-          {
-            type: Schema.Types.ObjectId,
-            ref: 'Attachment',
-            required: [true, 'Attachments is required'],
-          }
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Attachment',
+        required: [true, 'Attachments is required'],
+      }
     ],
     // tenant_id: {
 
     // }
-
-
 
     isDeleted: {
       type: Boolean,

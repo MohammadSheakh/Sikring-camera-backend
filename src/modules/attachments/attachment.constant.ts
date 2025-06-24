@@ -3,10 +3,19 @@ export enum AttachmentType {
     image = 'image',
     unknown = 'unknown',
 }
-  
-export enum AttachedToType {
-    user = 'user',
-    lab = 'lab'
+
+export enum TFolderName {
+    site = "sikring-camera/site",
+    user = "sikring-camera/user",
+    conversation = "sikring-camera/conversation",
+    camera = "sikring-camera/camera",
+    report = "sikring-camera/report",
+    review = "sikring-camera/review",
+}
+
+// TODO: attachment er model eo update korte hobe .. 
+export enum TAttachedToType {
+    site = 'site',
     // meal = 'meal',
     // workout = 'workout',
     // lifeStyle = 'lifeStyle',
@@ -17,8 +26,3 @@ export enum AttachedToType {
     // wellnessProduct = 'wellnessProduct',
     // virtualWorkoutClass = 'virtualWorkoutClass',
 }
-
-// export enum UploaderRole {
-//     projectManager = 'projectManager',
-//     projectSupervisor = 'projectSupervisor',
-// }

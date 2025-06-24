@@ -1,4 +1,5 @@
 export type Role = 'customer' | 'user' | 'manager' | 'admin';	  	
+
 export type RoleType = 'customer' | 'user' | 'manager' | 'admin' | 'common' | 'commonAdmin';
 
 const allRoles: Record<Role, string[]> = {

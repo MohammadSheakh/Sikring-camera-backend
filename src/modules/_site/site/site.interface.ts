@@ -1,13 +1,16 @@
 import { Model, Types } from 'mongoose';
 import { PaginateOptions, PaginateResult } from '../../../types/paginate';
+import { TSiteType } from './site.constant';
 import { TStatusType } from '../../user/user.constant';
 
-export interface Isite {
+
+export interface ISite {
   // _taskId: undefined | Types.ObjectId;
   _id?: Types.ObjectId; // undefined |  Types.ObjectId |
   // userId: Types.ObjectId;
   name : String;
   address? : String;
+  type: TSiteType.liveEvent | TSiteType.construction | TSiteType.other;
   lat? : String;
   long? : String;
   phoneNumber : String;
@@ -20,9 +23,9 @@ export interface Isite {
   updatedAt?: Date;
 }
 
-export interface IsiteModel extends Model<Isite> {
+export interface IsiteModel extends Model<ISite> {
   paginate: (
     query: Record<string, any>,
     options: PaginateOptions
-  ) => Promise<PaginateResult<Isite>>;
+  ) => Promise<PaginateResult<ISite>>;
 }

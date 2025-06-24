@@ -1,9 +1,10 @@
 import { model, Schema } from 'mongoose';
-import { Isite, IsiteModel } from './site.interface';
+import { ISite, IsiteModel } from './site.interface';
 import paginate from '../../../common/plugins/paginate';
 import { TStatusType } from '../../user/user.constant';
+import { TSiteType } from './site.constant';
 
-const siteSchema = new Schema<Isite>(
+const siteSchema = new Schema<ISite>(
   {
     // userId: {
     //   type: Schema.Types.ObjectId,
@@ -32,6 +33,18 @@ const siteSchema = new Schema<Isite>(
     customerName : {
       type: String,
       required: [false, 'customerName is not required'],
+    },
+
+    type : {
+      type: String,
+      enum:  [TSiteType.liveEvent, TSiteType.construction, TSiteType.other],
+      required: [
+        false,
+        `Status is required it can be ${Object.values(
+          TSiteType
+        ).join(', ')}`,
+      ],
+      default: TStatusType.active,
     },
 
     status : {
@@ -85,7 +98,7 @@ siteSchema.set('toJSON', {
   },
 });
 
-export const site = model<
+export const Site = model<
   Isite,
   IsiteModel
 >('site', siteSchema);

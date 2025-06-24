@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { GenericController } from '../../__Generic/generic.controller';
-import { site } from './site.model';
-import { Isite } from './site.interface';
+import { Site } from './site.model';
+import { ISite } from './site.interface';
 import { siteService } from './site.service';
 import catchAsync from '../../../shared/catchAsync';
 import { AttachmentService } from '../../attachments/attachment.service';
@@ -11,12 +11,16 @@ import sendResponse from '../../../shared/sendResponse';
 import eventEmitterForAuditLog from '../../auditLog/auditLog.service';
 import { IauditLog } from '../../auditLog/auditLog.interface';
 import { TStatus } from '../../auditLog/auditLog.constant';
+import { TRole } from '../../user/user.constant';
+import {UserSiteService }  from '../userSite/userSite.service';
+import { userSite } from '../userSite/userSite.model';
 
 const attachmentService = new AttachmentService();
+const userSiteService = new UserSiteService();
 
-export class siteController extends GenericController<
-  typeof site,
-  Isite
+export class SiteController extends GenericController<
+  typeof Site,
+  ISite
 > {
   siteService = new siteService();
 
@@ -26,7 +30,9 @@ export class siteController extends GenericController<
 
   create = catchAsync(async (req: Request, res: Response) => {
     
-        console.log('req.body 🧪🧪🧪', req.body);
+        // console.log('req.body 🧪🧪🧪', req.body);
+        // TODO : req.body te assignedManager and assignedUser er nam nite hobe abu sayeed vai er kas theke .. 
+        // INFO :  karon shei nam ta audit log e dekhano lagbe .. 
 
         let attachments = [];
   
@@ -57,12 +63,62 @@ export class siteController extends GenericController<
             customerName: req.body.customerName || '',
             status: req.body.status, 
             attachments: req.body.attachments,
+            type: req.body.type || "other",
         });
+
+        let actionPerformed = '';
+
+        if(req.body.assignedManagerId && result){
+
+          // need to check if the manager exist or not  
+
+          const createdManagerForSite = await userSiteService.create({
+            userId: req.body.assignedManagerId,
+            siteId: result._id,
+            role: TRole.manager,
+          });
+
+          actionPerformed+= `Assign a manager for ${this.modelName} whoose id is ${req.body.assignedManagerId} `
+
+          /******************
+          let valueForAuditLog : IauditLog = {
+            userId: req.user.userId,
+            role: req.user.role,
+            actionPerformed: `Assign a manager for ${this.modelName} whoose id is ${req.body.assignedManagerId} `,
+            status: TStatus.success,
+          }
+
+          eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
+          
+          ************* */
+        }
+        if(req.body.assignedUserId  && result){
+          // need to check if the manager exist or not  
+
+          const createdUserForSite = await userSiteService.create({
+            userId: req.body.assignedUserId,
+            siteId: result._id,
+            role: TRole.user,
+          });
+
+          actionPerformed+= `| Assign a user for ${this.modelName} whoose id is ${req.body.assignedUserId} `
+
+          /******************
+          let valueForAuditLog : IauditLog = {
+            userId: req.user.userId,
+            role: req.user.role,
+            actionPerformed: `Assign a user for ${this.modelName} whoose id is ${req.body.assignedUserId} `,
+            status: TStatus.success,
+          }
+
+          eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
+          *************** */
+        }
 
         let valueForAuditLog : IauditLog = {
           userId: req.user.userId,
           role: req.user.role,
-          actionPerformed: `Created a new ${this.modelName} named ${req.body.name}`,
+          actionPerformed: `Created a new ${this.modelName} named ${req.body.name} | ${actionPerformed}`,
           status: TStatus.success,
         }
 
@@ -74,8 +130,108 @@ export class siteController extends GenericController<
           message: `${this.modelName} created successfully`,
           success: true,
         });
-    });
+  });
 
+  updateById = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    if (!id) {
+      throw new Error(`id is required for update ${this.modelName}`);
+    }
+
+    let attachments = [];
+  
+        if (req.files && req.files.attachments) {
+        attachments.push(
+            ...(await Promise.all(
+            req.files.attachments.map(async file => {
+                const attachmenId = await attachmentService.uploadSingleAttachment(
+                    file, // file to upload 
+                    TFolderName.site, // folderName
+                    req.user.userId, // uploadedByUserId
+                    TAttachedToType.site
+                );
+                return attachmenId;
+            })
+            ))
+        );
+        }
+
+    req.body.attachments = attachments;
+
+    const updatedData = {
+      name: req.body.name,
+      address: req.body.address,
+      lat: req.body.lat,
+      long : req.body.long,
+      phoneNumber: req.body.phoneNumber,
+      customerName: req.body.customerName || '',
+      status: req.body.status, 
+      attachments: req.body.attachments,
+      type: req.body.type || "other",
+    };
+
+    let actionPerformed;
+
+    const result = await Site.findByIdAndUpdate(
+      id,
+      updatedData, 
+      { new: true }
+    ).select('-isDeleted -updatedAt -createdAt -__v');
+    
+    actionPerformed = `Updated ${this.modelName} with id ${id} | `;
+
+    if(req.body.assignedManagerId && result){
+
+      // need to check if the manager exist or not  
+
+      const updatedManagerForSite = await userSite.findOneAndUpdate(
+        { personId: req.body.assignedManagerId, siteId: result._id },
+        { role: TRole.manager },
+        { new: true, upsert: true } // upsert to create if not exists
+      )
+
+      actionPerformed+= `| Assign a manager for ${this.modelName} whoose id is ${req.body.assignedManagerId} `
+
+      // let valueForAuditLog : IauditLog = {
+      //   userId: req.user.userId,
+      //   role: req.user.role,
+      //   actionPerformed: `${actionPerformed} | Assign a manager for ${this.modelName} whoose id is ${req.body.assignedManagerId} `,
+      //   status: TStatus.success,
+      // }
+
+      // eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
+    
+    }
+    if(req.body.assignedUserId  && result){
+      // need to check if the manager exist or not  
+
+      const updatedManagerForSite = await userSite.findOneAndUpdate(
+        { personId: req.body.assignedUserId, siteId: result._id },
+        { role: TRole.manager },
+        { new: true, upsert: true } // upsert to create if not exists
+      )
+
+      actionPerformed+=`| Assign a user for ${this.modelName} whoose id is ${req.body.assignedUserId} `
+
+      
+    }
+
+    let valueForAuditLog : IauditLog = {
+        userId: req.user.userId,
+        role: req.user.role,
+        actionPerformed: actionPerformed,
+        status: TStatus.success,
+    }
+
+    eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `${this.modelName} updated successfully`,
+      success: true,
+    });
+  });
 
   // add more methods here if needed or override the existing ones 
   

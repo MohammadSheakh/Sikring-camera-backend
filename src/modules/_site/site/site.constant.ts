@@ -1,5 +1,5 @@
-export enum siteType {
-  document = 'document',
-  image = 'image',
-  unknown = 'unknown',
+export enum TSiteType {
+  liveEvent = 'liveEvent',
+  construction = 'construction',
+  other = 'other',
 }

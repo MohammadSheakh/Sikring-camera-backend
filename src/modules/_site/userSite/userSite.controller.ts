@@ -4,7 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import { GenericController } from '../../__Generic/generic.controller';
 import { userSite } from './userSite.model';
 import { IuserSite } from './userSite.interface';
-import { userSiteService } from './userSite.service';
+import { UserSiteService } from './userSite.service';
 
 
 // let conversationParticipantsService = new ConversationParticipentsService();
@@ -14,10 +14,10 @@ export class userSiteController extends GenericController<
   typeof userSite,
   IuserSite
 > {
-  userSiteService = new userSiteService();
+  userSiteService = new UserSiteService();
 
   constructor() {
-    super(new userSiteService(), 'userSite');
+    super(new UserSiteService(), 'userSite');
   }
 
   // add more methods here if needed or override the existing ones 

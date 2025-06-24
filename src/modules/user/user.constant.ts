@@ -1,4 +1,12 @@
-export type Role = 'super_admin' | 'admin' | 'user';
+// export type Role = 'super_admin' | 'admin' | 'user';
+
+export enum TRole{
+  customer = 'customer',
+  user = 'user',
+  manager = 'manager',
+  admin = 'admin',
+}
+
 // TODO : fix korte hobe .. 
 export type TUserStatus = 'active' | 'delete' | 'block';
 

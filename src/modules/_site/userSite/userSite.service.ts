@@ -4,7 +4,7 @@ import { IuserSite } from './userSite.interface';
 import { GenericService } from '../../__Generic/generic.services';
 
 
-export class userSiteService extends GenericService<
+export class UserSiteService extends GenericService<
   typeof userSite,
   IuserSite
 > {

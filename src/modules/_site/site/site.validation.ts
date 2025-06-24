@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { TStatusType } from '../../user/user.constant';
+import { TSiteType } from './site.constant';
 
 export const createSiteValidationSchema = z.object({
   body: z.object({
@@ -50,6 +51,12 @@ export const createSiteValidationSchema = z.object({
     .enum([TStatusType.active, TStatusType.inactive], {
       required_error: 'status is required, status must be one of "active" or "inactive".',
       invalid_type_error: 'status must be one of "active" or "inactive".',
+    }).optional(),
+
+    type: z
+    .enum([TSiteType.construction, TSiteType.liveEvent, TSiteType.other], {
+      required_error: 'type is required, type must be one of "construction" or "liveEvent" or "other".',
+      invalid_type_error: 'status must be one of "construction" or "liveEvent" or "other".',
     }).optional(),
 
     attachments: z

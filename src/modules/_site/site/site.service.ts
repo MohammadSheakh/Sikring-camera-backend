@@ -1,14 +1,13 @@
 import { StatusCodes } from 'http-status-codes';
-import { site } from './site.model';
-import { Isite } from './site.interface';
+import { Site } from './site.model';
+import { ISite } from './site.interface';
 import { GenericService } from '../../__Generic/generic.services';
 
-
 export class siteService extends GenericService<
-  typeof site,
-  Isite
+  typeof Site,
+  ISite
 > {
   constructor() {
-    super(site);
+    super(Site);
   }
 }

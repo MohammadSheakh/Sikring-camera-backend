@@ -14,10 +14,6 @@ const userSiteSchema = new Schema<IuserSite>(
       type: Schema.Types.ObjectId,
       ref: 'Site',
     },
-    message: {
-      type: String,
-      required: [true, 'dateOfBirth is required'],
-    },
     role: {
           type: String,
           enum: {
@@ -28,7 +24,7 @@ const userSiteSchema = new Schema<IuserSite>(
     },
     workHours: {
       type: Number,
-      required: [true, 'Work hours is required'],
+      required: [false, 'Work hours is not required'],
       default: 0,
     },
 

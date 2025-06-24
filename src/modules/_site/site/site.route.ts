@@ -1,7 +1,7 @@
 import express from 'express';
 import * as validation from './site.validation';
-import { siteController} from './site.controller';
-import { Isite } from './site.interface';
+import { SiteController} from './site.controller';
+import { ISite } from './site.interface';
 import { validateFiltersForQuery } from '../../../middlewares/queryValidation/paginationQueryValidationMiddleware';
 import validateRequest from '../../../shared/validateRequest';
 import auth from '../../../middlewares/auth';
@@ -12,14 +12,14 @@ const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-export const optionValidationChecking = <T extends keyof Isite>(
+export const optionValidationChecking = <T extends keyof ISite>(
   filters: T[]
 ) => {
   return filters;
 };
 
 // const taskService = new TaskService();
-const controller = new siteController();
+const controller = new SiteController();
 
 //info : pagination route must be before the route with params
 
@@ -60,7 +60,7 @@ router.route('/create').post(
     ]),
   ],
   auth('admin'),
-  // validateRequest(validation.createSiteValidationSchema),
+  validateRequest(validation.createSiteValidationSchema),
   controller.create
 );
 
@@ -81,5 +81,20 @@ router.route('/softDelete/:id').put(
 
 // TODO: update location of a site by site id
 // INFO :  try korte hobe .. location update korar api ta update site er maddhome korar try korte hobe..  
+
+/*************
+ * 
+ * Admin: updateSiteForm :: get a site by id with assign manager and assigned user info 
+ * 
+ * ************* */
+router.route('/update-site-form/:id').put(
+  [
+    upload.fields([
+      { name: 'attachments', maxCount: 15 }, // Allow up to 5 cover photos
+    ]),
+  ],
+  auth('admin'),
+  controller.updateById
+)
 
 export const siteRoute = router;

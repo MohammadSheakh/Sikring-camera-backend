@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
 import { IcustomerReport, IcustomerReportModel } from './customerReport.interface';
-import paginate from '../../common/plugins/paginate';
+import paginate from '../../../common/plugins/paginate';
 import { Roles } from '../../../middlewares/roles';
 
 

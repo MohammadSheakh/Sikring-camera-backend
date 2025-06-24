@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
 import { IcameraCustomer, IcameraCustomerModel } from './cameraCustomer.interface';
-import paginate from '../../common/plugins/paginate';
+import paginate from '../../../common/plugins/paginate';
 import { Roles } from '../../../middlewares/roles';
 import { ICustomersPermission } from './cameraCustomer.constant';
 

@@ -27,6 +27,7 @@ const userSchema = new Schema<TUser, UserModal>(
       required: [false, 'User custom ID is not required'],
       trim: true,
     },
+    // TODO : this can be an issue .. 
     conversation_restrict_with: {
       type: [String],
     },

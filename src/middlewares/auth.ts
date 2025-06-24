@@ -26,6 +26,7 @@ const auth = (...roles: RoleType[]) => /*  string[] */
       );
       // Step 3: Attach user to the request object
       req.user = verifyUser;
+      console.log('User verified:', req.user);
 
       // Step 4: Check if the user exists and is active
       const user = await User.findById(verifyUser.userId);

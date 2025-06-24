@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
 import { Icamera, IcameraModel } from './camera.interface';
-import paginate from '../../common/plugins/paginate';
+import paginate from '../../../common/plugins/paginate';
 import { TStatus } from './camera.constant';
 
 

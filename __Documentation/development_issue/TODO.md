@@ -8,3 +8,12 @@ This document tracks the issues and their current statuses. Each issue is follow
 > for more information write here... 
 - [ ] 
  
+<details>
+  <summary>Click to expand/collapse</summary>
+
+  ## Section Title
+  This is the content 
+  - [x] ~~Test~~
+  - [ ] for admin part .. in case of site create and update .. we need to keep users name in the audit log 🚦
+  > for more information write here... 
+</details>

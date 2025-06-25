@@ -15,12 +15,12 @@ export const createReportValidationSchema = z.object({
 
     reportType: z
       .string({
-        required_error: 'fertilityLevel is not required.',
-        invalid_type_error: 'fertilityLevel must be a string.',
+        required_error: 'reportType is not required.',
+        invalid_type_error: 'reportType must be a string.',
       })
       .refine(reportType => Object.keys(TReportType).includes(reportType as keyof typeof TReportType), {
         message: `reportType must be one of the following: ${Object.keys(TReportType).join(', ')}`,
-      }).optional(),
+      }),
 
     incidentSevearity :  z
       .string({
@@ -29,7 +29,7 @@ export const createReportValidationSchema = z.object({
       })
       .refine(incidentSevearity => Object.keys(TIncidentSevearity).includes(incidentSevearity as keyof typeof TIncidentSevearity), {
         message: `incidentSevearity must be one of the following: ${Object.keys(TIncidentSevearity).join(', ')}`,
-      }).optional(),
+      }),
 
     title: z  
     .string({

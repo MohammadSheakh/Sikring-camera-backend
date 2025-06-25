@@ -5,6 +5,7 @@ import { Ireport } from './report.interface';
 import { validateFiltersForQuery } from '../../../middlewares/queryValidation/paginationQueryValidationMiddleware';
 import validateRequest from '../../../shared/validateRequest';
 import auth from '../../../middlewares/auth';
+import { schedule } from 'node-cron';
 
 const multer = require('multer');
 const storage = multer.memoryStorage();
@@ -76,5 +77,13 @@ router.route('/softDelete/:id').put(
 //[🚧][🧑‍💻✅][🧪] // 🆗
 
 // TODO : change report status ..  try korte hobe update by id diye e jeno kore fela jay .. 
+
+// TODO : get all report organized by category .. 
+
+router.route('/category/all').get(
+  auth('common'),
+  controller.getAllReportByCategory
+);
+
 
 export const reportRoute = router;

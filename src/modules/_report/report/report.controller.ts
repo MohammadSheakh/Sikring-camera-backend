@@ -89,9 +89,6 @@ export class reportController extends GenericController<
         attachments: req.body.attachments,
     }, populateOptions);
     
-    
-
-
     let actionPerformed = '';
 
     if(result._id){
@@ -124,7 +121,6 @@ export class reportController extends GenericController<
       success: true,
     });
   });
-
 
   getById = catchAsync(async (req: Request, res: Response) => {
     const id = req.params.id;
@@ -176,6 +172,41 @@ export class reportController extends GenericController<
     });
   });
 
+
+  /***********
+   * 
+   * we are not using this controller .. 
+   * 
+   * as there was a design fault of UI designer .. so, design have been fixed .. 
+   * now pagination works fine .. 
+   * 
+   * ********** */
+  getAllReportByCategory = catchAsync(
+    async (req: Request, res: Response) => {
+      const response = await report.aggregate([
+        {
+          $group: {
+            _id: '$reportType',
+            reports: { $push: '$$ROOT' },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            reportType: '$_id',
+            reports: 1,
+          },
+        },
+      ]);
+
+
+      console.log('response 🧪🧪🧪', response);
+      sendResponse(res, {
+        code: StatusCodes.OK,
+        data: response,
+        message: `Reports categorized by ${req.params.category} retrieved successfully`,
+      });
+  })
+
   // add more methods here if needed or override the existing ones 
-  
 }

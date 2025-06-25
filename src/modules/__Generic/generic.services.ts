@@ -25,7 +25,6 @@ export class GenericService<  ModelType , InterfaceType> {
     options: PaginateOptions,
     dontWantToInclude ? : string | string[]
   ) {
-
     console.log('filters from generic service 🧪🧪', filters);
     console.log('options from generic service 🧪🧪', options);
 
@@ -40,15 +39,59 @@ export class GenericService<  ModelType , InterfaceType> {
     return result;
   }
 
-  async getById(id: string) : Promise<InterfaceType | null> {
-    const object = await this.model.findById(id);
+  async getById(id: string, populateOptions?: (string | any)[]) : Promise<InterfaceType | null> {
+    /********************
+        const object = await this.model.findById(id).populate(needToPopulate).select('-__v');
+        if (!object) {
+          // throw new ApiError(StatusCodes.BAD_REQUEST, 'No file uploaded');
+          return null;
+        }
+        return object;
+    ******************** */
+
+    // INFO : populateOptions can be an array of strings or objects 
+
+    /*****************
+      
+      populateOptions example : 
+
+      const populateOptions = [
+        {
+            path: 'attachments',
+            select: 'attachment'
+        },
+        //'siteId' // This will populate all fields for siteId
+        {
+          path: 'siteId',
+          select: 'name address'
+        }
+      ];
+    
+     * **************** */
+
+    let query = this.model.findById(id);
+    
+    if (populateOptions && populateOptions.length > 0) {
+        populateOptions.forEach(option => {
+            if (typeof option === 'string') {
+                query = query.populate(option);
+            } else {
+                query = query.populate(option);
+            }
+        });
+    }
+    
+    const object = await query.select('-__v');
     if (!object) {
-      // throw new ApiError(StatusCodes.BAD_REQUEST, 'No file uploaded');
-      return null;
+        return null;
     }
     return object;
+
+
+    
   }
 
+  
   async updateById(id: string, data: InterfaceType) {
     const object = await this.model.findById(id).select('-__v');
     if (!object) {

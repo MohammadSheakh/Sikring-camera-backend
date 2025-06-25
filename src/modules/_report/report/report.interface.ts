@@ -11,11 +11,9 @@ export interface Ireport {
   title : String;
   description : String;
   location? : String;
-  personName? : String;
+  person? : Object; // this is just for show in front end who is create the report .. 
   status : TStatus.accept | TStatus.deny;
-
   attachments: Types.ObjectId[];
-
   isDeleted? : Boolean;  
   createdAt?: Date;
   updatedAt?: Date;

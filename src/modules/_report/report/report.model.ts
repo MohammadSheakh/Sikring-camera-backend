@@ -57,8 +57,9 @@ const reportSchema = new Schema<Ireport>(
       required: [false, 'location is not required'],
     },
 
-    personName : {
-      type: String,
+    // INFO : this is just for show in front end who is created the report
+    person : {
+      type: Object,
       required: [false, 'personName is not required'],
     },
 

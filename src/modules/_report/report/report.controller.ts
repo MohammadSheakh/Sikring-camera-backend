@@ -13,6 +13,8 @@ import { IauditLog } from '../../auditLog/auditLog.interface';
 import { TStatus } from '../../auditLog/auditLog.constant';
 import eventEmitterForAuditLog from '../../auditLog/auditLog.service';
 import sendResponse from '../../../shared/sendResponse';
+import ApiError from '../../../errors/ApiError';
+import { customerReport } from '../customerReport/customerReport.model';
 
 // let conversationParticipantsService = new ConversationParticipentsService();
 let attachmentService = new AttachmentService();
@@ -95,6 +97,55 @@ export class reportController extends GenericController<
       data: result,
       message: `${this.modelName} created successfully`,
       success: true,
+    });
+  });
+
+
+  getById = catchAsync(async (req: Request, res: Response) => {
+    const id = req.params.id;
+
+    const populateOptions = [
+      {
+          path: 'attachments',
+          select: 'attachment'
+      },
+      //'siteId' // This will populate all fields for siteId
+      {
+        path: 'siteId',
+        select: 'name address'
+      }
+    ];
+  
+    const result = await this.service.getById(id, 
+     /* ['attachments', 'siteId'] */
+      populateOptions
+    );
+
+    // let find out who is submitting this report .. 
+    const customerReportRes = await customerReport.find({
+      reportId: id
+    }).select('personId role').populate({
+      path: 'personId',
+      select: 'name email phoneNumber'
+    });
+
+    if (customerReportRes && customerReportRes.length > 0) {
+      result.person = customerReportRes;
+    } else {
+      result.person = [];
+    }
+
+    if (!result) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        `Object with ID ${id} not found`
+      );
+    }
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `${this.modelName} retrieved successfully`,
     });
   });
 

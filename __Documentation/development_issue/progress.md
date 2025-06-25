@@ -2,7 +2,7 @@ Project Come to me : Sunday, June 15 5:32 PM  2025
 --------------------------------------------------
 - [x] 24-6-2025  - 30%  [site create/ update.. audit log 
                           functionality with node js events]
-- [ ] 25-6-2025  - 35%  
+- [ ] 25-6-2025  - 35%  [create report /]
 - [ ] 26-6-2025  - 40%  
 - [ ] 27-6-2025  - 45%  
 - [ ] 28-6-2025  - 50%   

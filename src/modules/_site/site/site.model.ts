@@ -99,6 +99,6 @@ siteSchema.set('toJSON', {
 });
 
 export const Site = model<
-  Isite,
+  ISite,
   IsiteModel
->('site', siteSchema);
+>('Site', siteSchema);

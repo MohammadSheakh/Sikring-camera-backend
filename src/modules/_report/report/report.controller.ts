@@ -56,6 +56,15 @@ export class reportController extends GenericController<
 
     req.body.attachments = attachments;
 
+    const populateOptions = [
+        {
+            path: 'attachments',
+            select: 'attachment'
+        },
+        //'siteId' // This will populate all fields for siteId
+      ];
+
+    /**************** 
     const result = await this.service.create({
         title: req.body.title,
         reportType: req.body.reportType,
@@ -65,6 +74,23 @@ export class reportController extends GenericController<
         status: req.body.status, 
         attachments: req.body.attachments,
     });
+    ************** */
+
+
+    /****************   ******** */
+    
+    const result = await this.service.createAndPopulateSpecificFields({
+        title: req.body.title,
+        reportType: req.body.reportType,
+        incidentSevearity: req.body.incidentSevearity,
+        siteId: req.body.siteId,
+        description: req.body.description,
+        status: req.body.status, 
+        attachments: req.body.attachments,
+    }, populateOptions);
+    
+    
+
 
     let actionPerformed = '';
 
@@ -82,7 +108,6 @@ export class reportController extends GenericController<
       actionPerformed+= `A New Review ${result._id} Created by ${req.user.userId} For Site ${req.body.siteId} `
     }
     
-
     let valueForAuditLog : IauditLog = {
       userId: req.user.userId,
       role: req.user.role,
@@ -121,6 +146,13 @@ export class reportController extends GenericController<
       populateOptions
     );
 
+    if (!result) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        `Report Not Found `
+      );
+    }
+
     // let find out who is submitting this report .. 
     const customerReportRes = await customerReport.find({
       reportId: id
@@ -135,12 +167,7 @@ export class reportController extends GenericController<
       result.person = [];
     }
 
-    if (!result) {
-      throw new ApiError(
-        StatusCodes.NOT_FOUND,
-        `Object with ID ${id} not found`
-      );
-    }
+    
 
     sendResponse(res, {
       code: StatusCodes.OK,

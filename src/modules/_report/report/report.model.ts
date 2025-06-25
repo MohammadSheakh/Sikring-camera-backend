@@ -61,18 +61,19 @@ const reportSchema = new Schema<Ireport>(
     person : {
       type: Object,
       required: [false, 'personName is not required'],
+      default: null
     },
 
     status : {
           type: String,
-          enum:  [TStatus.accept, TStatus.deny],
+          enum:  [TStatus.accept, TStatus.deny, TStatus.underReview],
           required: [
             false,
             `status is required it can be ${Object.values(
               TStatus
             ).join(', ')}`,
           ],
-          // default: TReportType.alarmPatrol, // INFO : no default value for reportType
+        default: TStatus.underReview,
     },
 
     attachments: [

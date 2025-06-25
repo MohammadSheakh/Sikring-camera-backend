@@ -13,5 +13,6 @@ export enum TIncidentSevearity {
 
 export enum TStatus {
   accept = 'accept',
-  deny = 'deny'
+  deny = 'deny',
+  underReview = 'underReview'
 }

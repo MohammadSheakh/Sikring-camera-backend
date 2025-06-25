@@ -12,9 +12,22 @@ export class GenericService<  ModelType , InterfaceType> {
 
   async create(data:InterfaceType) : Promise<InterfaceType> {
     // | null
-    // console.log('req.body from generic create 🧪🧪', data);    
-    return await this.model.create(data);
+    // console.log('req.body from generic create 🧪🧪', data); 
+      return await this.model.create(data);
   }
+
+  async createAndPopulateSpecificFields(data:InterfaceType, populateOptions?: (string | any)[]) : Promise<InterfaceType> {
+    // Create the document
+    const createdObject = await this.model.create(data);
+    
+    // If populate options are provided, fetch and populate
+    if (populateOptions && populateOptions.length > 0) {
+        return await this.getById(createdObject._id.toString(), populateOptions);
+    }
+    
+    return createdObject;
+  }
+
 
   async getAll() {
     return await this.model.find({isDeleted : false}).select('-__v');
@@ -72,6 +85,8 @@ export class GenericService<  ModelType , InterfaceType> {
     let query = this.model.findById(id);
     
     if (populateOptions && populateOptions.length > 0) {
+        
+        /**************** 🟢 working perfectly 
         populateOptions.forEach(option => {
             if (typeof option === 'string') {
                 query = query.populate(option);
@@ -79,6 +94,28 @@ export class GenericService<  ModelType , InterfaceType> {
                 query = query.populate(option);
             }
         });
+
+
+        ************* */
+
+        /*************
+         * 
+         * // If you want to keep backward compatibility with your old getById method
+         * 
+         * *********** */
+
+        // Check if it's the old format (array of strings)
+        if (typeof populateOptions[0] === 'string') {
+            // Old format: ['attachments', 'siteId']
+            populateOptions.forEach(field => {
+                query = query.populate(field as string);
+            });
+        } else {
+            // New format: [{path: 'attachments', select: 'filename'}, ...]
+            populateOptions.forEach(option => {
+                query = query.populate(option);
+            });
+        }
     }
     
     const object = await query.select('-__v');

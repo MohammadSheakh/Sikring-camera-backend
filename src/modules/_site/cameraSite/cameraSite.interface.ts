@@ -7,7 +7,7 @@ export interface IcameraSite {
   cameraId: Types.ObjectId;
   siteId: Types.ObjectId;
   
-  isDeleted : Boolean;  
+  isDeleted? : Boolean;  
   createdAt?: Date;
   updatedAt?: Date;
 }

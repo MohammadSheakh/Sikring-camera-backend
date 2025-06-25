@@ -1,5 +1,6 @@
 import { Model, Types } from 'mongoose';
 import { PaginateOptions, PaginateResult } from '../../../types/paginate';
+import { TStatus } from './camera.constant';
 
 export interface Icamera {
   // _taskId: undefined | Types.ObjectId;
@@ -8,21 +9,20 @@ export interface Icamera {
   cameraName : String;
   siteName : String; 
   localLocation : String; 
-  globalLocation : String; 
-  lat: String; 
-  long: String; 
-  status : String;
-  attachments: Types.ObjectId[]; 
-  assignedManagerId : Types.ObjectId;
-  assignedUserId : Types.ObjectId;
+  globalLocation? : String; 
+  lat?: String; 
+  long?: String; 
+  status? : TStatus.offline | TStatus.working;  
+  attachments?: Types.ObjectId[]; 
+  assignedManagerId? : Types.ObjectId;
+  assignedUserId? : Types.ObjectId;
   description?: String;
-  cameraIp?: String;
-  cameraPort?: String;
-  cameraUsername?: String;
-  cameraPassword?: String;
+  cameraIp: String;
+  cameraPort: String;
+  cameraUsername: String;
+  cameraPassword: String;
   
-
-  isDeleted : Boolean;  
+  isDeleted? : Boolean;  
   createdAt?: Date;
   updatedAt?: Date;
 }

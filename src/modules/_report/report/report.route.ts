@@ -50,15 +50,15 @@ router.route('/').get(
 );
 
 //[🚧][🧑‍💻✅][🧪] // 🆗
-// create report 💡
+// customer: user : create report 💡
 router.route('/create').post(
-  // [
-  //   upload.fields([
-  //     { name: 'attachments', maxCount: 15 }, // Allow up to 5 cover photos
-  //   ]),
-  // ],
+  [
+    upload.fields([
+      { name: 'attachments', maxCount: 15 }, // Allow up to 5 cover photos
+    ]),
+  ],
   auth('common'),
-  validateRequest(validation.createHelpMessageValidationSchema),
+  validateRequest(validation.createReportValidationSchema),
   controller.create
 );
 

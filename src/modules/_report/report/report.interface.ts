@@ -10,13 +10,13 @@ export interface Ireport {
   incidentSevearity : TIncidentSevearity.low | TIncidentSevearity.medium | TIncidentSevearity.high; 
   title : String;
   description : String;
-  location : String;
-  personName : String;
-  status : TStatus.accept | TStatus.deny ;
+  location? : String;
+  personName? : String;
+  status : TStatus.accept | TStatus.deny;
 
   attachments: Types.ObjectId[];
 
-  isDeleted : Boolean;  
+  isDeleted? : Boolean;  
   createdAt?: Date;
   updatedAt?: Date;
 }

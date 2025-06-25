@@ -4,7 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import { GenericController } from '../../__Generic/generic.controller';
 import { cameraSite } from './cameraSite.model';
 import { IcameraSite } from './cameraSite.interface';
-import { cameraSiteService } from './cameraSite.service';
+import { CameraSiteService } from './cameraSite.service';
 
 
 // let conversationParticipantsService = new ConversationParticipentsService();
@@ -14,10 +14,10 @@ export class cameraSiteController extends GenericController<
   typeof cameraSite,
   IcameraSite
 > {
-  cameraSiteService = new cameraSiteService();
+  cameraSiteService = new CameraSiteService();
 
   constructor() {
-    super(new cameraSiteService(), 'cameraSite');
+    super(new CameraSiteService(), 'cameraSite');
   }
 
   // add more methods here if needed or override the existing ones 

@@ -32,6 +32,7 @@ const cameraSchema = new Schema<Icamera>(
       required: [false, 'long is not required'],
     },
 
+    // ISSUE : status er input field ba change korar option UI te ase kina tamim vai er shathe kotha bolte hobe .. 
     status : {
       type: String,
       enum:  [TStatus.offline, TStatus.working],
@@ -52,7 +53,7 @@ const cameraSchema = new Schema<Icamera>(
       }
     ],
 
-    // TODO : changed to required true 
+    // TODO : changed to required true  // no need for this 
     assignedManagerId : {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -66,7 +67,7 @@ const cameraSchema = new Schema<Icamera>(
 
     description: {
       type: String,
-      required: [true, 'description is required'],
+      required: [false, 'description is not required'],
     },
     cameraName : {
       type: String,

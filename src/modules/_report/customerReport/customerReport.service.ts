@@ -4,7 +4,7 @@ import { IcustomerReport } from './customerReport.interface';
 import { GenericService } from '../../__Generic/generic.services';
 
 
-export class customerReportService extends GenericService<
+export class CustomerReportService extends GenericService<
   typeof customerReport,
   IcustomerReport
 > {

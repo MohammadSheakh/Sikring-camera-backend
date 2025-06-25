@@ -9,7 +9,7 @@ export interface IcustomerReport {
   reportId: Types.ObjectId;
   role  :Role
   
-  isDeleted : Boolean;  
+  isDeleted? : Boolean;  
   createdAt?: Date;
   updatedAt?: Date;
 }

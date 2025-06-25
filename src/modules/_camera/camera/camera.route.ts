@@ -6,7 +6,6 @@ import { validateFiltersForQuery } from '../../../middlewares/queryValidation/pa
 import auth from '../../../middlewares/auth';
 import validateRequest from '../../../shared/validateRequest';
 
-
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -18,7 +17,6 @@ export const optionValidationChecking = <T extends keyof Icamera | 'sortBy' | 'p
 ) => {
   return filters;
 };
-
 
 // const taskService = new TaskService();
 const controller = new cameraController();
@@ -58,14 +56,15 @@ router.route('/').get(
 );
 
 //[🚧][🧑‍💻✅][🧪] // 🆗
+// Admin: create a new camera 💡
 router.route('/create').post(
   // [
   //   upload.fields([
   //     { name: 'attachments', maxCount: 15 }, // Allow up to 5 cover photos
   //   ]),
   // ],
-  auth('common'),
-  validateRequest(validation.createHelpMessageValidationSchema),
+  auth('admin'),
+  validateRequest(validation.createCameraValidationSchema),
   controller.create
 );
 

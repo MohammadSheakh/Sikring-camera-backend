@@ -4,7 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import { GenericController } from '../../__Generic/generic.controller';
 import { customerReport } from './customerReport.model';
 import { IcustomerReport } from './customerReport.interface';
-import { customerReportService } from './customerReport.service';
+import { CustomerReportService } from './customerReport.service';
 
 
 // let conversationParticipantsService = new ConversationParticipentsService();
@@ -14,10 +14,10 @@ export class customerReportController extends GenericController<
   typeof customerReport,
   IcustomerReport
 > {
-  customerReportService = new customerReportService();
+  customerReportService = new CustomerReportService();
 
   constructor() {
-    super(new customerReportService(), 'customerReport');
+    super(new CustomerReportService(), 'customerReport');
   }
 
   // add more methods here if needed or override the existing ones 

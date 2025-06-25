@@ -59,7 +59,7 @@ const reportSchema = new Schema<Ireport>(
 
     personName : {
       type: String,
-      required: [false, 'personName is required'],
+      required: [false, 'personName is not required'],
     },
 
     status : {
@@ -85,8 +85,6 @@ const reportSchema = new Schema<Ireport>(
     // tenant_id :{
 
     // },
-
-    
 
     isDeleted: {
       type: Boolean,

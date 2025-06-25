@@ -4,7 +4,7 @@ import { IcameraSite } from './cameraSite.interface';
 import { GenericService } from '../../__Generic/generic.services';
 
 
-export class cameraSiteService extends GenericService<
+export class CameraSiteService extends GenericService<
   typeof cameraSite,
   IcameraSite
 > {

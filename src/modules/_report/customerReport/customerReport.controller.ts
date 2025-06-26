@@ -29,20 +29,22 @@ export class customerReportController extends GenericController<
       const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
       const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
       
-      console.log("🔴1🔴")
-
       const populateOptions = [
         {
           path: 'reportId',
           select: 'title incidentSevearity reportType'
         },
-        {
-          path: 'personId',
-          select: 'name email phoneNumber'
-        }
+        // 'personId'
+        // {
+        //   path: 'personId',
+        //   select: 'name email phoneNumber'
+        // }
       ];
 
-      const result = await this.customerReportService.getAllWithPagination(filters, options, populateOptions);
+      // const dontWantToInclude = "-personId"; // 🟢 working prefectly alhamdulillah
+      const dontWantToInclude = ['']; // 🟢 working prefectly alhamdulillah
+
+      const result = await this.service.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
   
       sendResponse(res, {
         code: StatusCodes.OK,

@@ -99,6 +99,7 @@ export class reportController extends GenericController<
         personId: req.user.userId,
         reportId: result._id,
         role: req.user.role,
+        reportType: req.body.reportType
       });
 
 

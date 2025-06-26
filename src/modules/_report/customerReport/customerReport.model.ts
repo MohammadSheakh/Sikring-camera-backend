@@ -2,6 +2,7 @@ import { model, Schema } from 'mongoose';
 import { IcustomerReport, IcustomerReportModel } from './customerReport.interface';
 import paginate, { paginateDebug, paginateV1, paginateV2 } from '../../../common/plugins/paginate';
 import { Roles } from '../../../middlewares/roles';
+import { TReportType } from '../report/report.constant';
 
 
 const customerReportSchema = new Schema<IcustomerReport>(
@@ -24,6 +25,17 @@ const customerReportSchema = new Schema<IcustomerReport>(
       },
       required: [true, 'Role is required'],
     },
+    reportType : {
+              type: String,
+              enum:  [TReportType.alarmPatrol, TReportType.patrolReport, TReportType.service, TReportType.emergency_call_out],
+              required: [
+                false,
+                `reportType is required it can be ${Object.values(
+                  TReportType
+                ).join(', ')}`,
+              ],
+              // default: TReportType.alarmPatrol, // INFO : no default value for reportType
+      },
 
     isDeleted: {
       type: Boolean,
@@ -34,7 +46,7 @@ const customerReportSchema = new Schema<IcustomerReport>(
   { timestamps: true }
 );
 
-customerReportSchema.plugin(paginateV1); // paginate ///  paginateV2 // paginateDebug
+customerReportSchema.plugin(paginate); // paginate ///  paginateV2 // paginateDebug
 
 customerReportSchema.pre('save', function (next) {
   // Rename _id to _projectId

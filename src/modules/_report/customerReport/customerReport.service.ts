@@ -24,27 +24,4 @@ export class CustomerReportService extends GenericService<
   constructor() {
     super(customerReport);
   }
-
-  async getAllWithPagination(
-      filters: any, // Partial<INotification> // FixMe : fix type
-      options: PaginateOptions,
-      populateOptions?: any, // Add populate options parameter
-      //dontWantToInclude ? : string | string[],
-    ) {
-      
-  
-       const result = await this.model.paginate(filters, options, populateOptions);
-      //const result = await this.model.paginateV2(filters, options, populateOptions);
-  
-      /*****************
-
-
-      const result = await this.model.paginate(
-         filters, // ISSUE :  may be issue thakte pare .. Test korte hobe .. 
-        { ...filters, isDeleted : false },
-        options);
-
-      *********************/
-      return result;
-    }
 }

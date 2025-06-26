@@ -49,7 +49,21 @@ export class GenericController<ModelType, InterfaceType> {
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
     
-    const result = await this.service.getAllWithPagination(filters, options);
+    const populateOptions: (string | {path: string, select: string}[]) = [
+      // {
+      //   path: 'userId',
+      //   select: 'name email'
+      // },
+      // 'personId'
+      // {
+      //   path: 'personId',
+      //   select: 'name email phoneNumber'
+      // }
+    ];
+
+    const dontWantToInclude = ['']; // -role
+
+    const result = await this.service.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
 
     sendResponse(res, {
       code: StatusCodes.OK,

@@ -1,6 +1,7 @@
 import { Model, Types } from 'mongoose';
 import { PaginateOptions, PaginateResult } from '../../../types/paginate';
 import { Role } from '../../user/user.constant';
+import { TReportType } from '../report/report.constant';
 
 export interface IcustomerReport {
   // _taskId: undefined | Types.ObjectId;
@@ -8,7 +9,11 @@ export interface IcustomerReport {
   personId: Types.ObjectId;
   reportId: Types.ObjectId;
   role  :Role
-  
+  reportType : TReportType.alarmPatrol |
+              TReportType.patrolReport |
+              TReportType.service |
+              TReportType.emergency_call_out;
+
   isDeleted? : Boolean;  
   createdAt?: Date;
   updatedAt?: Date;

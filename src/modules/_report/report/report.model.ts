@@ -120,4 +120,4 @@ reportSchema.set('toJSON', {
 export const report = model<
   Ireport,
   IreportModel
->('report', reportSchema);
+>('Report', reportSchema);

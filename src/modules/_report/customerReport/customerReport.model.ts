@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
 import { IcustomerReport, IcustomerReportModel } from './customerReport.interface';
-import paginate from '../../../common/plugins/paginate';
+import paginate, { paginateDebug, paginateV1, paginateV2 } from '../../../common/plugins/paginate';
 import { Roles } from '../../../middlewares/roles';
 
 
@@ -34,7 +34,7 @@ const customerReportSchema = new Schema<IcustomerReport>(
   { timestamps: true }
 );
 
-customerReportSchema.plugin(paginate);
+customerReportSchema.plugin(paginateV1); // paginate ///  paginateV2 // paginateDebug
 
 customerReportSchema.pre('save', function (next) {
   // Rename _id to _projectId

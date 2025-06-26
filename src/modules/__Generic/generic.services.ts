@@ -28,7 +28,6 @@ export class GenericService<  ModelType , InterfaceType> {
     return createdObject;
   }
 
-
   async getAll() {
     return await this.model.find({isDeleted : false}).select('-__v');
   }
@@ -39,8 +38,6 @@ export class GenericService<  ModelType , InterfaceType> {
     populateOptions?: any,
     dontWantToInclude ? : string | string[]
   ) {
-    console.log('filters from generic service 🧪🧪', filters);
-    console.log('options from generic service 🧪🧪', options);
 
     const result = await this.model.paginate(filters, options, populateOptions, dontWantToInclude);
 

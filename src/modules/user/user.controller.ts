@@ -11,6 +11,7 @@ import { sendAdminOrSuperAdminCreationEmail } from '../../helpers/emailService';
 import { AuthService } from '../auth/auth.service';
 import { Request, Response } from 'express';
 import { TStatusType, TSubscriptionType } from './user.constant';
+import omit from '../../shared/omit';
 
 const userCustomService = new UserCustomService();
 
@@ -147,6 +148,36 @@ const deleteMyProfile = catchAsync(async (req, res) => {
 
 //[🚧][🧑‍💻][🧪] // ✅ 🆗
 const getAllUserForAdminDashboard = catchAsync(async (req, res) => {
+  const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
+  const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+  
+  const populateOptions: (string | {path: string, select: string}[]) = [
+    // {
+    //   path: 'cameraId',
+    //   select: ''
+    // },
+    // // 'personId'
+    // {
+    //   path: 'siteId',
+    //   select: ''
+    // }
+  ];
+
+  // const dontWantToInclude = ['-localLocation -attachments']; // -role
+
+  const dontWantToInclude = ''; // -role
+  
+  const result = await userCustomService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
+
+  sendResponse(res, {
+    code: StatusCodes.OK,
+    data: result,
+    message: `All data with pagination`,
+    success: true,
+  });
+  
+  /*********************
+  
   const filters = req.query;
   const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
 
@@ -172,6 +203,8 @@ const getAllUserForAdminDashboard = catchAsync(async (req, res) => {
 
     message: 'All users fetched successfully',
   });
+
+  ***************** */
 });
 
 //[🚧][🧑‍💻][🧪] // ✅ 🆗
@@ -255,116 +288,6 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
   }
 });
 
-//////////////  Access Pin related controller ///////////
-
-const setNewAccessPin = catchAsync(async (req, res) => {
-  const userId = req.user.userId;
-  if (!userId) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
-  }
-  const { accessPinCode } = req.body;
-  if (!accessPinCode) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, 'Access Pin Code is required');
-  }
-
-  // TODO :  We need to hash the access pin code before saving it to the database ..
-
-  const result = await UserService.setNewAccessPin(userId, accessPinCode);
-
-  if (!result) {
-    throw new ApiError(StatusCodes.NOT_FOUND, 'User not found');
-  }
-
-  sendResponse(res, {
-    code: StatusCodes.OK,
-    data: result,
-    message: 'Access Pin Code updated successfully',
-  });
-});
-
-const removeAccessPin = catchAsync(async (req, res) => {
-  const userId = req.user.userId;
-  if (!userId) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
-  }
-  if (!req.body.accessPinCode) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, 'Access Pin Code is required');
-  }
-
-  const result = await UserService.removeAccessPin(
-    userId,
-    req.body.accessPinCode
-  );
-  if (!result) {
-    throw new ApiError(StatusCodes.NOT_FOUND, 'Access Pin can not be removed');
-  }
-
-  sendResponse(res, {
-    code: StatusCodes.OK,
-    data: result,
-    message: 'Access Pin Code removed successfully',
-  });
-});
-
-const givePermissionToChangeCurrentPin = catchAsync(async (req, res) => {
-  const userId = req.user.userId;
-  if (!userId) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
-  }
-  if (!req.body.accessPinCode) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, 'Access Pin Code is required');
-  }
-
-  const result = await UserService.givePermissionToChangeCurrentPin(
-    userId,
-    req.body.accessPinCode
-  );
-  if (!result) {
-    throw new ApiError(
-      StatusCodes.BAD_REQUEST,
-      'Access Pin can not be changed'
-    );
-  }
-
-  sendResponse(res, {
-    code: StatusCodes.OK,
-    data: result,
-    message: 'Access Pin Code removed successfully',
-  });
-});
-
-const matchAccessPin = catchAsync(async (req, res) => {
-  const userId = req.user.userId;
-  if (!userId) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
-  }
-  if (!req.body.accessPinCode) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, 'Access Pin Code is required');
-  }
-
-  const result = await UserService.matchAccessPin(
-    userId,
-    req.body.accessPinCode
-  );
-  if (!result) {
-    throw new ApiError(
-      StatusCodes.BAD_REQUEST,
-      'Access Pin can not be matched'
-    );
-  }
-
-  const updateUserlastProvideAccessPinCode = await User.findByIdAndUpdate(
-    userId,
-    { lastProvideAccessPinCode: new Date() },
-    { new: true }
-  );
-
-  sendResponse(res, {
-    code: StatusCodes.OK,
-    data: result,
-    message: 'Access Pin Code matched successfully',
-  });
-});
 
 /*************************
  *
@@ -437,83 +360,8 @@ const deleteAllDataFromCollection = async (req: Request, res: Response) => {
   }
 };
 
-const changeUserStatus = catchAsync(async (req: Request, res: Response) => {
-  const { userId } = req.query;
-  if (!userId) {
-    throw new ApiError(
-      StatusCodes.BAD_REQUEST,
-      'User ID is required in req.query'
-    );
-  }
 
-  const { status } = req.body;
-  // console.log('status', status);
-  // console.log('body', req.body);
 
-  // Validate if status is one of the enums
-  if (![TStatusType.active, TStatusType.inactive].includes(status)) {
-    throw new ApiError(
-      StatusCodes.BAD_REQUEST,
-      `Invalid status value it can be ${Object.values(TStatusType).join(', ')}`
-    );
-  }
-
-  const result = await User.findByIdAndUpdate(
-    userId,
-    {
-      status,
-    },
-    { new: true }
-  );
-
-  sendResponse(res, {
-    code: StatusCodes.OK,
-    data: result,
-    message: 'User status changed successfully',
-  });
-});
-
-const changeUserSubscriptionType = catchAsync(
-  async (req: Request, res: Response) => {
-    const { userId } = req.query;
-    if (!userId) {
-      throw new ApiError(
-        StatusCodes.BAD_REQUEST,
-        'User ID is required in req.query'
-      );
-    }
-
-    const { subsciptionType } = req.body;
-
-    // Validate if status is one of the enums
-    if (
-      ![TSubscriptionType.free, TSubscriptionType.premium].includes(
-        subsciptionType
-      )
-    ) {
-      throw new ApiError(
-        StatusCodes.BAD_REQUEST,
-        `Invalid subscription type value it can be ${Object.values(
-          TSubscriptionType
-        ).join(', ')}`
-      );
-    }
-
-    const result = await User.findByIdAndUpdate(
-      userId,
-      {
-        subsciptionType,
-      },
-      { new: true }
-    );
-
-    sendResponse(res, {
-      code: StatusCodes.OK,
-      data: result,
-      message: 'User Subscription Type changed successfully',
-    });
-  }
-);
 
 export const UserController = {
   createAdminOrSuperAdmin,
@@ -529,15 +377,7 @@ export const UserController = {
   getAllAdminForAdminDashboard,
   sendInvitationLinkToAdminEmail,
 
-  //////////////// For Admin Change User Status and Subscription Type ..
-  changeUserStatus,
-  changeUserSubscriptionType,
-
-  ////////////// Access Pin Related Controller ////////
-  setNewAccessPin,
-  removeAccessPin,
-  givePermissionToChangeCurrentPin,
-  matchAccessPin,
+  
   ///////////////////////////////////////////////////
   deleteAllDataFromCollection,
 

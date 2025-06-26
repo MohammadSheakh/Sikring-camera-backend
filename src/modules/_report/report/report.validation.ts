@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { TIncidentSevearity, TReportType } from './report.constant';
+import { TIncidentSevearity, TReportType, TStatus } from './report.constant';
+import mongoose from 'mongoose';
 
 const ObjectIdRegex = /^[0-9a-fA-F]{24}$/; // Regular expression to check for valid ObjectId
 
@@ -7,11 +8,11 @@ export const createReportValidationSchema = z.object({
   body: z.object({
 
     siteId: z.string({
-            required_error: 'siteId is required, siteId must be a valid mongoose object id .',
-            invalid_type_error: 'siteId must be a string.',
-          }).refine(value => ObjectIdRegex.test(value), {
-          message: 'Invalid siteId format. Must be a valid ObjectId.',
-        }),
+        required_error: 'siteId is required, siteId must be a valid mongoose object id .',
+        invalid_type_error: 'siteId must be a string.',
+      }).refine(value => ObjectIdRegex.test(value), {
+      message: 'Invalid siteId format. Must be a valid ObjectId.',
+    }),
 
     reportType: z
       .string({
@@ -57,9 +58,9 @@ export const createReportValidationSchema = z.object({
 
     attachments: z
       .array(z.string(), {
-          required_error: 'attachments is required, attachments must be an array of strings.',
-          invalid_type_error: 'attachments must be an array of strings.',
-        }).optional(),
+        required_error: 'attachments is required, attachments must be an array of strings.',
+        invalid_type_error: 'attachments must be an array of strings.',
+      }).optional(),
   }),
 
   // params: z.object({
@@ -70,6 +71,32 @@ export const createReportValidationSchema = z.object({
   // }),
    
 });
+
+export const changeStatusOfAReportValidationSchema = z.object({
+  body: z.object({
+    status: z
+      .string({
+        required_error: 'status is required.',
+        invalid_type_error: 'status must be a string.',
+      }).refine(status => Object.keys(TStatus).includes(status as keyof typeof TStatus), {
+        message: `status must be one of the following: ${Object.keys(TStatus).join(', ')}`,
+      })
+  }),
+
+  params: z.object({
+    id: z.string({
+        required_error: 'id is required in params.',
+        invalid_type_error: 'id must be a mongoose object.',
+      }).refine(value => mongoose.Types.ObjectId.isValid(value), {
+        message: 'id must be a valid mongoose ObjectId.',
+      }), 
+  }),
+
+  // query: z.object({
+  //   page: z.string().optional(),
+  // }),
+});
+
 
 
 

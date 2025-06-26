@@ -209,5 +209,45 @@ export class reportController extends GenericController<
       });
   })
 
+  
+  //[🚧][🧑‍💻✅][🧪🆗] // 6/26/2025 
+  changeReportStatus = catchAsync(
+    async (req: Request, res: Response) => {
+      const id = req.params.id;
+      const { status } = req.body;
+      const userId = req.user.userId;
+
+      const updatedReport = await report.findByIdAndUpdate(
+        id,
+        { status: status },
+        { new: true }
+      ).select('-isDeleted -createdAt -updatedAt -__v');
+
+      if (!updatedReport) {
+        throw new ApiError(
+          StatusCodes.NOT_FOUND,
+          `Report with id ${id} not found`
+        );
+      }
+
+      let actionPerformed = `Report ${id} status changed to ${status} by ${req.user.userId}`;
+
+      let valueForAuditLog: IauditLog = {
+        userId: req.user.userId,
+        role: req.user.role,
+        actionPerformed: `${actionPerformed}`,
+        status: TStatus.success,
+      };
+
+      eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
+
+      sendResponse(res, {
+        code: StatusCodes.OK,
+        data: updatedReport,
+        message: `Report status changed successfully`,
+      });
+    }
+  );
+
   // add more methods here if needed or override the existing ones 
 }

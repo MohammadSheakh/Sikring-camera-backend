@@ -123,4 +123,4 @@ cameraSchema.set('toJSON', {
 export const camera = model<
   Icamera,
   IcameraModel
->('camera', cameraSchema);
+>('Camera', cameraSchema);

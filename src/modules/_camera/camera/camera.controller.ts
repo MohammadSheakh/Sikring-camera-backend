@@ -11,6 +11,8 @@ import catchAsync from '../../../shared/catchAsync';
 import { IauditLog } from '../../auditLog/auditLog.interface';
 import { TStatus } from '../../auditLog/auditLog.constant';
 import eventEmitterForAuditLog from '../../auditLog/auditLog.service';
+import omit from '../../../shared/omit';
+import pick from '../../../shared/pick';
 
 // let conversationParticipantsService = new ConversationParticipentsService();
 // let messageService = new MessagerService();
@@ -75,6 +77,37 @@ export class cameraController extends GenericController<
       });
     });
 
+    getAllWithPagination = catchAsync(async (req: Request, res: Response) => {
+    //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
+    const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
+    const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+    
+    const populateOptions: (string | {path: string, select: string}[]) = [
+      // {
+      //   path: 'userId',
+      //   select: 'name email'
+      // },
+      // 'personId'
+      // {
+      //   path: 'personId',
+      //   select: 'name email phoneNumber'
+      // }
+    ];
+
+    // const dontWantToInclude = ['-localLocation -attachments']; // -role
+
+    const dontWantToInclude = '-localLocation -attachments -cameraPassword -cameraIp -cameraPort -isDeleted -createdAt -updatedAt -__v'; // -role
+    // -localLocation -attachments 
+
+    const result = await this.service.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `All ${this.modelName} with pagination`,
+      success: true,
+    });
+  });
 
 
   // add more methods here if needed or override the existing ones 

@@ -34,7 +34,7 @@ const paginationOptions: Array<'sortBy' | 'page' | 'limit' | 'populate'> = [
 // admin : get all camera  💡
 router.route('/paginate').get(
   //auth('common'),
-  validateFiltersForQuery(optionValidationChecking(['_id', ...paginationOptions])),
+  validateFiltersForQuery(optionValidationChecking(['_id','status','cameraName', ...paginationOptions])),
   controller.getAllWithPagination
 );
 

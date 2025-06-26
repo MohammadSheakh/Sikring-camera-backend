@@ -78,12 +78,19 @@ router.route('/softDelete/:id').put(
 
 // TODO : change report status ..  try korte hobe update by id diye e jeno kore fela jay .. 
 
+//[🚧][🧑‍💻✅][🧪🆗] // 6/26/2025 
+router.route('/change-status/:id').put(
+  auth('admin'),
+  validateRequest(validation.changeStatusOfAReportValidationSchema),
+  controller.changeReportStatus
+);
+
 // TODO : get all report organized by category .. 
 
-router.route('/category/all').get(
-  auth('common'),
-  controller.getAllReportByCategory
-);
+// router.route('/category/all').get(
+//   auth('common'),
+//   controller.getAllReportByCategory
+// );
 
 
 export const reportRoute = router;

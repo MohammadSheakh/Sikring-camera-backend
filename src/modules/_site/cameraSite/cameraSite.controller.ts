@@ -32,18 +32,18 @@ export class cameraSiteController extends GenericController<
     const populateOptions: (string | {path: string, select: string}[]) = [
       {
         path: 'cameraId',
-        select: ''
+        select: '-localLocation -attachments -cameraName -cameraUsername -__v -updatedAt -createdAt ',//-cameraPassword -cameraIp -cameraPort -isDeleted
       },
       // 'personId'
-      {
-        path: 'siteId',
-        select: ''
-      }
+      // {
+      //   path: 'siteId',
+      //   select: ''
+      // }
     ];
 
     // const dontWantToInclude = ['-localLocation -attachments']; // -role
 
-    const dontWantToInclude = ''; // -role
+    const dontWantToInclude = '-createdAt -updatedAt -__v'; // -role
     // -localLocation -attachments
     // -localLocation -attachments -cameraPassword -cameraIp -cameraPort -isDeleted -createdAt -updatedAt -__v 
 

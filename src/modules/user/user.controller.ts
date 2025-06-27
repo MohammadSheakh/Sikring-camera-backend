@@ -12,6 +12,10 @@ import { AuthService } from '../auth/auth.service';
 import { Request, Response } from 'express';
 import { TStatusType, TSubscriptionType } from './user.constant';
 import omit from '../../shared/omit';
+import { UserSiteService } from '../_site/userSite/userSite.service';
+import { IauditLog } from '../auditLog/auditLog.interface';
+import { TStatus } from '../auditLog/auditLog.constant';
+import eventEmitterForAuditLog from '../auditLog/auditLog.service';
 
 const userCustomService = new UserCustomService();
 
@@ -146,6 +150,20 @@ const deleteMyProfile = catchAsync(async (req, res) => {
 
 //////////////////////////////////////////////////////////
 
+/*********
+ * 
+ *  Admin:  Register Customer
+ *   
+ *  But we dont need to register customer .. since we have send
+ *  invitation line functionality .. lets use that function  
+ * ********* */
+
+//[🚧][🧑‍💻][🧪] // ✅ 🆗  
+// const createCustomer = catchAsync(async (req, res) => {
+
+// }
+  
+
 //[🚧][🧑‍💻][🧪] // ✅ 🆗
 const getAllUserForAdminDashboard = catchAsync(async (req, res) => {
   const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
@@ -270,14 +288,58 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
         'User already found and Invitation link sent successfully for admin',
     });
   } else {
+
+    let actionPerformed = '';
+
     // create new user
-    if (req.body.role == 'admin') {
+    if (req.body.role == 'customer') {
       const newUser = await AuthService.createUser({
         email: req.body.email,
         password: req.body.password,
         role: req.body.role,
-        isEmailVerified: true,
+        isEmailVerified: true, // INFO: Customer dont need to verify Email
+        name : req.body.name,
+        user_custom_id : req.body.customId, 
+        // TODO : Company Logo upload korte hobe 
       });
+
+      /***********
+       * 
+       * jei userId create hobe .. sheta ar req.body.siteId niye
+       * userSite create korte hobe  
+       * 
+       * ********** */
+
+      if(newUser && newUser._id && req.body.siteId){
+
+        /**********
+         * 
+         * // TODO : we need to check if the siteId is valid or not
+         * 
+         * ******** */
+
+        // TODO : create userSite here
+        await new UserSiteService().create(
+          {
+            personId: newUser._id,
+            siteId: req.body.siteId,
+            role: 'customer',
+          }  
+        );
+      }
+
+      let valueForAuditLog : IauditLog = {
+          userId: req.user.userId,
+          role: req.user.role,
+          actionPerformed: `Created a new ${req.body.role} named ${req.body.name} for site ${req.body.siteId}`,
+          status: TStatus.success,
+        }
+
+        eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
+        
+
+
+
 
       return sendResponse(res, {
         code: StatusCodes.OK,

@@ -8,7 +8,12 @@ import convertHeicToPngMiddleware from '../../shared/convertHeicToPngMiddleware'
 import { IUser } from './user.interface';
 import { validateFiltersForQuery } from '../../middlewares/queryValidation/paginationQueryValidationMiddleware';
 const UPLOADS_FOLDER = 'uploads/users';
-const upload = fileUploadHandler(UPLOADS_FOLDER);
+// const upload = fileUploadHandler(UPLOADS_FOLDER);
+
+
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 const router = express.Router();
 
@@ -44,8 +49,13 @@ router.route('/paginate/admin').get(
 
 //[🚧][🧑‍💻][🧪] // ✅ 🆗
 router.post(
-  "/send-invitation-link-to-admin-email",
-  auth('superAdmin'),
+  "/create-user-and-send-mail",
+  [
+    upload.fields([
+      { name: 'attachments', maxCount: 15 }, // Allow up to 5 cover photos
+    ]),
+  ],
+  auth('admin'),
   validateRequest(UserValidation.sendInvitationToBeAdminValidationSchema),
   UserController.sendInvitationLinkToAdminEmail
 );
@@ -59,7 +69,7 @@ router.post(
  * 
  * ********************* */
 router.post('/delete/:collectionName',
-  auth('superAdmin'),
+  auth('admin'),
   UserController.deleteAllDataFromCollection
 )
 

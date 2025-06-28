@@ -34,6 +34,7 @@ const attachmentSchema = new Schema<IAttachment>(
     attachedToType : {
       enum: [
         TAttachedToType.site,
+        TAttachedToType.user,
       ],
       type: String,
       required: [

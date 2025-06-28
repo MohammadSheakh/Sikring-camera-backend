@@ -14,6 +14,8 @@ import { TStatus } from '../../auditLog/auditLog.constant';
 import { TRole } from '../../user/user.constant';
 import {UserSiteService }  from '../userSite/userSite.service';
 import { userSite } from '../userSite/userSite.model';
+import omit from '../../../shared/omit';
+import pick from '../../../shared/pick';
 
 const attachmentService = new AttachmentService();
 const userSiteService = new UserSiteService();
@@ -73,7 +75,7 @@ export class SiteController extends GenericController<
           // need to check if the manager exist or not  
 
           const createdManagerForSite = await userSiteService.create({
-            userId: req.body.assignedManagerId,
+            personId: req.body.assignedManagerId,
             siteId: result._id,
             role: TRole.manager,
           });
@@ -96,7 +98,7 @@ export class SiteController extends GenericController<
           // need to check if the manager exist or not  
 
           const createdUserForSite = await userSiteService.create({
-            userId: req.body.assignedUserId,
+            personId: req.body.assignedUserId,
             siteId: result._id,
             role: TRole.user,
           });
@@ -229,6 +231,21 @@ export class SiteController extends GenericController<
       code: StatusCodes.OK,
       data: result,
       message: `${this.modelName} updated successfully`,
+      success: true,
+    });
+  });
+
+  //[🚧][🧑‍💻][🧪] // ✅🆗
+  getAllWithPagination = catchAsync(async (req: Request, res: Response) => {
+    const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
+    const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+    
+    const result = await this.siteService.getAllSitesWithUsersAndManagers(filters, options);
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `All ${this.modelName} with pagination`,
       success: true,
     });
   });

@@ -98,7 +98,7 @@ const updateMyProfile = catchAsync(async (req, res) => {
     ))
   );
 
-  req.body.attachments = attachments;
+  req.body.companyLogoImage = attachments[0].attachment;
   }
   
   const result = await UserService.updateMyProfile(userId, req.body);

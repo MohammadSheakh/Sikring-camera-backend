@@ -1,15 +1,12 @@
 import { model, Schema } from 'mongoose';
 import { ISite, IsiteModel } from './site.interface';
-import paginate from '../../../common/plugins/paginate';
+
 import { TStatusType } from '../../user/user.constant';
 import { TSiteType } from './site.constant';
+import paginate from '../../../common/plugins/paginate';
 
 const siteSchema = new Schema<ISite>(
-  {
-    // userId: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: 'User',
-    // },
+{
     name: {
       type: String,
       required: [true, 'name is required'],

@@ -1,6 +1,6 @@
 import { Model, Types } from 'mongoose';
 import { PaginateOptions, PaginateResult } from '../../types/paginate';
-import {AttachmentType, AttachedToType } from './attachment.constant';
+import {AttachmentType, TAttachedToType } from './attachment.constant';
 
 // FIX  // TODO : joto jaygay role ase .. role gula check dite hobe .. 
 export interface IAttachment {
@@ -10,8 +10,8 @@ export interface IAttachment {
    | AttachmentType.unknown;
 
   attachedToType: 
-    AttachedToType.lab|
-    AttachedToType.user;
+    TAttachedToType.site|
+    TAttachedToType.user;
 
   attachedToId?: string;
   uploadedByUserId?: Types.ObjectId | string;

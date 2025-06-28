@@ -3,15 +3,10 @@ import { UserController } from './user.controller';
 import auth from '../../middlewares/auth';
 import validateRequest from '../../shared/validateRequest';
 import { UserValidation } from './user.validation';
-import fileUploadHandler from '../../shared/fileUploadHandler';
-import convertHeicToPngMiddleware from '../../shared/convertHeicToPngMiddleware';
 import { IUser } from './user.interface';
 import { validateFiltersForQuery } from '../../middlewares/queryValidation/paginationQueryValidationMiddleware';
-const UPLOADS_FOLDER = 'uploads/users';
-// const upload = fileUploadHandler(UPLOADS_FOLDER);
-
-
 const multer = require('multer');
+
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
@@ -99,14 +94,13 @@ router.post('/delete/:collectionName',
 
 // TODO : Admin : edit customer by id 
 
-//[🚧][🧑‍💻✅][🧪🆗] // query :: userId
-
+//[🚧][🧑‍💻✅][🧪🆗] // query :: userId  SC
 router.route('/edit-user/:userId')
   .put(
     auth('admin'),
     [
     upload.fields([
-      { name: 'attachments', maxCount: 15 }, // Allow up to 5 cover photos
+      { name: 'attachments', maxCount: 1 }, // Allow up to 1 cover photos
     ]),
   ],
     // validateRequest(UserValidation.editUserValidationSchema),
@@ -115,13 +109,8 @@ router.route('/edit-user/:userId')
 
 ////////////////////////////////////////////////
 
-
-
 // sub routes must be added after the main routes
 //[🚧][🧑‍💻✅][🧪🆗]
-
-
-
 
 ///////////////////////////////////////////////
   

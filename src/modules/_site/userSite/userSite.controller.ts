@@ -29,6 +29,8 @@ export class userSiteController extends GenericController<
    * 
    * Admin : Customer Management - get all user where role is customer 
    * 
+   * // ISSUE : this userSite pagination is not needed ..  we use site modules controller instead 
+   * 
    * ******* */
   //[🚧][🧑‍💻][🧪] // ✅🆗
   getAllWithPagination = catchAsync(async (req: Request, res: Response) => {

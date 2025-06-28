@@ -4,10 +4,11 @@ This document tracks the issues and their current statuses. Each issue is follow
 
 ## Issues List
 
-- [x] ~~Test~~
-- [ ] cameraCustomer and customerReport route is not used .. 
-- [x] dsdsd
 
-> 3
+- [ ] cameraCustomer and customerReport route is not used ..~~ 
+- [ ] when user profile update .. if password is passed .. then its not hashed .. direct password
+    saved in database .. ~~ 
+
+> ~~~~
 
 

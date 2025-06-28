@@ -75,12 +75,15 @@ export class siteService extends GenericService<
   }
 
   async getAllLocationOfSite(){
-    const sites = await Site.find().select('long lat'); // { isDeleted: false }
+    const sites = await Site.find({
+      lat: { $exists: true, $ne: null },
+      long: { $exists: true, $ne: null }
+    }).select('long lat'); // { isDeleted: false }
 
     if (!sites || sites.length === 0) {
       throw new Error('No sites found');
     }
-
+    
     return sites; 
   }
 }

@@ -2,8 +2,6 @@
 
 This document tracks the issues and their current statuses. Each issue is followed by a checkbox to mark its resolution.
 
-
- 
 <details>
   <summary>Admin Part Issue </summary>
 
@@ -13,11 +11,11 @@ This document tracks the issues and their current statuses. Each issue is follow
   
   - [ ]  {{shob}}v1/user-site/paginate?role=customer 
         for this route .. admin part .. we have to show employee Name also for user Id 
-  - [x] 
-  - [x] 
-  - [x] 
+  - [ ] 
+  - [ ] 
+  - [ ] 
 
-  > for more information write here... 
+  > ~~~~
 </details>
 
 <details>
@@ -36,12 +34,9 @@ This document tracks the issues and their current statuses. Each issue is follow
   > for more information write here... 
 </details>
 
-## Global Issue 
+##### Global Issue 
 
 - [x] ~~Test~~
 - [ ] for admin part .. in case of site create and update .. we need to keep users name in the audit log 🚦
 > for more information write here... 
 - [ ] 
-- [x] 
-- [x] 
-- [x] 

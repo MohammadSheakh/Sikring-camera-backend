@@ -35,7 +35,38 @@ export class cameraController extends GenericController<
       // INFO :  karon shei nam ta audit log e dekhano lagbe .. 
 
       // TODO :  check korte hobe thik ase kina 
-      const result = await this.service.create({
+
+      let payload = {
+          localLocation: req.body.localLocation,
+          cameraName: req.body.cameraName,
+          cameraUsername : req.body.cameraUsername,
+          cameraPassword: req.body.cameraPassword,
+          cameraIp: req.body.cameraIp || '',
+          cameraPort: req.body.cameraPort, 
+      }
+
+      if(req.body.globalLocation){
+        payload = {
+          ...payload,
+          globalLocation: req.body.globalLocation,
+        }
+      }
+      if(req.body.lat){
+        payload = {
+          ...payload,
+          lat: req.body.lat,
+        }
+      }
+      if(req.body.long){
+        payload = {
+          ...payload,
+          long: req.body.long,
+        }
+      }
+
+      const result = await this.service.create(payload);
+      /*******
+      {
           // siteName: req.body.siteName,
           localLocation: req.body.localLocation,
           cameraName: req.body.cameraName,
@@ -43,7 +74,8 @@ export class cameraController extends GenericController<
           cameraPassword: req.body.cameraPassword,
           cameraIp: req.body.cameraIp || '',
           cameraPort: req.body.cameraPort, 
-      });
+      }
+      ******* */
 
       let actionPerformed = '';
 

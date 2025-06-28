@@ -37,8 +37,8 @@ router.route('/paginate').get(
 );
 
 //[🚧][🧑‍💻✅][🧪] // 🆗 // FIX ME : route ta change korte hobe get location of all site  ei route er jonno 
-router.route('/test').get(
-  auth('commonAdmin'),
+router.route('/location').get(
+  auth('admin'),
   controller.getAllLocationOfSite
 );
 
@@ -57,9 +57,9 @@ router.route('/update/:id').put(
 
 // get all location of site 💡
 //[🚧][🧑‍💻✅][🧪] // 🆗
-router.route('/location').get(
+router.route('/').get(
   auth('commonAdmin'),
-  controller.getAllLocationOfSite
+  controller.getAll
 );
 
 // router.route('/').get(

@@ -51,13 +51,13 @@ export class GenericController<ModelType, InterfaceType> {
     
     const populateOptions: (string | {path: string, select: string}[]) = [
       // {
-      //   path: 'userId',
-      //   select: 'name email'
+      //   path: 'personId',
+      //   select: 'name ' 
       // },
       // 'personId'
       // {
-      //   path: 'personId',
-      //   select: 'name email phoneNumber'
+      //   path: 'siteId',
+      //   select: ''
       // }
     ];
 

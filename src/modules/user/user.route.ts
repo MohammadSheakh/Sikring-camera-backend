@@ -48,6 +48,7 @@ router.route('/paginate/admin').get(
 );
 
 //[🚧][🧑‍💻][🧪] // ✅ 🆗
+// TODO : companyLogo upload korte parte hobe .. 
 router.post(
   "/create-user-and-send-mail",
   [
@@ -60,8 +61,6 @@ router.post(
   UserController.sendInvitationLinkToAdminEmail
 );
 
-
-// TODO:  Forgot Pin and Verify Email Develop korte hobe .. access Pin related 
 
 /*************************
  * 

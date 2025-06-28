@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Role, Roles } from '../../middlewares/roles';
 import { max } from 'date-fns';
+import mongoose from 'mongoose';
 
 const createUserValidationSchema = z.object({
   body: z.object({
@@ -135,6 +136,11 @@ const createAccessPinCodeValidationSchema = z.object({
 
 const sendInvitationToBeAdminValidationSchema = z.object({
   body: z.object({
+    customId : z
+      .string({
+        required_error: 'customId is required.',
+        invalid_type_error: 'customId must be a string.',
+      }).optional(),
     email : z.
       string({
         required_error: 'email is required.',
@@ -156,7 +162,12 @@ const sendInvitationToBeAdminValidationSchema = z.object({
         required_error: 'role is required.',
         invalid_type_error: 'role must be a string.',
       }),
-    
+    siteId: z.string({
+            required_error: 'id is required in params.',
+            invalid_type_error: 'id must be a mongoose object.',
+          }).refine(value => mongoose.Types.ObjectId.isValid(value), {
+            message: 'id must be a valid mongoose ObjectId.',
+          }), 
 }),
 });
 

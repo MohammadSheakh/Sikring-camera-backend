@@ -32,23 +32,7 @@ export class GenericService<  ModelType , InterfaceType> {
     return await this.model.find({isDeleted : false}).select('-__v');
   }
   
-  async getAllWithPagination(
-    filters: any, // Partial<INotification> // FixMe : fix type
-    options: PaginateOptions,
-    populateOptions?: any,
-    dontWantToInclude ? : string | string[]
-  ) {
-
-    const result = await this.model.paginate(filters, options, populateOptions, dontWantToInclude);
-
-    /*
-    const result = await this.model.paginate(
-       filters, // ISSUE :  may be issue thakte pare .. Test korte hobe .. 
-      { ...filters, isDeleted : false },
-      options);
-    */
-    return result;
-  }
+   
 
   async getById(id: string, populateOptions?: (string | any)[]) : Promise<InterfaceType | null> {
     /********************

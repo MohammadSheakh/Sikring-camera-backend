@@ -300,6 +300,7 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
         isEmailVerified: true, // INFO: Customer dont need to verify Email
         name : req.body.name,
         user_custom_id : req.body.customId, 
+        address : req.body.address,
         // TODO : Company Logo upload korte hobe 
       });
 
@@ -310,8 +311,7 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
        * 
        * ********** */
 
-      if(newUser && newUser._id && req.body.siteId){
-
+      if(newUser?.user?._id && req.body.siteId){
         /**********
          * 
          * // TODO : we need to check if the siteId is valid or not
@@ -319,13 +319,15 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
          * ******** */
 
         // TODO : create userSite here
-        await new UserSiteService().create(
+        let userSiteRes = await new UserSiteService().create(
           {
-            personId: newUser._id,
+            personId: newUser?.user._id,
             siteId: req.body.siteId,
             role: 'customer',
           }  
         );
+
+        console.log('userSiteRes ', userSiteRes);
       }
 
       let valueForAuditLog : IauditLog = {
@@ -344,7 +346,7 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
       return sendResponse(res, {
         code: StatusCodes.OK,
         data: null,
-        message: 'New admin created and invitation link sent successfully',
+        message: 'New user created and email sent successfully',
       });
     }
   }

@@ -88,7 +88,10 @@ const userSchema = new Schema<TUser, UserModal>(
       select: false,
       minlength: [8, 'Password must be at least 8 characters long'],
     },
-    
+    address : {
+      type: String,
+      required: true,
+    },
 
     fcmToken: { type: String, default: null }, // Store Firebase Token
 

@@ -26,6 +26,7 @@ export type TUser = {
   name: string;
   email: string;
   password: string;
+  address : string;
   profileImage?: TProfileImage;
   fcmToken : string;
   companyLogoImage: string;
@@ -63,6 +64,8 @@ export interface IUser  {
   name: string;
   email: string;
   password: string;
+
+  address : string;
   profileImage?: TProfileImage;
   fcmToken : string;
   role: Role;

@@ -24,6 +24,12 @@ export class cameraSiteController extends GenericController<
     super(new CameraSiteService(), 'cameraSite');
   }
 
+  /**************
+   * 
+   *  
+   * 
+   * ********** */
+
   getAllWithPagination = catchAsync(async (req: Request, res: Response) => {
     //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
@@ -32,13 +38,13 @@ export class cameraSiteController extends GenericController<
     const populateOptions: (string | {path: string, select: string}[]) = [
       {
         path: 'cameraId',
-        select: '-localLocation -attachments -cameraName -cameraUsername -__v -updatedAt -createdAt ',//-cameraPassword -cameraIp -cameraPort -isDeleted
-      },
+        select: 'cameraName localLocation  status ',
+      }, // lat long  // assignedManagerId assignedUserId description
       // 'personId'
-      // {
-      //   path: 'siteId',
-      //   select: ''
-      // }
+      {
+        path: 'siteId',
+        select: 'name'
+      }
     ];
 
     // const dontWantToInclude = ['-localLocation -attachments']; // -role

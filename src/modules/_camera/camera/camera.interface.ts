@@ -7,7 +7,7 @@ export interface Icamera {
   _id?: Types.ObjectId; // undefined |  Types.ObjectId |
   // userId: Types.ObjectId;
   cameraName : String;
-  siteName : String; 
+  // siteName : String; 
   localLocation : String; 
   globalLocation? : String; 
   lat?: String; 

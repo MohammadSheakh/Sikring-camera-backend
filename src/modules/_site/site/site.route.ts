@@ -27,13 +27,13 @@ const controller = new SiteController();
 // get all site by userId and type user 💡
 // get all user where role is customer [pagination ] 💡 show siteId, userName, siteName, cusName, address
 
-// Admin: Site Management : get all site 💡
+// Admin: Site Management : get all site 💡 Done
 // Admin : get all location of all site  💡
 
 router.route('/paginate').get(
   //auth('common'),
   validateFiltersForQuery(optionValidationChecking(['_id'])),
-  controller.getAllWithPagination // Admin: Site Management : get all site 💡
+  controller.getAllWithPaginationWithUsersAndManagers // Admin: Site Management : get all site 💡
 );
 
 // get site details by site id 💡

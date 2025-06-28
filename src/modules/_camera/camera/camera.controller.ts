@@ -36,7 +36,7 @@ export class cameraController extends GenericController<
 
       // TODO :  check korte hobe thik ase kina 
       const result = await this.service.create({
-          siteName: req.body.siteName,
+          // siteName: req.body.siteName,
           localLocation: req.body.localLocation,
           cameraName: req.body.cameraName,
           cameraUsername : req.body.cameraUsername,

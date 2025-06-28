@@ -6,15 +6,12 @@ import { TStatus } from './camera.constant';
 
 const cameraSchema = new Schema<Icamera>(
   {
-    // userId: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: 'User',
-    // },
     
-    siteName : {
-      type: String,
-      required: [false, 'siteName is not required'],
-    },
+    // siteName : {
+    //   type: String,
+    //   required: [false, 'siteName is not required'],
+    // },
+
     localLocation : {
       type: String,
       required: [false, 'localLocation is not required'],

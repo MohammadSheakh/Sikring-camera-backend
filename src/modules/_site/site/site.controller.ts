@@ -236,7 +236,7 @@ export class SiteController extends GenericController<
   });
 
   //[🚧][🧑‍💻][🧪] // ✅🆗
-  getAllWithPagination = catchAsync(async (req: Request, res: Response) => {
+  getAllWithPaginationWithUsersAndManagers = catchAsync(async (req: Request, res: Response) => {
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
     

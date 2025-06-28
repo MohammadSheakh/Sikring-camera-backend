@@ -250,6 +250,17 @@ export class SiteController extends GenericController<
     });
   });
 
+  getAllLocationOfSite = catchAsync(async (req: Request, res: Response) => {
+    const result = await this.siteService.getAllLocationOfSite();
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `All location of ${this.modelName}`,
+      success: true,
+    });
+  });
+
   // add more methods here if needed or override the existing ones 
   
 }

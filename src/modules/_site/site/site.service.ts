@@ -72,5 +72,15 @@ export class siteService extends GenericService<
     ...paginatedResult,
     results: formattedResults
   };
-}
+  }
+
+  async getAllLocationOfSite(){
+    const sites = await Site.find().select('long lat'); // { isDeleted: false }
+
+    if (!sites || sites.length === 0) {
+      throw new Error('No sites found');
+    }
+
+    return sites; 
+  }
 }

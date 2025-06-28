@@ -36,6 +36,12 @@ router.route('/paginate').get(
   controller.getAllWithPaginationWithUsersAndManagers // Admin: Site Management : get all site 💡
 );
 
+//[🚧][🧑‍💻✅][🧪] // 🆗 // FIX ME : route ta change korte hobe get location of all site  ei route er jonno 
+router.route('/test').get(
+  auth('commonAdmin'),
+  controller.getAllLocationOfSite
+);
+
 // get site details by site id 💡
 router.route('/:id').get(
   // auth('common'),
@@ -49,11 +55,17 @@ router.route('/update/:id').put(
   controller.updateById
 );
 
+// get all location of site 💡
 //[🚧][🧑‍💻✅][🧪] // 🆗
-router.route('/').get(
+router.route('/location').get(
   auth('commonAdmin'),
-  controller.getAll
+  controller.getAllLocationOfSite
 );
+
+// router.route('/').get(
+//   // auth('admin'),
+//   controller.getAllLocationOfSite
+// )
 
 //[🚧][🧑‍💻✅][🧪] // 🆗
 // Admin: create a new site 💡
@@ -78,10 +90,16 @@ router.route('/softDelete/:id').put(
   controller.softDeleteById
 );
 
-////////////
-//[🚧][🧑‍💻✅][🧪] // 🆗
 
-// get all location of site 💡
+
+/*************
+ * 
+ * Admin: updateSiteForm :: get a site by id with assign manager and assigned user info 
+ * 
+ * ************* */
+
+
+
 
 // TODO: update location of a site by site id
 // INFO :  try korte hobe .. location update korar api ta update site er maddhome korar try korte hobe..  

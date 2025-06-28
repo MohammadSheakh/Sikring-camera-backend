@@ -16,8 +16,11 @@ import { UserSiteService } from '../_site/userSite/userSite.service';
 import { IauditLog } from '../auditLog/auditLog.interface';
 import { TStatus } from '../auditLog/auditLog.constant';
 import eventEmitterForAuditLog from '../auditLog/auditLog.service';
+import { AttachmentService } from '../attachments/attachment.service';
+import { TAttachedToType, TFolderName } from '../attachments/attachment.constant';
 
 const userCustomService = new UserCustomService();
+const attachmentService = new AttachmentService();
 
 const createAdminOrSuperAdmin = catchAsync(async (req, res) => {
   const payload = req.body;
@@ -62,18 +65,42 @@ const updateProfileImage = catchAsync(async (req, res) => {
   });
 });
 
+
+//[🚧][🧑‍💻][🧪] // ✅ 🆗 // SC
 //update user from database
 const updateMyProfile = catchAsync(async (req, res) => {
   const userId = req.user.userId;
   if (!userId) {
     throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
   }
-  if (req.file) {
-    req.body.profile_image = {
-      imageUrl: '/uploads/users/' + req.file.filename,
-      file: req.file,
-    };
+  /*******
+   * 
+   * if req.file is present then we will update the profile image 
+   * 
+   * // TODO : image thik moto update hocche kina check korte hobe ..  
+   * 
+   * ***** */
+
+  let attachments = [];
+        
+  if (req.files && req.files.attachments) {
+  attachments.push(
+    ...(await Promise.all(
+    req.files.attachments.map(async file => {
+        const attachmenId = await attachmentService.uploadSingleAttachment(
+            file, // file to upload 
+            TFolderName.user, // folderName
+            req.user.userId, // uploadedByUserId
+            TAttachedToType.user
+        );
+        return attachmenId;
+    })
+    ))
+  );
+
+  req.body.attachments = attachments;
   }
+  
   const result = await UserService.updateMyProfile(userId, req.body);
   sendResponse(res, {
     code: StatusCodes.OK,
@@ -253,7 +280,7 @@ const getAllAdminForAdminDashboard = catchAsync(async (req, res) => {
   });
 });
 
-//[🚧][🧑‍💻][🧪] // ✅ 🆗 // 🧪🧪🧪🧪🧪🧪🧪🧪🧪 need test
+//[🚧][🧑‍💻][🧪] // ✅ 🆗 // SC
 // send Invitation Link for a admin
 const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
   const user = await UserService.getUserByEmail(req.body.email);
@@ -299,6 +326,35 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
 
     // create new user
     if (req.body.role == 'customer') {
+
+      /********
+       * 
+       * we have to upload company logo here 
+       * 
+       * ******** */
+
+      let attachments = [];
+        
+      if (req.files && req.files.attachments) {
+      attachments.push(
+        ...(await Promise.all(
+        req.files.attachments.map(async file => {
+            const attachmenId = await attachmentService.uploadSingleAttachment(
+                file, // file to upload 
+                TFolderName.user, // folderName
+                req.user.userId, // uploadedByUserId
+                TAttachedToType.user
+            );
+            return attachmenId;
+        })
+        ))
+      );
+
+        req.body.attachments = attachments;
+      }
+      
+      
+
       const newUser = await AuthService.createUser({
         email: req.body.email,
         password: req.body.password,
@@ -335,7 +391,7 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
 
         console.log('userSiteRes ', userSiteRes);
       }
-
+      
       let valueForAuditLog : IauditLog = {
           userId: req.user.userId,
           role: req.user.role,
@@ -346,15 +402,67 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
         eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
         
 
-
-
-
       return sendResponse(res, {
         code: StatusCodes.OK,
         data: null,
         message: 'New user created and email sent successfully',
       });
+    } else if (req.body.role == 'user'){
+      const newUser = await AuthService.createUser({
+        user_custom_id : req.body.customId, 
+        name : req.body.name,
+        designation : req.body.designation,  // for user [employee] and manager 🟢
+        email: req.body.email,
+        password: req.body.password,
+        phoneNumber: req.body.phoneNumber, // for user [employee] and manager 🟢
+        role: req.body.role,
+        address: req.body.address, // for user [employee] and manager 🟢
+        isEmailVerified: true, // INFO: User dont need to verify Email
+      });
+
+      let valueForAuditLog : IauditLog = {
+          userId: req.user.userId,
+          role: req.user.role,
+          actionPerformed: `Created a new ${req.body.role} named ${req.body.name} `,
+          status: TStatus.success,
+      }
+
+      eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
+
+      return sendResponse(res, {
+        code: StatusCodes.OK,
+        data: null,
+        message: `New ${req.body.role} created and email sent successfully`,
+      });
+    }else if (req.body.role == 'manager'){
+      const newUser = await AuthService.createUser({
+        user_custom_id : req.body.customId, 
+        name : req.body.name,
+        designation : req.body.designation,  // for manager and user 🟢
+        email: req.body.email,
+        password: req.body.password,
+        phoneNumber: req.body.phoneNumber, // for manager and user 🟢
+        role: req.body.role,
+        address: req.body.address, // for user [employee] and manager 🟢
+        isEmailVerified: true, // INFO: User dont need to verify Email
+      });
+
+      let valueForAuditLog : IauditLog = {
+          userId: req.user.userId,
+          role: req.user.role,
+          actionPerformed: `Created a new ${req.body.role} named ${req.body.name} `,
+          status: TStatus.success,
+      }
+
+      eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
+
+      return sendResponse(res, {
+        code: StatusCodes.OK,
+        data: null,
+        message: `New ${req.body.role} created and email sent successfully`,
+      });
     }
+    
   }
 });
 

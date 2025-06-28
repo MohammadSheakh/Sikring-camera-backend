@@ -16,6 +16,7 @@ export enum TFolderName {
 // TODO: attachment er model eo update korte hobe .. 
 export enum TAttachedToType {
     site = 'site',
+    user = 'user',
     // meal = 'meal',
     // workout = 'workout',
     // lifeStyle = 'lifeStyle',

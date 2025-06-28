@@ -50,17 +50,28 @@ router.route('/paginate/admin').get(
 //[🚧][🧑‍💻][🧪] // ✅ 🆗
 // TODO : companyLogo upload korte parte hobe .. 
 router.post(
-  "/create-user-and-send-mail",
+  "/create-customer-and-send-mail",
   [
     upload.fields([
       { name: 'attachments', maxCount: 15 }, // Allow up to 5 cover photos
     ]),
   ],
   auth('admin'),
-  validateRequest(UserValidation.sendInvitationToBeAdminValidationSchema),
+  validateRequest(UserValidation.sendInvitationToBeCustomerValidationSchema),
   UserController.sendInvitationLinkToAdminEmail
 );
 
+router.post(
+  "/create-userOrManager-and-send-mail",
+  [
+    upload.fields([
+      { name: 'attachments', maxCount: 15 }, // Allow up to 5 cover photos
+    ]),
+  ],
+  auth('admin'),
+  validateRequest(UserValidation.sendInvitationToBeUserAndManagerValidationSchema),
+  UserController.sendInvitationLinkToAdminEmail
+);
 
 /*************************
  * 
@@ -84,7 +95,23 @@ router.post('/delete/:collectionName',
 
 // TODO : update users basic info by user id 
 
+
+
 // TODO : Admin : edit customer by id 
+
+//[🚧][🧑‍💻✅][🧪🆗] // query :: userId
+
+router.route('/edit-user/:userId')
+  .put(
+    auth('admin'),
+    [
+    upload.fields([
+      { name: 'attachments', maxCount: 15 }, // Allow up to 5 cover photos
+    ]),
+  ],
+    // validateRequest(UserValidation.editUserValidationSchema),
+    UserController.updateMyProfile
+  );
 
 ////////////////////////////////////////////////
 
@@ -96,7 +123,7 @@ router.post('/delete/:collectionName',
 
 
 
-  ///////////////////////////////////////////////
+///////////////////////////////////////////////
   
 
 export const UserRoutes = router;

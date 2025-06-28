@@ -134,7 +134,8 @@ const createAccessPinCodeValidationSchema = z.object({
   }),
 });
 
-const sendInvitationToBeAdminValidationSchema = z.object({
+//[🚧][🧑‍💻][🧪] // ✅ 🆗 SC
+const sendInvitationToBeCustomerValidationSchema = z.object({
   body: z.object({
     customId : z
       .string({
@@ -163,19 +164,51 @@ const sendInvitationToBeAdminValidationSchema = z.object({
         invalid_type_error: 'role must be a string.',
       }),
     siteId: z.string({
-            required_error: 'id is required in params.',
-            invalid_type_error: 'id must be a mongoose object.',
+            required_error: 'siteId is required in params.',
+            invalid_type_error: 'siteId must be a mongoose object.',
           }).refine(value => mongoose.Types.ObjectId.isValid(value), {
-            message: 'id must be a valid mongoose ObjectId.',
+            message: 'siteId must be a valid mongoose ObjectId.',
           }), 
 }),
 });
 
+//[🚧][🧑‍💻][🧪] // ✅ 🆗  SC
+const sendInvitationToBeUserAndManagerValidationSchema = z.object({
+  body: z.object({
+    customId : z
+      .string({
+        required_error: 'customId is required.',
+        invalid_type_error: 'customId must be a string.',
+      }).optional(),
+    email : z.
+      string({
+        required_error: 'email is required.',
+        invalid_type_error: 'email must be a string.',
+      })
+      .email('Invalid email address.'),
+    password : z
+      .string({
+        required_error: 'password is required.',
+        invalid_type_error: 'password must be a string.',
+      }),
+      
+    name: z.string({
+        required_error: 'name is required.',
+        invalid_type_error: 'name must be a string.',
+      }),
+  
+    role :  z.string({
+        required_error: 'role is required.',
+        invalid_type_error: 'role must be a string.',
+      }),
+}),
+});
 
 export const UserValidation = {
   createUserValidationSchema,
   updateUserValidationSchema,
   changeUserStatusValidationSchema,
   createAccessPinCodeValidationSchema,
-  sendInvitationToBeAdminValidationSchema
+  sendInvitationToBeCustomerValidationSchema,
+  sendInvitationToBeUserAndManagerValidationSchema
 };

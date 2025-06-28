@@ -176,7 +176,14 @@ const userSchema = new Schema<TUser, UserModal>(
       type: Boolean,
       default: false,
     },
+
     //------------- For Google and Apple Login End 
+
+    designation : {  // for user [employee]
+      type: String,
+      required: false, // but we need this address info // TODO : 
+    },
+
   },
   {
     timestamps: true,

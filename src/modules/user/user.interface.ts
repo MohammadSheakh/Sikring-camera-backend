@@ -50,6 +50,7 @@ export type TUser = {
   appleAccessToken : string;
   isGoogleVerified : boolean;
   isAppleVerified : boolean;
+  designation? : string; 
   createdAt: Date;
   updatedAt: Date;
 };
@@ -87,6 +88,7 @@ export interface IUser  {
   appleAccessToken : string;
   isGoogleVerified : boolean;
   isAppleVerified : boolean;
+  designation? : string;
   createdAt: Date;
   updatedAt: Date;
 };

@@ -2,18 +2,46 @@
 
 This document tracks the issues and their current statuses. Each issue is followed by a checkbox to mark its resolution.
 
-## Admin Part
+
+ 
+<details>
+  <summary>Admin Part Issue </summary>
+
+  <!-- ## Section Title -->
+
+  - [ ] for admin part .. in case of site create and update .. we need to keep users name in the audit log 🚦
+  
+  - [ ]  {{shob}}v1/user-site/paginate?role=customer 
+        for this route .. admin part .. we have to show employee Name also for user Id 
+  - [x] 
+  - [x] 
+  - [x] 
+
+  > for more information write here... 
+</details>
+
+<details>
+  <summary>Manager Part Issue </summary>
+
+  <!-- ## Section Title -->
+
+  - [ ] for admin part .. in case of site create and update .. we need to keep users name in the audit log 🚦
+  
+  - [ ]  {{shob}}v1/user-site/paginate?role=customer 
+        for this route .. admin part .. we have to show employee Name also for user Id 
+  - [x] 
+  - [x] 
+  - [x] 
+
+  > for more information write here... 
+</details>
+
+## Global Issue 
+
 - [x] ~~Test~~
 - [ ] for admin part .. in case of site create and update .. we need to keep users name in the audit log 🚦
 > for more information write here... 
 - [ ] 
- 
-<details>
-  <summary>Click to expand/collapse</summary>
-
-  ## Section Title
-  This is the content 
-  - [x] ~~Test~~
-  - [ ] for admin part .. in case of site create and update .. we need to keep users name in the audit log 🚦
-  > for more information write here... 
-</details>
+- [x] 
+- [x] 
+- [x] 

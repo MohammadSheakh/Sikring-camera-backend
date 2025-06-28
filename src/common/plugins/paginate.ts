@@ -37,7 +37,6 @@ const paginate = <T>(schema: Schema<T>) => {
     //   query = query.populate(options.populate);
     // }
     
-
     const [totalResults, results] = await Promise.all([
       countPromise,
       query.exec(),

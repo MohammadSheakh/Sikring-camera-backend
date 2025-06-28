@@ -61,9 +61,9 @@ export class GenericController<ModelType, InterfaceType> {
       // }
     ];
 
-    const dontWantToInclude = ['']; // -role
+    const select = ''; // -role
 
-    const result = await this.service.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
+    const result = await this.service.getAllWithPagination(filters, options, populateOptions, select);
 
     sendResponse(res, {
       code: StatusCodes.OK,

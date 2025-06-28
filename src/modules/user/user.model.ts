@@ -48,6 +48,7 @@ const userSchema = new Schema<TUser, UserModal>(
     },
     phoneNumber : {
       type: String,
+      required: [false, 'Phone number is not required'],
     },
     //> What is site_forman ?? 
 
@@ -90,7 +91,7 @@ const userSchema = new Schema<TUser, UserModal>(
     },
     address : {
       type: String,
-      required: true,
+      required: false, // but we need this address info // TODO : 
     },
 
     fcmToken: { type: String, default: null }, // Store Firebase Token

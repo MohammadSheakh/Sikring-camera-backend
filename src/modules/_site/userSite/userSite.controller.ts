@@ -9,6 +9,7 @@ import catchAsync from '../../../shared/catchAsync';
 import omit from '../../../shared/omit';
 import pick from '../../../shared/pick';
 import sendResponse from '../../../shared/sendResponse';
+import { GenericService } from '../../__Generic/generic.services';
 
 
 // let conversationParticipantsService = new ConversationParticipentsService();
@@ -36,20 +37,20 @@ export class userSiteController extends GenericController<
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
     
     const populateOptions: (string | {path: string, select: string}[]) = [
-      // {
-      //   path: 'personId',
-      //   select: 'name ' 
-      // },
+      {
+        path: 'personId',
+        select: 'user_custom_id email name address' // name 
+      },
       // 'personId'
-      // {
-      //   path: 'siteId',
-      //   select: ''
-      // }
+      {
+        path: 'siteId',
+        select: 'name'
+      }
     ];
 
     const dontWantToInclude = ['']; // -role
 
-    const result = await this.service.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
+    const result = await this.userSiteService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
 
     sendResponse(res, {
       code: StatusCodes.OK,

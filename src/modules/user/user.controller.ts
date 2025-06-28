@@ -162,8 +162,14 @@ const deleteMyProfile = catchAsync(async (req, res) => {
 // const createCustomer = catchAsync(async (req, res) => {
 
 // }
-  
 
+
+/*********
+ * 
+ *  {{shob}}v1/user/paginate?role=manager  [role = manager / user]
+ *  Admin:  Register Customer
+ *    
+ * ********* */
 //[🚧][🧑‍💻][🧪] // ✅ 🆗
 const getAllUserForAdminDashboard = catchAsync(async (req, res) => {
   const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
@@ -183,7 +189,7 @@ const getAllUserForAdminDashboard = catchAsync(async (req, res) => {
 
   // const dontWantToInclude = ['-localLocation -attachments']; // -role
 
-  const dontWantToInclude = ''; // -role
+  const dontWantToInclude = 'name address phoneNumber status' ; // -role
   
   const result = await userCustomService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
 

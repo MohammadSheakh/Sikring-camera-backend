@@ -12,7 +12,7 @@ const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-export const optionValidationChecking = <T extends keyof IuserSite>(
+export const optionValidationChecking = <T extends keyof IuserSite  | 'sortBy' | 'page' | 'limit' | 'populate'>(
   filters: T[]
 ) => {
   return filters;
@@ -21,12 +21,34 @@ export const optionValidationChecking = <T extends keyof IuserSite>(
 // const taskService = new TaskService();
 const controller = new userSiteController();
 
+const paginationOptions: Array<'sortBy' | 'page' | 'limit' | 'populate'> = [
+  'sortBy',
+  'page',
+  'limit',
+  'populate',
+];
+
 //info : pagination route must be before the route with params
 
- 
+/***********
+ * 
+ * App (Customer) : Home : get all site by personId and customer type |🔴|//TODO :  eta pagination kora jabe na
+ * 
+ * *********** */ 
 router.route('/paginate').get(
   //auth('common'),
-  validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role'])),
+  validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role', 'siteId', ...paginationOptions])),
+  controller.getAllWithPagination
+);
+
+/***********
+ * 
+ * App (Customer) : Home : get al site by siteId And role manager 
+ * 
+ * *********** */ 
+router.route('/paginate/siteId').get(
+  //auth('common'),
+  validateFiltersForQuery(optionValidationChecking(['_id', 'role', 'siteId', ...paginationOptions])),
   controller.getAllWithPagination
 );
 

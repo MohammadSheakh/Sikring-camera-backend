@@ -12,7 +12,7 @@ const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-export const optionValidationChecking = <T extends keyof ISite>(
+export const optionValidationChecking = <T extends keyof ISite  | 'sortBy' | 'page' | 'limit' | 'populate'>(
   filters: T[]
 ) => {
   return filters;
@@ -20,6 +20,13 @@ export const optionValidationChecking = <T extends keyof ISite>(
 
 // const taskService = new TaskService();
 const controller = new SiteController();
+
+const paginationOptions: Array<'sortBy' | 'page' | 'limit' | 'populate'> = [
+  'sortBy',
+  'page',
+  'limit',
+  'populate',
+];
 
 //info : pagination route must be before the route with params
 
@@ -32,7 +39,7 @@ const controller = new SiteController();
 
 router.route('/paginate').get(
   //auth('common'),
-  validateFiltersForQuery(optionValidationChecking(['_id'])),
+  validateFiltersForQuery(optionValidationChecking(['_id', ...paginationOptions])),
   controller.getAllWithPaginationWithUsersAndManagers // Admin: Site Management : get all site 💡
 );
 

@@ -43,7 +43,8 @@ export class cameraController extends GenericController<
           cameraPassword: req.body.cameraPassword,
           cameraIp: req.body.cameraIp || '',
           cameraPort: req.body.cameraPort, 
-      }
+          rtspUrl: `rtsp://${req.body.cameraUsername}:${req.body.cameraPassword}@${req.body.cameraIp}:${req.body.cameraPort}/stream`
+      };
 
       if(req.body.globalLocation){
         payload = {
@@ -63,6 +64,7 @@ export class cameraController extends GenericController<
           long: req.body.long,
         }
       }
+      
 
       const result = await this.service.create(payload);
       /*******

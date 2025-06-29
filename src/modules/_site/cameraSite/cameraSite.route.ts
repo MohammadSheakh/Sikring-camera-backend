@@ -12,7 +12,7 @@ const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-export const optionValidationChecking = <T extends keyof IcameraSite>(
+export const optionValidationChecking = <T extends keyof IcameraSite  | 'sortBy' | 'page' | 'limit' | 'populate'>(
   filters: T[]
 ) => {
   return filters;
@@ -21,11 +21,18 @@ export const optionValidationChecking = <T extends keyof IcameraSite>(
 // const taskService = new TaskService();
 const controller = new cameraSiteController();
 
+const paginationOptions: Array<'sortBy' | 'page' | 'limit' | 'populate'> = [
+  'sortBy',
+  'page',
+  'limit',
+  'populate',
+];
+
 //info : pagination route must be before the route with params
 // get all camera by siteId 💡
 router.route('/paginate').get(
   //auth('common'),
-  validateFiltersForQuery(optionValidationChecking(['_id', 'siteId'])),
+  validateFiltersForQuery(optionValidationChecking(['_id', 'siteId', ...paginationOptions])),
   controller.getAllWithPagination
 );
 

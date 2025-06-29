@@ -86,6 +86,10 @@ const cameraSchema = new Schema<Icamera>(
       type: String,
       required: [true, 'cameraPort is required'],
     },
+    rtspUrl: {
+      type: String,
+      required: [true, 'rtspUrl is required'],
+    },
     
 
     isDeleted: {

@@ -27,9 +27,7 @@ export class userSiteController extends GenericController<
 
   /********
    * 
-   * Admin : Customer Management - get all user where role is customer 
-   * 
-   * // ISSUE : this userSite pagination is not needed ..  we use site modules controller instead 
+   * Customer : Home Page : get All site by personId and customer type 
    * 
    * ******* */
   //[🚧][🧑‍💻][🧪] // ✅🆗
@@ -41,16 +39,17 @@ export class userSiteController extends GenericController<
     const populateOptions: (string | {path: string, select: string}[]) = [
       {
         path: 'personId',
-        select: 'user_custom_id email name address' // name 
+        select: 'name role' // name 
       },
       // 'personId'
       {
         path: 'siteId',
-        select: 'name'
+        select: 'name createdAt type'
       }
     ];
 
-    const dontWantToInclude = ['']; // -role
+    const dontWantToInclude = '-role -workHours -isDeleted -updatedAt -createdAt -__v';
+    //const dontWantToInclude = ['']; // -role
 
     const result = await this.userSiteService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
 

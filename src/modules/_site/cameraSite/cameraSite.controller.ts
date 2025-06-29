@@ -84,7 +84,7 @@ export class cameraSiteController extends GenericController<
       //   path: 'siteId',
       //   select: 'name'
       // }
-    ];685fbe50447ad67057f28829
+    ];
 
     // const dontWantToInclude = ['-localLocation -attachments']; // -role
 

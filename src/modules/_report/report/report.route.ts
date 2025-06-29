@@ -13,7 +13,7 @@ const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-export const optionValidationChecking = <T extends keyof Ireport>(
+export const optionValidationChecking = <T extends keyof Ireport  | 'sortBy' | 'page' | 'limit' | 'populate'>(
   filters: T[]
 ) => {
   return filters;
@@ -21,6 +21,14 @@ export const optionValidationChecking = <T extends keyof Ireport>(
 
 // const taskService = new TaskService();
 const controller = new reportController();
+
+const paginationOptions: Array<'sortBy' | 'page' | 'limit' | 'populate'> = [
+  'sortBy',
+  'page',
+  'limit',
+  'populate',
+];
+
 // TODO : Report template thing
 
 //info : pagination route must be before the route with params
@@ -28,7 +36,7 @@ const controller = new reportController();
 // get all todays report 💡 
 router.route('/paginate').get(
   //auth('common'),
-  validateFiltersForQuery(optionValidationChecking(['_id', 'reportType', 'createdAt'])),
+  validateFiltersForQuery(optionValidationChecking(['_id', 'reportType', 'createdAt' , ...paginationOptions])),
   controller.getAllWithPagination
 );
 

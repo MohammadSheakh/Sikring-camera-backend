@@ -86,6 +86,15 @@ router.route('/softDelete/:id').put(
 
 // TODO : change report status ..  try korte hobe update by id diye e jeno kore fela jay .. 
 
+/******************
+ *  story
+ *  when customer create a report .. then it goes to admin... 
+ *  after seeing the report admin can change the status .. 'underReview' to 'accept'
+ * 
+ *  if admin 'accept' that report .. then it will be assigned to that customer's site's..... employee  
+ * 
+ * **************** */
+
 //[🚧][🧑‍💻✅][🧪🆗] // 6/26/2025 
 router.route('/change-status/:id').put(
   auth('admin'),

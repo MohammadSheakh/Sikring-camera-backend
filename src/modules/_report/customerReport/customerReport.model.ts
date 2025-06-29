@@ -33,7 +33,7 @@ const customerReportSchema = new Schema<IcustomerReport>(
             TReportType
           ).join(', ')}`,
         ],
-              // default: TReportType.alarmPatrol, // INFO : no default value for reportType
+        // default: TReportType.alarmPatrol, // INFO : no default value for reportType
     },
 
     isDeleted: {

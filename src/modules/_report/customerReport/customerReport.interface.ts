@@ -7,7 +7,7 @@ export interface IcustomerReport {
   // _taskId: undefined | Types.ObjectId;
   _id?: Types.ObjectId; // undefined |  Types.ObjectId |
   personId: Types.ObjectId;
-  authorId? : Types.ObjectId;
+  
   reportId: Types.ObjectId;
   role  :Role
   reportType : TReportType.alarmPatrol |

@@ -102,7 +102,6 @@ export class reportController extends GenericController<
       const customerForReport = await this.customerReportService.create({
         personId: req.user.userId,
         reportId: result._id,
-        authorId: req.user.userId, // who write this report
         role: req.user.role,
         reportType: req.body.reportType
       });
@@ -234,8 +233,6 @@ export class reportController extends GenericController<
        * 
        * ********** */
 
-      // 
-      
       const reportDetails: Ireport | null = await report.findById(id);
 
       if (!reportDetails) {
@@ -317,7 +314,10 @@ export class reportController extends GenericController<
         data: updatedReport,
         message: `Report status changed successfully`,
       });
+        return;
       }
+
+      console.log('🔴🔴🔴');
 
       /****************
        * 

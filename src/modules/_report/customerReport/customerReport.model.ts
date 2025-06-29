@@ -11,11 +11,6 @@ const customerReportSchema = new Schema<IcustomerReport>(
       ref: 'User',
       required: [true, 'customerId is required'],
     },
-    authorId: {  // Who write this report .. 
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: [true, 'Author ID is required'],
-    },
     reportId: {
       type: Schema.Types.ObjectId,
       ref: 'Report',

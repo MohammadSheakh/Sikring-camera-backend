@@ -103,7 +103,7 @@ router.route('/edit-user/:userId')
       { name: 'attachments', maxCount: 1 }, // Allow up to 1 cover photos
     ]),
   ],
-    // validateRequest(UserValidation.editUserValidationSchema),
+    // validateRequest(UserValidation.editUserValidationSchema), // TODO : Must Valisation add kora lagbe .. 
     UserController.updateUserProfile
   );
 

@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
 import { IcustomerReport, IcustomerReportModel } from './customerReport.interface';
-import paginate, { paginateDebug, paginateV1, paginateV2 } from '../../../common/plugins/paginate';
+import paginate from '../../../common/plugins/paginate';
 import { Roles } from '../../../middlewares/roles';
 import { TReportType } from '../report/report.constant';
 
@@ -25,16 +25,16 @@ const customerReportSchema = new Schema<IcustomerReport>(
       required: [true, 'Role is required'],
     },
     reportType : {
-              type: String,
-              enum:  [TReportType.alarmPatrol, TReportType.patrolReport, TReportType.service, TReportType.emergency_call_out],
-              required: [
-                false,
-                `reportType is required it can be ${Object.values(
-                  TReportType
-                ).join(', ')}`,
-              ],
+        type: String,
+        enum:  [TReportType.alarmPatrol, TReportType.patrolReport, TReportType.service, TReportType.emergency_call_out],
+        required: [
+          false,
+          `reportType is required it can be ${Object.values(
+            TReportType
+          ).join(', ')}`,
+        ],
               // default: TReportType.alarmPatrol, // INFO : no default value for reportType
-      },
+    },
 
     isDeleted: {
       type: Boolean,
@@ -68,4 +68,4 @@ customerReportSchema.set('toJSON', {
 export const customerReport = model<
   IcustomerReport,
   IcustomerReportModel
->('customerReport', customerReportSchema);
+>('CustomerReport', customerReportSchema);

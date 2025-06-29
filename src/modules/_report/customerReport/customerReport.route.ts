@@ -31,7 +31,7 @@ const paginationOptions: Array<'sortBy' | 'page' | 'limit' | 'populate'> = [
 //info : pagination route must be before the route with params
 router.route('/paginate').get(
   //auth('common'),
-  validateFiltersForQuery(optionValidationChecking(['_id', 'reportType', 'personId', ...paginationOptions])),
+  validateFiltersForQuery(optionValidationChecking(['_id', 'reportType', 'role', 'personId', ...paginationOptions])),
   controller.getAllWithPagination
 );
 

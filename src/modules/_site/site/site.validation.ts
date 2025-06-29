@@ -60,10 +60,11 @@ export const createSiteValidationSchema = z.object({
     }).optional(),
 
     attachments: z
-    .array(z.string(), {
-        required_error: 'attachments is required, attachments must be an array of strings.',
-        invalid_type_error: 'attachments must be an array of strings.',
-      }).optional(),
+    .array(z.instanceof(File), {
+    required_error: 'attachments is required, and must be an array of files.',
+    invalid_type_error: 'attachments must be an array of File objects.',
+  }).optional(),
+
   }),
     
   // params: z.object({

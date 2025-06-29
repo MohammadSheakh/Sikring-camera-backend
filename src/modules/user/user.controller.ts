@@ -19,6 +19,7 @@ import { AttachmentService } from '../attachments/attachment.service';
 import { TAttachedToType, TFolderName } from '../attachments/attachment.constant';
 import bcryptjs from 'bcryptjs';
 import { config } from '../../config';
+import { userSite } from '../_site/userSite/userSite.model';
 
 
 const userCustomService = new UserCustomService();
@@ -141,6 +142,37 @@ const updateUserProfile = catchAsync(async (req, res) => {
 
   if(payload.email && existingUser.email !== payload.email){
     payload.email = existingUser.email; // dont allow to change email
+  }
+
+  if(payload.siteId){
+    // now we have to check if userSite collection has this userId and siteId already exist or not
+    // if exist then we will update the userSite collection
+    // or we create a new userSite collection
+    const existingUserSite = await userSite.findOne({
+      personId: userId,
+      siteId: payload.siteId,
+    })
+
+    console.log('existingUserSite 🌋🌋 :updateUsers:', existingUserSite);
+
+    if(existingUserSite){
+      // update the userSite collection
+      await userSite.findByIdAndUpdate(
+        existingUserSite.id,
+        { 
+          personId: userId,
+          siteId: payload.siteId,
+        },
+        { new : true } // return the updated document
+      );
+    }else{
+      // we create a new userSite collection
+      await userSite.create({
+        personId: userId,
+        siteId: payload.siteId,
+        role : existingUser.role // we will use the existing user role
+      });
+    }
   }
 
   const result = await UserService.updateUserProfile(userId, payload);

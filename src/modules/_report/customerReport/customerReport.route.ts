@@ -35,6 +35,18 @@ router.route('/paginate').get(
   controller.getAllWithPagination
 );
 
+/************
+ * 
+ * Customer (APP) | Home Page | getTodaysReports  
+ * 
+ * ********** */
+router.route('/paginate/customer').get(
+  //auth('common'),
+  validateFiltersForQuery(optionValidationChecking(['_id', 'reportType', 'role', 'personId', 'createdAt', ...paginationOptions])),
+  controller.getAllWithPaginationForCustomer
+);
+
+
 router.route('/:id').get(
   // auth('common'),
   controller.getById

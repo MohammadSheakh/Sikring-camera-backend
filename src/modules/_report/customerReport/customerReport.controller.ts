@@ -52,7 +52,42 @@ export class customerReportController extends GenericController<
         message: `All ${this.modelName} with pagination`,
         success: true,
       });
-    });
+  });
+
+
+  /************
+   * 
+   * Customer (APP) | Home Page | getTodaysReports  
+   * 
+   * ********** */
+  getAllWithPaginationForCustomer = catchAsync(async (req: Request, res: Response) => {
+      //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
+      const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
+      const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+      
+      const populateOptions = [
+        {
+          path: 'reportId',
+          select: 'title incidentSevearity reportType'
+        },
+        // 'personId'
+        // {
+        //   path: 'personId',
+        //   select: 'name email phoneNumber'
+        // }
+      ];
+
+      const dontWantToInclude = "-__v -updatedAt -isDeleted -reportType"; 
+
+      const result = await this.service.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
+  
+      sendResponse(res, {
+        code: StatusCodes.OK,
+        data: result,
+        message: `All ${this.modelName} with pagination`,
+        success: true,
+      });
+  });
 
   // add more methods here if needed or override the existing ones 
   

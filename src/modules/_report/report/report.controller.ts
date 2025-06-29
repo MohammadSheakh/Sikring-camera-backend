@@ -17,6 +17,8 @@ import ApiError from '../../../errors/ApiError';
 import { customerReport } from '../customerReport/customerReport.model';
 import { userSite } from '../../_site/userSite/userSite.model';
 import mongoose from 'mongoose';
+import { IuserSite } from '../../_site/userSite/userSite.interface';
+import { IcustomerReport } from '../customerReport/customerReport.interface';
 
 // let conversationParticipantsService = new ConversationParticipentsService();
 let attachmentService = new AttachmentService();
@@ -100,6 +102,7 @@ export class reportController extends GenericController<
       const customerForReport = await this.customerReportService.create({
         personId: req.user.userId,
         reportId: result._id,
+        authorId: req.user.userId, // who write this report
         role: req.user.role,
         reportType: req.body.reportType
       });
@@ -221,6 +224,8 @@ export class reportController extends GenericController<
 
       /**********
        * 
+       * TODO: MUST FIX : before everything we have to check if the report is already assigned to an employee or not .. 
+       * 
        * lets 
        * 1. get the report  
        * 2. get the reports site Id
@@ -229,7 +234,9 @@ export class reportController extends GenericController<
        * 
        * ********** */
 
-      const reportDetails = await report.findById(id);
+      // 
+      
+      const reportDetails: Ireport | null = await report.findById(id);
 
       if (!reportDetails) {
         throw new ApiError(
@@ -237,8 +244,6 @@ export class reportController extends GenericController<
           `Report with id ${id} not found`
         );
       }
-
-      // reportDetails.siteId .. 
 
       /// now we have to check if the siteId exist or not 
 
@@ -250,14 +255,15 @@ export class reportController extends GenericController<
       }
 
       // lets find the siteId's employee
-      const siteUsers = await userSite.find(
+      const siteUsers : IuserSite[] = await userSite.find(
         {
           siteId: reportDetails.siteId,
-          role: 'employee', // assuming employee is the role for site users
+          role: 'user', // assuming employee is the role for site users
           isDeleted: false // make sure we are not getting deleted users
-        },
-        { userId: 1 } // only get userId field
+        }
       );
+
+      console.log('siteUsers 🧪🧪🧪', siteUsers);
 
       /// assign this report to that employee 
 
@@ -268,15 +274,65 @@ export class reportController extends GenericController<
         );
       }
 
-      // lets assign this report to the first employee
-      const customerReportRes = await this.customerReportService.create({
+      // lets check if the report is already assigned to an employee or not
+      const existingCustomerReport = await customerReport.findOne({
+        reportId: id,
+        personId: siteUsers[0].personId, // check if the report is already
+        role: 'user' // assuming employee is the role for site users
+      });
+
+      /****************
+       * 
+       *  if the report is already assigned to an employee, we need to update the report status
+       * 
+       * ************* */
+
+      if (existingCustomerReport) {
+        const updatedReport : Ireport | null = await report.findByIdAndUpdate(
+        id,
+        { status: status },
+        { new: true }
+      ).select('-isDeleted -createdAt -updatedAt -__v');
+
+      if (!updatedReport) {
+        throw new ApiError(
+          StatusCodes.NOT_FOUND,
+          `Report with id ${id} not found`
+        );
+      }
+
+      let actionPerformed = `Report ${id} status changed to ${status} by ${req.user.userId} and assigned to employee ${siteUsers[0].personId} for site ${reportDetails.siteId}`;
+
+      let valueForAuditLog: IauditLog = {
+        userId: req.user.userId,
+        role: req.user.role,
+        actionPerformed: `${actionPerformed}`,
+        status: TStatus.success,
+      };
+
+      eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
+
+      sendResponse(res, {
+        code: StatusCodes.OK,
+        data: updatedReport,
+        message: `Report status changed successfully`,
+      });
+      }
+
+      /****************
+       * 
+       *  if not .. // lets assign this report to the first employee
+       * 
+       * ************* */
+
+      const customerReportRes : IcustomerReport = await this.customerReportService.create({
         personId: siteUsers[0].personId, // assign to the first employee
         reportId: new mongoose.Types.ObjectId(id) ,
-        role: 'employee', // assuming employee is the role for site users
+        role: 'user', // assuming employee is the role for site users
         reportType: reportDetails.reportType // keep the same report type
       })
     
-      const updatedReport = await report.findByIdAndUpdate(
+      const updatedReport : Ireport | null = await report.findByIdAndUpdate(
         id,
         { status: status },
         { new: true }

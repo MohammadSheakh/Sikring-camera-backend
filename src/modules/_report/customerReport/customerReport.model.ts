@@ -6,10 +6,15 @@ import { TReportType } from '../report/report.constant';
 
 const customerReportSchema = new Schema<IcustomerReport>(
   {
-    personId: {
+    personId: {  // who is related to this report .. he can write this report or just assigned to this report .
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'customerId is required'],
+    },
+    authorId: {  // Who write this report .. 
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'Author ID is required'],
     },
     reportId: {
       type: Schema.Types.ObjectId,

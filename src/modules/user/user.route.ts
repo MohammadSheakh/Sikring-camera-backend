@@ -104,7 +104,7 @@ router.route('/edit-user/:userId')
     ]),
   ],
     // validateRequest(UserValidation.editUserValidationSchema),
-    UserController.updateMyProfile
+    UserController.updateUserProfile
   );
 
 ////////////////////////////////////////////////

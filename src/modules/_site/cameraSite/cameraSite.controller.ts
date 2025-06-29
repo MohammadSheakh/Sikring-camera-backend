@@ -75,15 +75,15 @@ export class cameraSiteController extends GenericController<
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
     
     const populateOptions: (string | {path: string, select: string}[]) = [
-      // {
-      //   path: 'cameraId',
-      //   select: '',
-      // }, // lat long  // assignedManagerId assignedUserId description
-       'cameraId'
-      // {
-      //   path: 'siteId',
-      //   select: 'name'
-      // }
+      {
+        path: 'cameraId',
+        select: 'rtspUrl cameraName',
+      }, // lat long  // assignedManagerId assignedUserId description
+      //  'cameraId'
+      {
+        path: 'siteId',
+        select: 'name'
+      }
     ];
 
     // const dontWantToInclude = ['-localLocation -attachments']; // -role

@@ -5,12 +5,11 @@ import sendResponse from '../../shared/sendResponse';
 import ApiError from '../../errors/ApiError';
 import { UserCustomService, UserService } from './user.service';
 import { User } from './user.model';
-import mongoose, { Types } from 'mongoose';
+import mongoose from 'mongoose';
 import { TokenService } from '../token/token.service';
 import { sendAdminOrSuperAdminCreationEmail } from '../../helpers/emailService';
 import { AuthService } from '../auth/auth.service';
 import { Request, Response } from 'express';
-import { TStatusType, TSubscriptionType } from './user.constant';
 import omit from '../../shared/omit';
 import { UserSiteService } from '../_site/userSite/userSite.service';
 import { IauditLog } from '../auditLog/auditLog.interface';
@@ -18,6 +17,9 @@ import { TStatus } from '../auditLog/auditLog.constant';
 import eventEmitterForAuditLog from '../auditLog/auditLog.service';
 import { AttachmentService } from '../attachments/attachment.service';
 import { TAttachedToType, TFolderName } from '../attachments/attachment.constant';
+import bcryptjs from 'bcryptjs';
+import { config } from '../../config';
+
 
 const userCustomService = new UserCustomService();
 const attachmentService = new AttachmentService();
@@ -109,11 +111,39 @@ const updateMyProfile = catchAsync(async (req, res) => {
   });
 });
 
-//update user status from database
-const updateUserStatus = catchAsync(async (req, res) => {
+// 
+//update user profile from database
+const updateUserProfile = catchAsync(async (req, res) => {
   const { userId } = req.params;
+
+  /***********
+   * 
+   * user exist kore kina check korte hobe ..
+   * 
+   * ********** */
+
+  const existingUser = await User.findById(userId);
+
+  console.log('existingUser 🌋🌋 :updateUsers:', existingUser);
+
+  if (!existingUser) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'User not found');
+  }
+
   const payload = req.body;
-  const result = await UserService.updateUserStatus(userId, payload);
+
+  if(payload.password){
+    payload.password = await bcryptjs.hash(
+          payload.password,
+          Number(config.bcrypt.saltRounds),
+    );
+  }
+
+  if(payload.email && existingUser.email !== payload.email){
+    payload.email = existingUser.email; // dont allow to change email
+  }
+
+  const result = await UserService.updateUserProfile(userId, payload);
   sendResponse(res, {
     code: StatusCodes.OK,
     data: result,
@@ -121,17 +151,6 @@ const updateUserStatus = catchAsync(async (req, res) => {
   });
 });
 
-//update user
-const updateUserProfile = catchAsync(async (req, res) => {
-  const { userId } = req.params;
-  const payload = req.body;
-  const result = await UserService.updateUserProfile(userId, payload);
-  sendResponse(res, {
-    code: StatusCodes.OK,
-    data: result,
-    message: 'User updated successfully',
-  });
-});
 
 //get my profile //[🚧][🧑‍💻✅][🧪🆗]
 const getMyProfile = catchAsync(async (req, res) => {
@@ -546,9 +565,11 @@ export const UserController = {
   getSingleUser,
   updateMyProfile,
   updateProfileImage,
-  updateUserStatus,
-  getMyProfile,
+
+
   updateUserProfile,
+  getMyProfile,
+  
   deleteMyProfile,
   //////////////////////////
   getAllUserForAdminDashboard,

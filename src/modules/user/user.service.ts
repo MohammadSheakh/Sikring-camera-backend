@@ -93,16 +93,6 @@ const updateMyProfile = async (
   return result;
 };
 
-const updateUserStatus = async (
-  userId: string,
-  payload: Partial<TUser>
-): Promise<TUser | null> => {
-  const result = await User.findByIdAndUpdate(userId, payload, { new: true });
-  if (!result) {
-    throw new ApiError(StatusCodes.NOT_FOUND, 'User not found');
-  }
-  return result;
-};
 const updateUserProfile = async (
   userId: string,
   payload: Partial<TUser>
@@ -113,6 +103,7 @@ const updateUserProfile = async (
   }
   return result;
 };
+
 
 const updateProfileImage = async (
   userId: string,
@@ -153,73 +144,6 @@ const deleteMyProfile = async (userId: string): Promise<TUser | null> => {
   return result;
 };
 
-const setNewAccessPin = async (userId: string, accessPinCode : string) => {
-  const result = await User.findByIdAndUpdate(
-    userId,
-    { accessPinCode },
-    { new: true }
-  );
-  if (!result) {
-    throw new ApiError(StatusCodes.NOT_FOUND, 'Database error which updating accessPinCode');
-  }
-  return result;
-}
-
-const removeAccessPin = async (userId: string, accessPinCode : string) => {
-
-  const result = await User.findById(userId);
-  if (!result) {
-    throw new ApiError(StatusCodes.NOT_FOUND, 'Database error while remove access pin code because user is not found ');
-  }
-
-  if(!result.accessPinCode){
-    throw new ApiError(StatusCodes.NOT_FOUND, 'Access pin code not found');
-  }
-
-  // console.log("result.accessPinCode", result.accessPinCode, "type of ", typeof result.accessPinCode);
-  // console.log("accessPinCode", accessPinCode , "type of ", typeof accessPinCode);
-  
-  if(result.accessPinCode !== accessPinCode){
-    throw new ApiError(StatusCodes.NOT_FOUND, 'Access pin is not matched, You can not remove access pin code ');
-  }
-
-  if(result.accessPinCode){
-    result.accessPinCode = "";
-    await result.save();
-  }
-
-  return result;
-}
-
-const givePermissionToChangeCurrentPin = async (userId: string, accessPinCode : string) => {
-  const result = await User.findById(userId);
-  if (!result) {
-    throw new ApiError(StatusCodes.NOT_FOUND, 'Database error which updating accessPinCode');
-  }
-  if(!result.accessPinCode){
-    throw new ApiError(StatusCodes.NOT_FOUND, 'Access pin code not found');
-  }
-  if(result.accessPinCode !== accessPinCode){
-    throw new ApiError(StatusCodes.NOT_FOUND, 'Access pin is not matched, You can not change access pin code ');
-  }
-  result.accessPinCode = "";
-  await result.save();
-  return result;
-}
-
-const matchAccessPin = async (userId: string, accessPinCode : string) => {
-  const result = await User.findById(userId);
-  if (!result) {
-    throw new ApiError(StatusCodes.NOT_FOUND, 'Database error while finding user');
-  }
-  if(!result.accessPinCode){
-    throw new ApiError(StatusCodes.NOT_FOUND, 'Access pin code not found of this user');
-  }
-  if(result.accessPinCode !== accessPinCode){
-    throw new ApiError(StatusCodes.NOT_FOUND, 'Access pin is not matched, try again');
-  }
-  return result;
-}
 
 ///////////////////////////////////////////////////////
 
@@ -231,17 +155,14 @@ export const UserService = {
   /////////////////////////////////////////////////
   getSingleUser,
   updateMyProfile,
-  updateUserStatus,
+  
   updateUserProfile,
   getMyProfile,
   updateProfileImage,
   deleteMyProfile,
   getUserByEmail,
-  ///////////////  Access pin Related Service ///////////
-  setNewAccessPin,
-  removeAccessPin,
-  givePermissionToChangeCurrentPin,
-  matchAccessPin,
+  ///////////////  ...  Related Service ///////////
+  
 
   //////////////////////////////////////
   getMyProfileOnlyRequiredField

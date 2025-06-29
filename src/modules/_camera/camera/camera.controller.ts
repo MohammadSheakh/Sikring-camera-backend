@@ -43,7 +43,7 @@ export class cameraController extends GenericController<
           cameraPassword: req.body.cameraPassword,
           cameraIp: req.body.cameraIp || '',
           cameraPort: req.body.cameraPort, 
-          rtspUrl: `rtsp://${req.body.cameraUsername}:${req.body.cameraPassword}@${req.body.cameraIp}:${req.body.cameraPort}/stream`
+          rtspUrl: `rtsp://${req.body.cameraUsername}:${req.body.cameraPassword}@${req.body.cameraIp.replace("http://", "")}:${req.body.cameraPort}/stream`
       };
 
       if(req.body.globalLocation){

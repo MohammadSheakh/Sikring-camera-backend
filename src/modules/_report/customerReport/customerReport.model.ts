@@ -4,7 +4,6 @@ import paginate, { paginateDebug, paginateV1, paginateV2 } from '../../../common
 import { Roles } from '../../../middlewares/roles';
 import { TReportType } from '../report/report.constant';
 
-
 const customerReportSchema = new Schema<IcustomerReport>(
   {
     personId: {

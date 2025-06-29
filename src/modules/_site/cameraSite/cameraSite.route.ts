@@ -29,7 +29,13 @@ const paginationOptions: Array<'sortBy' | 'page' | 'limit' | 'populate'> = [
 ];
 
 //info : pagination route must be before the route with params
-// get all camera by siteId 💡
+
+/***************
+ * 
+ * Admin : Site Management :: get all camera
+ * 
+ * ************** */
+
 router.route('/paginate').get(
   //auth('common'),
   validateFiltersForQuery(optionValidationChecking(['_id', 'siteId', ...paginationOptions])),
@@ -44,7 +50,7 @@ router.route('/paginate').get(
 
 router.route('/preview/paginate').get(
   //auth('common'),
-  validateFiltersForQuery(optionValidationChecking(['_id', 'siteId'])),
+  validateFiltersForQuery(optionValidationChecking(['_id', 'siteId', ...paginationOptions])),
   controller.getAllCameraBySiteIdWithPagination
 );
 

@@ -1,24 +1,25 @@
 import express from 'express';
-import * as validation from './cameraCustomer.validation';
-import { cameraCustomerController} from './cameraCustomer.controller';
-import { IcameraCustomer } from './cameraCustomer.interface';
 import { validateFiltersForQuery } from '../../../middlewares/queryValidation/paginationQueryValidationMiddleware';
 import auth from '../../../middlewares/auth';
 import validateRequest from '../../../shared/validateRequest';
+import { CameraPersonController } from './cameraPerson.controller';
+import { ICameraPerson } from './cameraPerson.interface';
+import * as validation from './cameraPerson.validation';
+
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-export const optionValidationChecking = <T extends keyof IcameraCustomer | 'sortBy' | 'page' | 'limit' | 'populate'>(
+export const optionValidationChecking = <T extends keyof ICameraPerson | 'sortBy' | 'page' | 'limit' | 'populate'>(
   filters: T[]
 ) => {
   return filters;
 };
 
 // const taskService = new TaskService();
-const controller = new cameraCustomerController();
+const controller = new CameraPersonController();
 
 const paginationOptions: Array<'sortBy' | 'page' | 'limit' | 'populate'> = [
   'sortBy',
@@ -77,4 +78,4 @@ router.route('/softDelete/:id').put(
 //[🚧][🧑‍💻✅][🧪] // 🆗
 
 
-export const cameraCustomerRoute = router;
+export const CameraPersonRoute = router;

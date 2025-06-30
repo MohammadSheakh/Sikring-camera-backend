@@ -85,10 +85,10 @@ export class cameraSiteController extends GenericController<
         select: 'rtspUrl cameraName',
       }, // lat long  // assignedManagerId assignedUserId description
       //  'cameraId'
-      {
-        path: 'siteId',
-        select: 'name'
-      }
+      // {
+      //   path: 'siteId',
+      //   select: 'name'
+      // }
     ];
 
     // const dontWantToInclude = ['-localLocation -attachments']; // -role
@@ -100,7 +100,7 @@ export class cameraSiteController extends GenericController<
     let siteRes;
 
     if(req.query.siteId){
-      siteRes = await Site.findById(req.query.siteId).select('name');
+      siteRes = await Site.findById(req.query.siteId).select('name createdAt');
       
     }
     

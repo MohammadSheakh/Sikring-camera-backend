@@ -1,4 +1,4 @@
-export enum ICustomersPermission {
+export enum ViewPermission {
   enable = 'enable',
   disable = 'disable'
 }

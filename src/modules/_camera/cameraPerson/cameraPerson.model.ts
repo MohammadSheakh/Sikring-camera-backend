@@ -1,11 +1,11 @@
 import { model, Schema } from 'mongoose';
-import { IcameraCustomer, IcameraCustomerModel } from './cameraCustomer.interface';
 import paginate from '../../../common/plugins/paginate';
 import { Roles } from '../../../middlewares/roles';
-import { ICustomersPermission } from './cameraCustomer.constant';
+import { ICameraPerson, ICameraPersonModel } from './cameraPerson.interface';
+import { ViewPermission } from './cameraPerson.constant';
 
 
-const cameraCustomerSchema = new Schema<IcameraCustomer>(
+const CameraPersonSchema = new Schema<ICameraPerson>(
   {
     cameraId: {
       type: Schema.Types.ObjectId,
@@ -27,14 +27,14 @@ const cameraCustomerSchema = new Schema<IcameraCustomer>(
 
     status : {
       type: String,
-      enum:  [ICustomersPermission.disable, ICustomersPermission.enable],
+      enum:  [ViewPermission.disable, ViewPermission.enable],
       required: [
         false,
         `Status is required it can be ${Object.values(
-          ICustomersPermission
+          ViewPermission
         ).join(', ')}`,
       ],
-      default: ICustomersPermission.disable,
+      default: ViewPermission.disable,
     },
 
     role: {
@@ -55,9 +55,9 @@ const cameraCustomerSchema = new Schema<IcameraCustomer>(
   { timestamps: true }
 );
 
-cameraCustomerSchema.plugin(paginate);
+CameraPersonSchema.plugin(paginate);
 
-cameraCustomerSchema.pre('save', function (next) {
+CameraPersonSchema.pre('save', function (next) {
   // Rename _id to _projectId
   // this._taskId = this._id;
   // this._id = undefined;  // Remove the default _id field
@@ -67,15 +67,15 @@ cameraCustomerSchema.pre('save', function (next) {
 });
 
 // Use transform to rename _id to _projectId
-cameraCustomerSchema.set('toJSON', {
+CameraPersonSchema.set('toJSON', {
   transform: function (doc, ret, options) {
-    ret._cameraCustomerId = ret._id; // Rename _id to _subscriptionId
+    ret._CameraPersonId = ret._id; // Rename _id to _subscriptionId
     delete ret._id; // Remove the original _id field
     return ret;
   },
 });
 
-export const cameraCustomer = model<
-  IcameraCustomer,
-  IcameraCustomerModel
->('cameraCustomer', cameraCustomerSchema);
+export const CameraPerson = model<
+  ICameraPerson,
+  ICameraPersonModel
+>('CameraPerson', CameraPersonSchema);

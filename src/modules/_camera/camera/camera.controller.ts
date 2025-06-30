@@ -13,6 +13,10 @@ import { TStatus } from '../../auditLog/auditLog.constant';
 import eventEmitterForAuditLog from '../../auditLog/auditLog.service';
 import omit from '../../../shared/omit';
 import pick from '../../../shared/pick';
+import { CameraPerson } from '../cameraPerson/cameraPerson.model';
+import { Site } from '../../_site/site/site.model';
+import { userSite } from '../../_site/userSite/userSite.model';
+import { IuserSite } from '../../_site/userSite/userSite.interface';
 
 // let conversationParticipantsService = new ConversationParticipentsService();
 // let messageService = new MessagerService();
@@ -90,10 +94,32 @@ export class cameraController extends GenericController<
           siteId:  req.body.siteId,
         });
 
+        /************
+         * 
+         * as we got the siteId .. that means .. site has already a manager Id .. 
+         * so, lets assign the camera to that manager .. 
+         * 
+         * *********** */
+
+        // Manager For Site 
+        const managerIdForSite : IuserSite | null = await userSite.findOne({
+          siteId: req.body.siteId,
+          role: 'manager',
+        }).select('personId role');
+
+        if(managerIdForSite && managerIdForSite.personId){
+          await CameraPerson.create({
+            cameraId: result._id,
+            personId : managerIdForSite?.personId
+          })
+        }
+
+        // TODO : better hoito jodi manager er nam dekhano jaito .. 
+        actionPerformed+= `Provide View Access ${result._id} for ${managerIdForSite?.personId} ${managerIdForSite?.role}`;
+
         actionPerformed+= `Assign a camera ${result._id} for ${req.body.siteName}`;
       }
       
-
       let valueForAuditLog : IauditLog = {
         userId: req.user.userId,
         role: req.user.role,

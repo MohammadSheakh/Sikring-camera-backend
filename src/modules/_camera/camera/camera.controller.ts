@@ -32,6 +32,11 @@ export class cameraController extends GenericController<
     super(new cameraService(), 'camera');
   }
 
+    /*************
+     * 
+     *  // TODO :  Must Need to implement mongodb transaction here
+     * 
+     * *********** */
     create = catchAsync(async (req: Request, res: Response) => {
     
       // console.log('req.body 🧪🧪🧪', req.body);
@@ -110,7 +115,10 @@ export class cameraController extends GenericController<
         if(managerIdForSite && managerIdForSite.personId){
           await CameraPerson.create({
             cameraId: result._id,
-            personId : managerIdForSite?.personId
+            personId : managerIdForSite?.personId,
+            siteId : req.body.siteId,
+            status: 'enable', // default status
+            role: managerIdForSite?.role, // default role if not specified
           })
         }
 

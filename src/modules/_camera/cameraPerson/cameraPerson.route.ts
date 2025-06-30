@@ -83,9 +83,19 @@ router.route('/softDelete/:id').put(
 router.route('/assign').post(
   
   auth('common'),
-  validateRequest(validation.createHelpMessageValidationSchema),
+  validateRequest(validation.assignCameraPersonValidationSchema),
   controller.assignMultiplePersonForViewAccessToCamera
 );
 
+/*************
+ * 
+ *  Admin > Site Management > (Give View Access to Customer) show all customers who have or have not access to a camera
+ * 
+ * ************* */
+router.route('/all-persons-with-or-without-access-byCameraId/:cameraId').get(
+  auth('common'),
+  controller.getUsersWithAccessToCameraV1
+);
 
 export const CameraPersonRoute = router;
+

@@ -15,7 +15,7 @@ const CameraPersonSchema = new Schema<ICameraPerson>(
     personId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: [true, 'customerId is required'],
+      required: [true, 'personId is required'],
     },
 
     // TODO : need to think about this siteId required  true false

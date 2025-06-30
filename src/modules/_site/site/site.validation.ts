@@ -6,7 +6,7 @@ export const createSiteValidationSchema = z.object({
   body: z.object({
     name: z  
     .string({
-        required_error: 'name is required, message must be a string.',
+        required_error: 'name is required, name must be a string.',
         invalid_type_error: 'name must be a string.',
       }).min(3, {
       message: 'name must be at least 3 characters long.',
@@ -59,11 +59,19 @@ export const createSiteValidationSchema = z.object({
       invalid_type_error: 'status must be one of "construction" or "liveEvent" or "other".',
     }).optional(),
 
-    attachments: z
-    .array(z.instanceof(File), {
-    required_error: 'attachments is required, and must be an array of files.',
-    invalid_type_error: 'attachments must be an array of File objects.',
-  }).optional(),
+    // We have to pass the attachments also 
+
+  //   attachments: z
+  //   .array(z.instanceof(File), {
+  //   required_error: 'attachments is required, and must be an array of files.',
+  //   invalid_type_error: 'attachments must be an array of File objects.',
+  // }).optional(),
+
+  // attachments: z
+  //   .array(z.string(), {
+  //   required_error: 'attachments is required, and must be an array of files.',
+  //   invalid_type_error: 'attachments must be an array of File objects.',
+  // }).optional(),
 
   }),
     

@@ -39,6 +39,8 @@ export class CameraPersonService extends GenericService<
         role: user?.role , // default role if not specified
       })
     })
+
+    return null;
   }
 
 
@@ -48,7 +50,7 @@ export class CameraPersonService extends GenericService<
    * 
    * *********** */
 
-  getUsersWithAccessToCameraV1 = async (cameraId : string) => {
+  getUsersWithAccessToCameraV = async (cameraId : string) => {
   // Step 1: Find all sites associated with the given camera
   const cameraSites = await cameraSite.find({ cameraId, isDeleted: false }).select('siteId');
 

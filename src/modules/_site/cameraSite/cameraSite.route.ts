@@ -34,6 +34,8 @@ const paginationOptions: Array<'sortBy' | 'page' | 'limit' | 'populate'> = [
  * 
  * Admin : Site Management :: get all camera
  * 
+ * Customer : (Home Page) : Live Preview  Get all camera by Site Id 
+ * 
  * ************** */
 
 router.route('/paginate').get(

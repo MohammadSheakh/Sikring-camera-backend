@@ -9,6 +9,7 @@ import sendResponse from '../../../shared/sendResponse';
 import catchAsync from '../../../shared/catchAsync';
 import omit from '../../../shared/omit';
 import pick from '../../../shared/pick';
+import { Site } from '../site/site.model';
 
 
 // let conversationParticipantsService = new ConversationParticipentsService();
@@ -26,7 +27,7 @@ export class cameraSiteController extends GenericController<
 
   /**************
    * 
-   *  
+   *  Customer : Home Page : get all camera by site id
    * 
    * ********** */
 
@@ -53,8 +54,12 @@ export class cameraSiteController extends GenericController<
     // -localLocation -attachments
     // -localLocation -attachments -cameraPassword -cameraIp -cameraPort -isDeleted -createdAt -updatedAt -__v 
 
+    
+    
+
     const result = await this.service.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
 
+    
     sendResponse(res, {
       code: StatusCodes.OK,
       data: result,
@@ -91,8 +96,19 @@ export class cameraSiteController extends GenericController<
     const dontWantToInclude = '-createdAt -updatedAt -__v'; // -role
     // -localLocation -attachments
     // -localLocation -attachments -cameraPassword -cameraIp -cameraPort -isDeleted -createdAt -updatedAt -__v 
+    
+    let siteRes;
 
+    if(req.query.siteId){
+      siteRes = await Site.findById(req.query.siteId).select('name');
+      
+    }
+    
     const result = await this.service.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
+
+    if(siteRes){
+      result.siteInfo  = siteRes;
+    }
 
     sendResponse(res, {
       code: StatusCodes.OK,

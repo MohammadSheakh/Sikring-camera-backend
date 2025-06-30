@@ -10,6 +10,7 @@ import omit from '../../../shared/omit';
 import pick from '../../../shared/pick';
 import sendResponse from '../../../shared/sendResponse';
 import { GenericService } from '../../__Generic/generic.services';
+import { User } from '../../user/user.model';
 
 
 // let conversationParticipantsService = new ConversationParticipentsService();
@@ -37,10 +38,10 @@ export class userSiteController extends GenericController<
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
     
     const populateOptions: (string | {path: string, select: string}[]) = [
-      {
-        path: 'personId',
-        select: 'name role' // name 
-      },
+      // {
+      //   path: 'personId',
+      //   select: 'name role' // name 
+      // },
       // 'personId'
       {
         path: 'siteId',
@@ -51,7 +52,19 @@ export class userSiteController extends GenericController<
     const dontWantToInclude = '-role -workHours -isDeleted -updatedAt -createdAt -__v';
     //const dontWantToInclude = ['']; // -role
 
+     let userInfo;
+
+   
+    
+    if(req.user.userId){
+      userInfo = await User.findById(req.user.userId).select('name role');
+    }
+
     const result = await this.userSiteService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
+
+    if(userInfo){
+      result.userInfo  = userInfo;
+    }
 
     sendResponse(res, {
       code: StatusCodes.OK,

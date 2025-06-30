@@ -36,7 +36,7 @@ const paginationOptions: Array<'sortBy' | 'page' | 'limit' | 'populate'> = [
  * 
  * *********** */ 
 router.route('/paginate').get(
-  //auth('common'),
+  auth('common'), // TODO : role fix korte hobe 
   validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role', 'siteId', ...paginationOptions])),
   controller.getAllWithPagination
 );
@@ -47,7 +47,7 @@ router.route('/paginate').get(
  * 
  * *********** */ 
 router.route('/paginate/siteId').get(
-  //auth('common'),
+  //auth('common'), // TODO : role fix korte hobe 
   validateFiltersForQuery(optionValidationChecking(['_id', 'role', 'siteId', ...paginationOptions])),
   controller.getAllWithPagination
 );

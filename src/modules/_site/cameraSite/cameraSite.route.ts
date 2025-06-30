@@ -56,6 +56,18 @@ router.route('/preview/paginate').get(
   controller.getAllCameraBySiteIdWithPagination
 );
 
+/**************
+ * 
+ *  Admin > Site Management > (Give View Access to Customer) get all camera by site Id  
+ * 
+ * ********** */
+router.route('/access/paginate').get(
+  //auth('common'),
+  validateFiltersForQuery(optionValidationChecking(['_id', 'siteId', ...paginationOptions])),
+  controller.getAllCameraBySiteIdForAccessWithPagination
+);
+
+
 
 router.route('/:id').get(
   // auth('common'),

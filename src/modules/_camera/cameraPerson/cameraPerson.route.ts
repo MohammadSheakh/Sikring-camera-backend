@@ -52,7 +52,6 @@ router.route('/').get(
   controller.getAll
 );
 
-//[🚧][🧑‍💻✅][🧪] // 🆗
 router.route('/create').post(
   // [
   //   upload.fields([
@@ -76,6 +75,17 @@ router.route('/softDelete/:id').put(
 
 ////////////
 //[🚧][🧑‍💻✅][🧪] // 🆗
+/*************
+ * 
+ *  Admin > Site Management > (Give View Access to Customer) assign multiple customer to a camera for view
+ * 
+ * ************* */
+router.route('/assign').post(
+  
+  auth('common'),
+  validateRequest(validation.createHelpMessageValidationSchema),
+  controller.assignMultiplePersonForViewAccessToCamera
+);
 
 
 export const CameraPersonRoute = router;

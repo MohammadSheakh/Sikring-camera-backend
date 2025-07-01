@@ -19,16 +19,15 @@ export class CameraPersonService extends GenericService<
    *  Manager > 
    * 
    * ************* */
-  assignMultiplePersonForViewAccessV0 = async (
+  assignMultiplePersonForViewAccess = async (
     cameraId: string,
     siteId: string,
     personIdsToEnableAccess: string[],
     personIdsToDisableAccess: string[]
   ) => {
 
-    try{
+  try{
 
-    
     personIdsToEnableAccess.forEach(async(personIdToEnableAccess) => {
       
       // let user = await User.findById(personIdToEnableAccess);
@@ -87,72 +86,69 @@ export class CameraPersonService extends GenericService<
     return null;
   }
 
+  /************
+     * 
+     *  Get all users who have access to a specific camera (Best Version)
+     * 
+     * *********** */
+  getUsersWithAccessToCamera = async (cameraId) =>  {
+    
+    const cameraPersons = await CameraPerson.find({
+      cameraId,
+    })
 
+    /***
+     * 
+     * cameraPersons gives us all users who have access to the camera
+     *  cameraId personId siteId status (disable enable)  role
+     * 
+     ***/
 
+    // Map cameraPersons by personId and siteId for quick access
+    const cameraPersonStatusMap = {};
 
-/************
-   * 
-   *  Get all users who have access to a specific camera (Best Version)
-   * 
-   * *********** */
-getUsersWithAccessToCameraV1 = async (cameraId) =>  {
-  
-  const cameraPersons = await CameraPerson.find({
-    cameraId,
-  })
+    let siteIdForThisCamera;
 
-  /***
-   * 
-   * cameraPersons gives us all users who have access to the camera
-   *  cameraId personId siteId status (disable enable)  role
-   * 
-   ***/
+    if(cameraPersons[0]?.siteId){
+      siteIdForThisCamera = cameraPersons[0].siteId;
+    }
 
-  // Map cameraPersons by personId and siteId for quick access
-  const cameraPersonStatusMap = {};
+    const userSites = await userSite.find({
+      siteId: siteIdForThisCamera,
+      isDeleted: false
+    }).select('-workHours');
 
-  let siteIdForThisCamera;
+    // console.log('userSites', userSites);
+    // console.log('cameraPersons', cameraPersons);
 
-  if(cameraPersons[0]?.siteId){
-    siteIdForThisCamera = cameraPersons[0].siteId;
+    // Combine userSites and cameraPersons
+      const result = userSites.map((userSite) => {
+        // Find the corresponding entry in cameraPersons
+        const cameraPerson = cameraPersons.find(
+          (cp) => cp.personId.toString() === userSite.personId.toString()
+        );
+
+        // Determine the status based on cameraPerson existence
+        const status = cameraPerson ? cameraPerson.status : 'disable';
+
+        // Return the combined user details and status
+        return {
+          _id: userSite._id,
+          personId: userSite.personId,
+          // siteId: userSite.siteId,
+          role: userSite.role,
+          // isDeleted: userSite.isDeleted,
+          // createdAt: userSite.createdAt,
+          // updatedAt: userSite.updatedAt,
+          // __v: userSite.__v,
+          status: status, // Access status: enable or disable
+        };
+      });
+
+    // console.log('usersWithStatus', result);
+
+    return result;
   }
-
-  const userSites = await userSite.find({
-    siteId: siteIdForThisCamera,
-    isDeleted: false
-  }).select('-workHours');
-
-  // console.log('userSites', userSites);
-  // console.log('cameraPersons', cameraPersons);
-
-  // Combine userSites and cameraPersons
-    const result = userSites.map((userSite) => {
-      // Find the corresponding entry in cameraPersons
-      const cameraPerson = cameraPersons.find(
-        (cp) => cp.personId.toString() === userSite.personId.toString()
-      );
-
-      // Determine the status based on cameraPerson existence
-      const status = cameraPerson ? cameraPerson.status : 'disable';
-
-      // Return the combined user details and status
-      return {
-        _id: userSite._id,
-        personId: userSite.personId,
-        // siteId: userSite.siteId,
-        role: userSite.role,
-        // isDeleted: userSite.isDeleted,
-        // createdAt: userSite.createdAt,
-        // updatedAt: userSite.updatedAt,
-        // __v: userSite.__v,
-        status: status, // Access status: enable or disable
-      };
-    });
-
-  // console.log('usersWithStatus', result);
-
-  return result;
-}
 
 
 }

@@ -13,122 +13,146 @@ export class CameraPersonService extends GenericService<
     super(CameraPerson);
   }
 
-  assignMultiplePersonForViewAccess = async (
+   /*************
+   * 
+   *  Admin > Site Management > (Give View Access to Customer) assign multiple persons for view access to camera
+   *  Manager > 
+   * 
+   * ************* */
+  assignMultiplePersonForViewAccessV0 = async (
     cameraId: string,
     siteId: string,
-    personIds: string[]
+    personIdsToEnableAccess: string[],
+    personIdsToDisableAccess: string[]
   ) => {
-    //-------- as we use zod to validate ... 
-    // Validate input
-    // if (!cameraId || !Array.isArray(personIds) || personIds.length === 0) {
-    //   throw new Error('Invalid input');
-    // }
 
-    personIds.forEach(async(personId) => {
-      if (typeof personId !== 'string') {
-        throw new Error('Invalid personId in personIds array');
+    try{
+
+    
+    personIdsToEnableAccess.forEach(async(personIdToEnableAccess) => {
+      
+      // let user = await User.findById(personIdToEnableAccess);
+
+      // console.log("user ----", user);
+
+      let alreadyEnables = await CameraPerson.findOne({
+        cameraId,
+        personId: personIdToEnableAccess,
+        siteId,
+        //status: 'enable', // Check if the person already has 'enable' status
+      });
+
+      if(!alreadyEnables){
+        await CameraPerson.insertOne({
+          cameraId,
+          personId : personIdToEnableAccess,
+          siteId,
+          status: 'enable', // default status
+          //role: user?.role , // default role if not specified
+        })
+      }else{
+        // lets update the status 
+        await CameraPerson.findOneAndUpdate(
+          { cameraId, personId: personIdToEnableAccess, siteId },
+          { status: 'enable' }, // Update status to 'enable'
+          { upsert: true } // Create a new document if it doesn't exist
+        );
+
       }
 
-      let user = await User.findById(personId);
-
-      await CameraPerson.insertOne({
-        cameraId,
-        personId,
-        siteId,
-        status: 'enable', // default status
-        role: user?.role , // default role if not specified
-      })
     })
+    if(personIdsToDisableAccess.length !== 0){
+
+      personIdsToDisableAccess.forEach(async(personIdToEnableAccess) => {
+        // if (typeof personIdToEnableAccess !== 'string') {
+        //   throw new Error('Invalid personId in personIds array');
+        // }
+
+        // let user = await User.findById(personIdToEnableAccess);
+
+        await CameraPerson.findOneAndUpdate(
+          { cameraId, personId: personIdToEnableAccess, siteId },
+          { status: 'disable' }, // Update status to 'disable'
+          { upsert: true } // Create a new document if it doesn't exist
+        );
+      })
+    }
+
+    }
+    catch(error){
+      console.error('Error assigning multiple persons for view access to camera:', error);
+      throw error; // Re-throw the error to be handled by the caller
+    }
 
     return null;
   }
 
 
-  /************
-   * 
-   *  Get all users who have access to a specific camera (Good Version)
-   * 
-   * *********** */
-
-  getUsersWithAccessToCameraV = async (cameraId : string) => {
-  // Step 1: Find all sites associated with the given camera
-  const cameraSites = await cameraSite.find({ cameraId, isDeleted: false }).select('siteId');
-
-  const siteIds = cameraSites.map(site => site.siteId);
-
-  // Step 2: Find all users associated with those sites
-  const userSites = await userSite
-    .find({ siteId: { $in: siteIds }, isDeleted: false })
-    .select('personId');
-
-  const siteUserIds = userSites.map(userSite => userSite.personId);
-
-  // Step 3: Find all users who have direct access to the camera
-  const cameraPersons = await CameraPerson
-    .find({ cameraId, isDeleted: false })
-    .select('personId');
-
-  const cameraUserIds = cameraPersons.map(person => person.personId);
-
-  // Step 4: Combine both sets of user IDs and remove duplicates
-  const allUserIds = [...new Set([...siteUserIds, ...cameraUserIds])];
-
-  // Step 5: Fetch detailed user information (optional)
-  const users = await User.find({ _id: { $in: allUserIds }, isDeleted: false });
-
-  return users;
-}
 
 
-  /************
+/************
    * 
    *  Get all users who have access to a specific camera (Best Version)
    * 
    * *********** */
+getUsersWithAccessToCameraV1 = async (cameraId) =>  {
+  
+  const cameraPersons = await CameraPerson.find({
+    cameraId,
+  })
 
-  getUsersWithAccessToCameraV1 = async (cameraId) =>  {
-  // Step 1: Find all sites associated with the given camera
-  const cameraSites = await cameraSite.find({ cameraId, isDeleted: false }).select('siteId');
+  /***
+   * 
+   * cameraPersons gives us all users who have access to the camera
+   *  cameraId personId siteId status (disable enable)  role
+   * 
+   ***/
 
-  const siteIds = cameraSites.map(site => site.siteId);
+  // Map cameraPersons by personId and siteId for quick access
+  const cameraPersonStatusMap = {};
 
-  // Step 2: Find all users associated with those sites
-  const userSites = await userSite
-    .find({ siteId: { $in: siteIds }, isDeleted: false })
-    .select('personId');
+  let siteIdForThisCamera;
 
-  const siteUserIds = userSites.map(userSite => userSite.personId);
+  if(cameraPersons[0]?.siteId){
+    siteIdForThisCamera = cameraPersons[0].siteId;
+  }
 
-  // Step 3: Find all users who have direct access to the camera
-  const cameraPersons = await CameraPerson
-    .find({ cameraId, isDeleted: false })
-    .select('personId');
+  const userSites = await userSite.find({
+    siteId: siteIdForThisCamera,
+    isDeleted: false
+  }).select('-workHours');
 
-  const cameraUserIds = cameraPersons.map(person => person.personId);
+  // console.log('userSites', userSites);
+  // console.log('cameraPersons', cameraPersons);
 
-  // Step 4: Combine both sets of user IDs and remove duplicates
-  const allUserIds = [...new Set([...siteUserIds, ...cameraUserIds])];
+  // Combine userSites and cameraPersons
+    const result = userSites.map((userSite) => {
+      // Find the corresponding entry in cameraPersons
+      const cameraPerson = cameraPersons.find(
+        (cp) => cp.personId.toString() === userSite.personId.toString()
+      );
 
-  // Step 5: Fetch detailed user information
-  const users = await User.find({ _id: { $in: allUserIds }, isDeleted: false }).select('_id name');
+      // Determine the status based on cameraPerson existence
+      const status = cameraPerson ? cameraPerson.status : 'disable';
 
-  // Step 6: Create a mapping of user IDs to names
-  const userIdToNameMap = {};
-  users.forEach(user => {
-    userIdToNameMap[user._id.toString()] = user.name;
-  });
+      // Return the combined user details and status
+      return {
+        _id: userSite._id,
+        personId: userSite.personId,
+        // siteId: userSite.siteId,
+        role: userSite.role,
+        // isDeleted: userSite.isDeleted,
+        // createdAt: userSite.createdAt,
+        // updatedAt: userSite.updatedAt,
+        // __v: userSite.__v,
+        status: status, // Access status: enable or disable
+      };
+    });
 
-  // Step 7: Determine status for each user
-  const result = users.map(user => ({
-    personId: user._id,
-    name: user.name,
-    status: allUserIds.includes(user._id) ? 'enable' : 'disable',
-  }));
+  // console.log('usersWithStatus', result);
 
   return result;
 }
-
-
 
 
 }

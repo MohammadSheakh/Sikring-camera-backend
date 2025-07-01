@@ -83,7 +83,7 @@ router.route('/softDelete/:id').put(
 router.route('/assign').post(
   
   auth('common'),
-  validateRequest(validation.assignCameraPersonValidationSchema),
+  // validateRequest(validation.assignCameraPersonValidationSchema),
   controller.assignMultiplePersonForViewAccessToCamera
 );
 

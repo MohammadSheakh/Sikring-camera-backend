@@ -22,11 +22,17 @@ export class CameraPersonController extends GenericController<
     super(new CameraPersonService(), 'CameraPerson');
   }
 
+  /*************
+   * 
+   *  Admin > Site Management > (Give View Access to Customer) assign multiple persons for view access to camera
+   *  Manager > 
+   * 
+   * ************* */
   assignMultiplePersonForViewAccessToCamera = catchAsync(async (req: Request, res: Response) => {
-    const { cameraId, siteId, personIds } = req.body;
+    const { cameraId, siteId, personIdsToEnableAccess , personIdsToDisableAccess } = req.body;
 
     // Call service method
-    const result = await this.CameraPersonService.assignMultiplePersonForViewAccess(cameraId,siteId, personIds);
+    const result = await this.CameraPersonService.assignMultiplePersonForViewAccessV0(cameraId,siteId, personIdsToEnableAccess, personIdsToDisableAccess);
 
     sendResponse(res, {
       code: StatusCodes.OK,
@@ -45,6 +51,8 @@ export class CameraPersonController extends GenericController<
     const { cameraId } = req.params;
     // Call service method
     const result = await this.CameraPersonService.getUsersWithAccessToCameraV1(cameraId);
+    //getUsersWithAccessToCameraV
+    // getUsersWithAccessToCameraV1
     sendResponse(res, {
       code: StatusCodes.OK,
       data: result,

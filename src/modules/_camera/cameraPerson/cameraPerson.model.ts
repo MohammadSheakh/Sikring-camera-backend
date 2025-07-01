@@ -18,7 +18,7 @@ const CameraPersonSchema = new Schema<ICameraPerson>(
       required: [true, 'personId is required'],
     },
 
-    // TODO : need to think about this siteId required  true false
+    // INFO : This is important .. 
     siteId: {
       type: Schema.Types.ObjectId,
       ref: 'Site',
@@ -43,7 +43,7 @@ const CameraPersonSchema = new Schema<ICameraPerson>(
         values: Roles,
         message: '${VALUE} is not a valid role', // 🔥 fix korte hobe .. 
       },
-      required: [true, 'Role is required'],
+      required: [false, 'Role is not required'], // ISSUE : role age required chilo .. ar eta dorkar o chilo .. but issue fix kora jacche na .. multiple person ke camera er permission dite giye .. 
     },
 
     isDeleted: {

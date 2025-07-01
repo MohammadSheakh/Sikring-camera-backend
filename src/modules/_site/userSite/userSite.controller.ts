@@ -74,6 +74,54 @@ export class userSiteController extends GenericController<
     });
   });
 
+  
+/***********
+ * 
+ * Web (Manager) : Dashboard : get all site by personId and customer type |🔴|//TODO :  eta pagination kora jabe na
+ * 
+ * *********** */ 
+  //[🚧][🧑‍💻][🧪] // ✅🆗
+  getAllWithPaginationForManagerDashboard = catchAsync(async (req: Request, res: Response) => {
+    //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
+    const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
+    const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+    
+    const populateOptions: (string | {path: string, select: string}[]) = [
+      // {
+      //   path: 'personId',
+      //   select: 'name role' // name 
+      // },
+      // 'personId'
+      {
+        path: 'siteId',
+        select: 'name address status'
+      }
+    ];
+
+    const dontWantToInclude = '-role -workHours -isDeleted -updatedAt -createdAt -__v';
+    //const dontWantToInclude = ['']; // -role
+
+     let userInfo;
+
+   
+    
+    if(req.user.userId){
+      userInfo = await User.findById(req.user.userId).select('name role');
+    }
+
+    const result = await this.userSiteService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
+
+    if(userInfo){
+      result.userInfo  = userInfo;
+    }
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `All ${this.modelName} with pagination`,
+      success: true,
+    });
+  });
   // add more methods here if needed or override the existing ones 
   
 }

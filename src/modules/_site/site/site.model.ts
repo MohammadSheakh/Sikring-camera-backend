@@ -41,7 +41,7 @@ const siteSchema = new Schema<ISite>(
           TSiteType
         ).join(', ')}`,
       ],
-      default: TStatusType.active,
+      default: TSiteType.other,
     },
 
     status : {

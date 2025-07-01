@@ -1,5 +1,6 @@
 import { report } from "../_report/report/report.model";
-import { site } from "../_site/site/site.model"
+import { Site } from "../_site/site/site.model";
+
 import { User } from "../user/user.model";
 
 
@@ -67,13 +68,20 @@ export class adminService {
             result[monthIndex].count = item.count;
         });
 
-        return result;
+        // Calculate average report count
+        const totalReports = result.reduce((sum, month) => sum + month.count, 0);
+        const averageReportCount = totalReports / 12;
+
+        return {
+            monthlyData: result,
+            averageReportCount: parseFloat(averageReportCount.toFixed(2))
+        };
     }
 
     const [totalSite, totalCustomers, recentReport, recentClientMessage, reportCountByMonth]
      = await Promise.all([
       // Assuming these methods are defined in your service
-      await site.countDocuments({ isDeleted: false }),
+      await Site.countDocuments({ isDeleted: false }),
       await User.countDocuments({ isDeleted: false, role: 'customer' }),
       await getReportCountOfLastTwentyFourHours(),
       

@@ -123,7 +123,26 @@ router.route('/update-site-form/:id').put(
     ]),
   ],
   auth('admin'),
+  // TODO : validation must add korte hobe ... 
   controller.updateById
 )
+
+
+/*************
+ * 
+ * Manager: updateSiteForm ::  🧪 Need Testing 
+ * 
+ * ************* */
+router.route('/update-site-for-manager/:id').put(
+  [
+    upload.fields([
+      { name: 'attachments', maxCount: 15 }, // Allow up to 5 cover photos
+    ]),
+  ],
+  auth('manager'),
+  // TODO : validation must add korte hobe ... 
+  controller.updateByIdForManager
+)
+
 
 export const siteRoute = router;

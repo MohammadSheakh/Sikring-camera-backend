@@ -52,6 +52,18 @@ router.route('/paginate/siteId').get(
   controller.getAllWithPagination
 );
 
+
+/***********
+ * 
+ * Web (Manager) : Dashboard : get all site by personId and customer type |🔴|//TODO :  eta pagination kora jabe na
+ * 
+ * *********** */ 
+router.route('/manager/paginate').get(
+  auth('common'), // TODO : role fix korte hobe 
+  validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role', 'siteId', ...paginationOptions])),
+  controller.getAllWithPaginationForManagerDashboard
+);
+
 router.route('/:id').get(
   // auth('common'),
   controller.getById

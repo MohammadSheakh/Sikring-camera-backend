@@ -134,6 +134,11 @@ export class SiteController extends GenericController<
         });
   });
 
+  /*************
+   * 
+   * Admin: updateSiteForm :: get a site by id with assign manager and assigned user info 
+   * 
+   * ************* */
   updateById = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
     if (!id) {
@@ -234,6 +239,76 @@ export class SiteController extends GenericController<
       success: true,
     });
   });
+
+  /*************
+   * 
+   * Manager: updateSiteForm :: 
+   * 
+   * ************* */
+
+  updateByIdForManager = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    if (!id) {
+      throw new Error(`id is required for update ${this.modelName}`);
+    }
+
+    let attachments = [];
+  
+        if (req.files && req.files.attachments) {
+        attachments.push(
+            ...(await Promise.all(
+            req.files.attachments.map(async file => {
+                const attachmenId = await attachmentService.uploadSingleAttachment(
+                    file, // file to upload 
+                    TFolderName.site, // folderName
+                    req.user.userId, // uploadedByUserId
+                    TAttachedToType.site
+                );
+                return attachmenId;
+            })
+            ))
+        );
+        }
+
+    req.body.attachments = attachments;
+
+    const updatedData = {
+      name: req.body.name,
+      address: req.body.address,
+      lat: req.body.lat,
+      long : req.body.long,
+      phoneNumber: req.body.phoneNumber,
+      attachments: req.body.attachments,
+      type: req.body.type || "other",
+    };
+
+    let actionPerformed;
+
+    const result = await Site.findByIdAndUpdate(
+      id,
+      updatedData, 
+      { new: true }
+    ).select('-isDeleted -updatedAt -createdAt -__v');
+    
+    actionPerformed = `Updated ${this.modelName} with id ${id} | `;
+
+    let valueForAuditLog : IauditLog = {
+        userId: req.user.userId,
+        role: req.user.role,
+        actionPerformed: actionPerformed,
+        status: TStatus.success,
+    }
+
+    eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `${this.modelName} updated successfully`,
+      success: true,
+    });
+  });
+
 
   //[🚧][🧑‍💻][🧪] // ✅🆗
   getAllWithPaginationWithUsersAndManagers = catchAsync(async (req: Request, res: Response) => {

@@ -23,7 +23,7 @@ export class AdminController {
             data: keyMetrics,
             message: `key metrics fetched successfully`,
             success: true,
-      });    
+      });
     }
   ) 
 }

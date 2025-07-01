@@ -94,7 +94,7 @@ router.route('/assign').post(
  * ************* */
 router.route('/all-persons-with-or-without-access-byCameraId/:cameraId').get(
   auth('common'),
-  controller.getUsersWithAccessToCameraV1
+  controller.getUsersWithAccessToCamera
 );
 
 export const CameraPersonRoute = router;

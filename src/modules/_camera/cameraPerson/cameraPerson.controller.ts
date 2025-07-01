@@ -47,10 +47,10 @@ export class CameraPersonController extends GenericController<
    *  Admin > Site Management > (Give View Access to Customer) show all customers who have or have not access to a camera
    * 
    * ************* */
-  getUsersWithAccessToCameraV1 = catchAsync(async (req: Request, res: Response) => {
+  getUsersWithAccessToCamera = catchAsync(async (req: Request, res: Response) => {
     const { cameraId } = req.params;
     // Call service method
-    const result = await this.CameraPersonService.getUsersWithAccessToCameraV1(cameraId);
+    const result = await this.CameraPersonService.getUsersWithAccessToCamera(cameraId);
     //getUsersWithAccessToCameraV
     // getUsersWithAccessToCameraV1
     sendResponse(res, {

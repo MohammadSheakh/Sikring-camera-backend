@@ -317,20 +317,28 @@ export class reportController extends GenericController<
         return;
       }
 
-      console.log('🔴🔴🔴');
+      console.log('🔴===================================🔴🔴', status);
 
       /****************
        * 
        *  if not .. // lets assign this report to the first employee
        * 
+       *  initialy under review thake ... 
+       *  accept hoilei user ke assign korbo .. 
+       *  deny hoile user ke assign korbo na .. 
        * ************* */
 
-      const customerReportRes : IcustomerReport = await this.customerReportService.create({
-        personId: siteUsers[0].personId, // assign to the first employee
-        reportId: new mongoose.Types.ObjectId(id) ,
-        role: 'user', // assuming employee is the role for site users
-        reportType: reportDetails.reportType // keep the same report type
-      })
+
+      if(status === 'accept'){
+
+        const customerReportRes : IcustomerReport = await this.customerReportService.create({
+          personId: siteUsers[0].personId, // assign to the first employee
+          reportId: new mongoose.Types.ObjectId(id) ,
+          role: 'user', // assuming employee is the role for site users
+          reportType: reportDetails.reportType // keep the same report type
+        })
+
+      }
     
       const updatedReport : Ireport | null = await report.findByIdAndUpdate(
         id,

@@ -27,7 +27,7 @@ This document tracks the issues and their current statuses. Each issue is follow
   
   - [ ]  {{shob}}v1/user-site/paginate?role=customer 
         for this route .. admin part .. we have to show employee Name also for user Id 
-  - [x] 
+  - [x]  for manager part .. we need to show a sites user Image .. so that .. we need to upload users image .. 
   - [x] 
   - [x] 
 

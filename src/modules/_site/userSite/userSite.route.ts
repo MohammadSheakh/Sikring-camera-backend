@@ -44,14 +44,25 @@ router.route('/paginate').get(
 /***********
  * 
  * App (Customer) : Home : get al site by siteId And role manager 
+ * Web (Manager) : Site Management
  * 
  * *********** */ 
 router.route('/paginate/siteId').get(
-  //auth('common'), // TODO : role fix korte hobe 
+  auth('common'), // TODO : role fix korte hobe 
   validateFiltersForQuery(optionValidationChecking(['_id', 'role', 'siteId', ...paginationOptions])),
   controller.getAllWithPagination
 );
 
+/***********
+ * 
+ * Web (Manager) : Site Management
+ * 
+ * *********** */ 
+router.route('/paginate/manager/siteId').get(
+  auth('common'), // TODO : role fix korte hobe 
+  validateFiltersForQuery(optionValidationChecking(['_id', 'role', 'siteId', ...paginationOptions])),
+  controller.getAllWithPaginationForManager
+);
 
 /***********
  * 

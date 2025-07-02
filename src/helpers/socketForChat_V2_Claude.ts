@@ -253,6 +253,20 @@ const socketForChat_V2_Claude = (io: Server) => {
           // console.log('Conversation data:', conversationData);
           // console.log('Conversation participants:', conversationParticipants);
 
+
+          /********
+           * 
+           * conversationData.canConversate jodi false hoy .. tahole ekta error send korbo je 
+           * message kora jabe na .. 
+           * 
+           * ******** */
+
+          if(conversationData.canConversate === false){
+            const error = "You can't send messages in this conversation";
+            callback?.({ success: false, message: error });
+            return emitError(socket, error);
+          }
+
           // Check if user is blocked
           if (conversationData.blockedUsers?.includes(userId)) {
             const error = "You have been blocked. You can't send messages.";

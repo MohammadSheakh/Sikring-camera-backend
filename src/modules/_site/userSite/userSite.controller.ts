@@ -164,20 +164,171 @@ export class userSiteController extends GenericController<
   });
 
 
-  // 🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴 issue  for conversation
-  // add more methods here if needed or override the existing ones 
+  /**************
+   * 
+   *  (App) (Customer) : Show all Related User For Create Conversation
+   * 
+   * ************* */
+  
   //[🚧][🧑‍💻][🧪] // ✅🆗
   getAllWithPaginationForUserConversation = catchAsync(async (req: Request, res: Response) => {
     
-    const results = await  userSite.find()
+    /*****************************
 
-    console.log('results 🧪🧪🧪🧪🧪', results);
+    const sitesRelatedToUser = await  userSite.find({
+      personId: req.user.userId,
+      isDeleted: false,
+    }).select('siteId')
+
+   sitesRelatedToUser.map((site) => {
+    // now for every siteId.. we have to get related PersonId and set those id into a set .. 
+    // so that we can get unique personId
+
+    const personIdsRelatedToSite = userSite.find({
+      siteId: site.siteId,
+      isDeleted: false,
+    }).select('personId');
+
+    *****************************/
+
+
+    // Step 1: Retrieve all siteIds related to the user
+    const sitesRelatedToUser = await userSite.find(
+      { personId: req.user.userId, isDeleted: false },
+      'siteId' // Select only the 'siteId' field
+    );
+
+    // Extract siteIds from the result
+    const siteIds = sitesRelatedToUser.map(site => site.siteId);
+
+    // Step 2: Retrieve all personIds related to the retrieved siteIds
+    const personIdsRelatedToSites = await userSite.find(
+      { siteId: { $in: siteIds }, isDeleted: false },
+      'personId siteId' // Select only the 'personId' field
+    ).populate({
+      path: 'personId',
+      select: 'name role',
+    });
+
+    // Step 3: Aggregate unique personIds into a Set
+    const uniquePersonIds = new Set(personIdsRelatedToSites.map(person => 
+        // person.personId
+        {
+        console.log('person::', person)
+          return {
+            personId: person.personId,
+            siteId: person.siteId
+          }
+      }  
+    ).filter(personId => {
+
+      return personId.personId.toString() !== req.user.userId.toString();
+
+    } ) // Exclude logged-in user
+    );
+
+    // Convert the Set to an array if needed
+    const uniquePersonIdsArray = Array.from(uniquePersonIds);
+
+    console.log('Unique Person IDs:', uniquePersonIdsArray);
+
+    console.log('req.user.userId', req.user.userId);
+
 
     sendResponse(res, {
       code: StatusCodes.OK,
-      data: null,
+      data: uniquePersonIdsArray,
       message: `All ${this.modelName} with pagination`,
       success: true,
     });
   });
+
+
+  /**************
+   * 
+   *  (Dashboard) (Admin) : Show all Related User For Create Conversation
+   * 
+   * ************* */
+  
+  //[🚧][🧑‍💻][🧪] // ✅🆗
+  getAllWithPaginationForAdminConversation = catchAsync(async (req: Request, res: Response) => {
+    
+    /*****************************
+
+    const sitesRelatedToUser = await  userSite.find({
+      personId: req.user.userId,
+      isDeleted: false,
+    }).select('siteId')
+
+   sitesRelatedToUser.map((site) => {
+    // now for every siteId.. we have to get related PersonId and set those id into a set .. 
+    // so that we can get unique personId
+
+    const personIdsRelatedToSite = userSite.find({
+      siteId: site.siteId,
+      isDeleted: false,
+    }).select('personId');
+
+    *****************************/
+
+    // TODO : req.params.role e valid role pass kortese kina .. sheta check dite hobe 
+    // TODO : userSite e ..  
+
+    console.log('role 🧪🧪', req.query.role);
+
+    // Step 1: Retrieve all siteIds related to the user
+    const sitesRelatedToUser = await userSite.find(
+      { personId: req.user.userId, isDeleted: false },
+      'siteId' // Select only the 'siteId' field
+    );
+
+    // Extract siteIds from the result
+    const siteIds = sitesRelatedToUser.map(site => site.siteId);
+
+    // Step 2: Retrieve all personIds related to the retrieved siteIds
+    const personIdsRelatedToSites = await userSite.find(
+      { siteId: { $in: siteIds }, isDeleted: false },
+      'personId siteId' // Select only the 'personId' field
+    ).populate({
+      path: 'personId',
+      select: 'name role canMessage',
+    });
+
+    // Step 3: Aggregate unique personIds into a Set
+    const uniquePersonIds = new Set(personIdsRelatedToSites.map(person => 
+      {
+        // console.log('person::', person)
+          return {
+            personId: person.personId,
+            siteId: person.siteId
+          }
+      }  
+      
+    ).filter(personId => {
+
+      // console.log('personId =====', personId);
+
+      return personId.personId.toString() !== req.user.userId.toString()  && 
+      personId.personId.role === req.query.role; // Exclude logged-in user and filter by role
+
+    } ) // Exclude logged-in user
+    );
+
+    // Convert the Set to an array if needed
+    const uniquePersonIdsArray = Array.from(uniquePersonIds);
+
+    // console.log('Unique Person IDs:', uniquePersonIdsArray);
+
+    // console.log('req.user.userId', req.user.userId);
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: uniquePersonIdsArray,
+      message: `All ${this.modelName} with pagination`,
+      success: true,
+    });
+  });
+
+
+  // add more methods here if needed or override the existing ones 
 }

@@ -31,6 +31,13 @@ const userSchema = new Schema<TUser, UserModal>(
     conversation_restrict_with: {
       type: [String],
     },
+
+    canMessage : {
+      type: Boolean,
+      required: [false, 'canMessage is not required'],
+      default: true, // By default, users can message
+    },
+
     name :{
       type: String,
       required: [true, 'Name is required'],
@@ -50,7 +57,7 @@ const userSchema = new Schema<TUser, UserModal>(
       type: String,
       required: [false, 'Phone number is not required'],
     },
-    //> What is site_forman ?? 
+    
 
     profileImage: {
       type: profileImageSchema,

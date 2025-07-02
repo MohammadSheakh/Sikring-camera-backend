@@ -24,6 +24,17 @@ const conversationSchema = new Schema<IConversation>(
         ).join(', ')}`,
       ],
     },
+
+    siteId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Site', // Reference to Site model
+      required: [true, 'Site Id is required'], // Optional site ID
+    },
+    canConversate :{
+      type: Boolean,
+      required: [false, 'canConversate is not required'],
+      default: true, 
+    },
   
     groupName: {
       type: String,

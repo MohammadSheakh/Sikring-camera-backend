@@ -86,6 +86,15 @@ router.route('/conversation/paginate').get(
   controller.getAllWithPaginationForUserConversation
 );
 
+
+router.route('/conversation/admin/paginate').get(
+  auth('common'), // TODO : role fix korte hobe 
+  validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role', 'siteId', ...paginationOptions])),
+  controller.getAllWithPaginationForAdminConversation
+);
+
+
+
 router.route('/:id').get(
   // auth('common'),
   controller.getById

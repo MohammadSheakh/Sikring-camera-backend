@@ -17,6 +17,7 @@ export type TUser = {
   _userId: undefined | Types.ObjectId;
   user_custom_id: string;
   conversation_restrict_with: string[];
+  canMessage? : boolean;
   _id:  undefined; // Types.ObjectId |
   personalize_Journey_Id : Types.ObjectId;
   subscriptionType : TSubscriptionType.free | TSubscriptionType.premium;

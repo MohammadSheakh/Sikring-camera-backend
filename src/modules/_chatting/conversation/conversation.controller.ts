@@ -192,7 +192,6 @@ export class ConversationController extends GenericController<typeof Conversatio
 
     participants = [...participants, req.user.userId]; // add yourself to the participants list
 
-    
     if (participants.length > 0) {
       type =
         participants.length > 2
@@ -202,6 +201,7 @@ export class ConversationController extends GenericController<typeof Conversatio
       const conversationData: IConversation = {
         creatorId: req.user.userId,
         type,
+        siteId: req.body.siteId,
       };
 
       // check if the conversation already exists
@@ -290,7 +290,7 @@ export class ConversationController extends GenericController<typeof Conversatio
       // just send message to the existing conversation
 
       let res1 ;
-      if (message && existingConversation?._id) {
+      if (message && existingConversation?._id && existingConversation?.canConversate) {
           let res1 : IMessage | null = await messageService.create({
             text: message,
             senderId: req.user.userId,

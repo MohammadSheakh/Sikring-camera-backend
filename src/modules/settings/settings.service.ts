@@ -69,6 +69,18 @@ export class SettingsService extends GenericService<typeof Settings> {
         `Details not found for type: ${type}..`
       );
     }
+  }
+  
+  async getDetails() {
+
+    const setting = await Settings.find(); // .sort({ createdAt: -1 })
+
+    if (setting.length === 0) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        `Details not found ..`
+      );
+    }
 
     return setting;
   }

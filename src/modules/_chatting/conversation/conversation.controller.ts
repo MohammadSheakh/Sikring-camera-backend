@@ -15,6 +15,7 @@ import { RoleType } from '../conversationParticipents/conversationParticipents.c
 import { User } from '../../user/user.model';
 import omit from '../../../shared/omit';
 import pick from '../../../shared/pick';
+import { populate } from 'dotenv';
 
 let conversationParticipantsService = new ConversationParticipentsService();
 let messageService = new MessagerService();
@@ -54,135 +55,52 @@ export class ConversationController extends GenericController<typeof Conversatio
     });
   });
 
-  // override // 1️⃣
-  /*
-  create = catchAsync(async (req: Request, res: Response) => {
-    let type;
-    let result: IConversation;
-    // creatorId ta req.user theke ashbe
-    //req.body.creatorId = req.user.userId;
-    let { participants, message } = req.body; // type, attachedToId, attachedToCategory
 
-    // type is based on participants count .. if count is greater than 2 then group else direct
+  /*************
+   * 
+   * ( Dashboard ) | Admin :: getAllConversationAndItsParticipantsBySiteId
+   * 
+   * *********** */
+  getAllConversationAndItsParticipantsBySiteId = catchAsync(
+    async (req: Request, res: Response) => {
+      const { siteId } = req.query;
 
-    if (!participants) {
-      // 🔥 test korte hobe logic ..
-      throw new ApiError(
-        StatusCodes.BAD_REQUEST,
-        'Without participants you can not create a conversation'
-      );
-    }
+      const conversations = await Conversation.find({
+        siteId: siteId,
+        isDeleted: false, 
+      }).select('-__v -type -updatedAt -lastMessage -deletedFor -groupAdmins -blockedUsers -groupBio -groupProfilePicture -groupName').populate(
+        {
+          path: 'siteId',
+          select: 'name'
+        }
+      )
 
-    participants = [...participants, req.user.userId]; // add yourself to the participants list
+      // now we have to get all participants of each conversation
 
-    
-    if (participants.length > 0) {
-      type =
-        participants.length > 2
-          ? ConversationType.group
-          : ConversationType.direct;
-
-      const conversationData: IConversation = {
-        creatorId: req.user.userId,
-        type,
-        // attachedToId,
-        // attachedToCategory,
-      };
-
-      // check if the conversation already exists
-      const existingConversation = await Conversation.findOne({
-        creatorId: req.user.userId,
-      });
-
-      if (!existingConversation){
-        ////////// Create a new conversation
-
-        result = await this.service.create(conversationData); // 🎯🎯🎯🎯
-
-        if (!result) {
-          throw new ApiError(
-            StatusCodes.BAD_REQUEST,
-            'Unable to create conversation'
+      const conversationsWithParticipants = await Promise.all(
+        conversations.map(async (conversation) => {
+          const participants = await conversationParticipantsService.getByConversationIdForAdminDashboard(
+            conversation._id
           );
-        }
-
-        for (const participant of participants) {
-          // try {
-          // console.log('🔥🔥participants🔥', participants);
-
-          // as participants is just an id .. 
-
-          let user = await User.findById(participant).select('role');
-
-          // console.log(
-          //   '🔥🔥user role  🔥',
-          //   user,
-          //   user?.role,)
-
-          const res1 = await conversationParticipantsService.create({
-            userId: participant,
-            conversationId: result?._id,
-            role: user?.role === RoleType.user ? RoleType.user : RoleType.bot, // 🔴 ekhane jhamela ase .. 
-          });
-          if (!res1) {
-            throw new ApiError(
-              StatusCodes.BAD_REQUEST,
-              'Unable to create conversation participant'
-            );
-          }
-
-          // console.log('🔥🔥res1🔥', res1);
-
-          // } catch (error) {
-          // console.error("Error creating conversation participant:", error);
-          // }
-        }
-
-        if (message && result?._id) {
-          const res1: IMessage | null = await messageService.create({
-            text: message,
-            senderId: req.user.userId,
-            conversationId: result?._id,
-            senderRole: req.user.role === RoleType.user ? RoleType.user : RoleType.bot,
-          });
-          if (!res1) {
-            throw new ApiError(
-              StatusCodes.BAD_REQUEST,
-              'Unable to create conversation participant'
-            );
-          }
-        }
-      }
-
-      // dont need to create conversation .. 
-      // just send message to the existing conversation
-
-      let res1 ;
-      if (message && existingConversation?._id) {
-          let res1 : IMessage | null = await messageService.create({
-            text: message,
-            senderId: req.user.userId,
-            conversationId: existingConversation?._id,
-            senderRole: req.user.role === RoleType.user ? RoleType.user : RoleType.bot,
-          });
-          if (!res1) {
-            throw new ApiError(
-              StatusCodes.BAD_REQUEST,
-              'Unable to create conversation participant'
-            );
-          }
-        }
+          
+          return {
+            ...conversation.toObject(),
+            participants,
+          };
+        })
+      );
 
       sendResponse(res, {
         code: StatusCodes.OK,
-        data: existingConversation ? existingConversation : result,
-        message: `${this.modelName} created successfully`,
+        data: conversationsWithParticipants,
+        message: `All conversations with participants for siteId: ${siteId}`,
         success: true,
       });
     }
-  });
-  */
+  );
 
+
+ 
   create = catchAsync(async (req: Request, res: Response) => {
     let type;
     let result: IConversation;
@@ -326,27 +244,7 @@ export class ConversationController extends GenericController<typeof Conversatio
     }
   });
 
-/********************
- * 
-  // this trigger Cron Job is For Manual Testing:
-  triggerCronJob = catchAsync(async (req: Request, res: Response) => {
-  try {
-    await sendDailyMessageToAllConversations();
-    
-    sendResponse(res, {
-      code: StatusCodes.OK,
-      message: 'Cron job triggered successfully',
-      success: true,
-    });
-  } catch (error) {
-    throw new ApiError(
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      'Failed to trigger cron job'
-    );
-  }
-  });
 
-******************** */
 
   addParticipantsToExistingConversation = catchAsync(
     async (req: Request, res: Response) => {
@@ -543,3 +441,156 @@ export class ConversationController extends GenericController<typeof Conversatio
 
   // add more methods here if needed or override the existing ones
 }
+
+
+ // override // 1️⃣
+  /*
+  create = catchAsync(async (req: Request, res: Response) => {
+    let type;
+    let result: IConversation;
+    // creatorId ta req.user theke ashbe
+    //req.body.creatorId = req.user.userId;
+    let { participants, message } = req.body; // type, attachedToId, attachedToCategory
+
+    // type is based on participants count .. if count is greater than 2 then group else direct
+
+    if (!participants) {
+      // 🔥 test korte hobe logic ..
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        'Without participants you can not create a conversation'
+      );
+    }
+
+    participants = [...participants, req.user.userId]; // add yourself to the participants list
+
+    
+    if (participants.length > 0) {
+      type =
+        participants.length > 2
+          ? ConversationType.group
+          : ConversationType.direct;
+
+      const conversationData: IConversation = {
+        creatorId: req.user.userId,
+        type,
+        // attachedToId,
+        // attachedToCategory,
+      };
+
+      // check if the conversation already exists
+      const existingConversation = await Conversation.findOne({
+        creatorId: req.user.userId,
+      });
+
+      if (!existingConversation){
+        ////////// Create a new conversation
+
+        result = await this.service.create(conversationData); // 🎯🎯🎯🎯
+
+        if (!result) {
+          throw new ApiError(
+            StatusCodes.BAD_REQUEST,
+            'Unable to create conversation'
+          );
+        }
+
+        for (const participant of participants) {
+          // try {
+          // console.log('🔥🔥participants🔥', participants);
+
+          // as participants is just an id .. 
+
+          let user = await User.findById(participant).select('role');
+
+          // console.log(
+          //   '🔥🔥user role  🔥',
+          //   user,
+          //   user?.role,)
+
+          const res1 = await conversationParticipantsService.create({
+            userId: participant,
+            conversationId: result?._id,
+            role: user?.role === RoleType.user ? RoleType.user : RoleType.bot, // 🔴 ekhane jhamela ase .. 
+          });
+          if (!res1) {
+            throw new ApiError(
+              StatusCodes.BAD_REQUEST,
+              'Unable to create conversation participant'
+            );
+          }
+
+          // console.log('🔥🔥res1🔥', res1);
+
+          // } catch (error) {
+          // console.error("Error creating conversation participant:", error);
+          // }
+        }
+
+        if (message && result?._id) {
+          const res1: IMessage | null = await messageService.create({
+            text: message,
+            senderId: req.user.userId,
+            conversationId: result?._id,
+            senderRole: req.user.role === RoleType.user ? RoleType.user : RoleType.bot,
+          });
+          if (!res1) {
+            throw new ApiError(
+              StatusCodes.BAD_REQUEST,
+              'Unable to create conversation participant'
+            );
+          }
+        }
+      }
+
+      // dont need to create conversation .. 
+      // just send message to the existing conversation
+
+      let res1 ;
+      if (message && existingConversation?._id) {
+          let res1 : IMessage | null = await messageService.create({
+            text: message,
+            senderId: req.user.userId,
+            conversationId: existingConversation?._id,
+            senderRole: req.user.role === RoleType.user ? RoleType.user : RoleType.bot,
+          });
+          if (!res1) {
+            throw new ApiError(
+              StatusCodes.BAD_REQUEST,
+              'Unable to create conversation participant'
+            );
+          }
+        }
+
+      sendResponse(res, {
+        code: StatusCodes.OK,
+        data: existingConversation ? existingConversation : result,
+        message: `${this.modelName} created successfully`,
+        success: true,
+      });
+    }
+  });
+  */
+
+
+  /********************
+ * 
+  // this trigger Cron Job is For Manual Testing:
+  triggerCronJob = catchAsync(async (req: Request, res: Response) => {
+  try {
+    await sendDailyMessageToAllConversations();
+    
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      message: 'Cron job triggered successfully',
+      success: true,
+    });
+  } catch (error) {
+    throw new ApiError(
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      'Failed to trigger cron job'
+    );
+  }
+  });
+
+******************** */

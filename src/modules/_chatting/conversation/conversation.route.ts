@@ -109,4 +109,16 @@ router.route('trigger-cron').get(
 //   controllerV2.getAllMessagesOfAConversation
 // )
 
+
+/*************
+   * 
+   * ( Dashboard ) | Admin :: getAllConversationAndItsParticipantsBySiteId
+   * 
+   * *********** */
+  router.route('/by/siteId').get(
+  //auth('common'),
+  controller.getAllConversationAndItsParticipantsBySiteId
+);
+
+
 export const ConversationRoute = router;

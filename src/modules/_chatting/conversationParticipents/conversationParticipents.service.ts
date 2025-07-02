@@ -28,6 +28,24 @@ export class ConversationParticipentsService extends GenericService<
     return object;
   }
 
+  /*************
+   * 
+   * ( Dashboard ) | Admin :: getAllConversationAndItsParticipantsBySiteId
+   * 
+   * *********** */
+  async getByConversationIdForAdminDashboard(conversationId: any) {
+    const object = await this.model.find({ conversationId }).select('-joinedAt -createdAt -updatedAt -__v')
+    .populate({
+      path: 'userId',
+      select:'name role'
+    });
+    if (!object) {
+      // throw new ApiError(StatusCodes.BAD_REQUEST, 'No file uploaded');
+      return null;
+    }
+    return object;
+  }
+
   // async getByUserId(userId: any) {
   //   const object = await this.model.find({ userId });
   //   if (!object) {

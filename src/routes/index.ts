@@ -14,6 +14,7 @@ import { userSiteRoute } from '../modules/_site/userSite/userSite.route';
 import { auditLogRoute } from '../modules/auditLog/auditLog.route';
 import { CameraPersonRoute } from '../modules/_camera/cameraPerson/cameraPerson.route';
 import { ReviewRoute } from '../modules/review/review.route';
+import { SettingsRoutes } from '../modules/settings/settings.routes';
 
 // import { ChatRoutes } from '../modules/chat/chat.routes';
 // import { MessageRoutes } from '../modules/message/message.routes';
@@ -92,6 +93,11 @@ const apiRoutes = [
     // 🌀
     path: '/review',
     route: ReviewRoute,
+  },
+  {
+    // 🌀
+    path: '/settings',
+    route: SettingsRoutes,
   },
 ];
 

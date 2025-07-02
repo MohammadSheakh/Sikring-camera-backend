@@ -56,7 +56,25 @@ const getDetailsByType = catchAsync(async (req, res, next) => {
   });
 });
 
+
+/**********
+ * 
+ * Get All Settings Details in one go
+ * 
+ * ******** */
+const getDetails = catchAsync(async (req, res, next) => {
+
+  const result = await settingsService.getDetails();
+
+  sendResponse(res, {
+    code: StatusCodes.OK,
+    message: `All settings fetched successfully`,
+    data: result,
+  });
+});
+
 export const SettingsController = {
   createOrUpdateSettings,
   getDetailsByType,
+  getDetails
 };

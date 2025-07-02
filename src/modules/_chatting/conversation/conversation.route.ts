@@ -29,7 +29,7 @@ const paginationOptions: Array<'sortBy' | 'page' | 'limit' | 'populate'> = [
 //info : pagination route must be before the route with params
 router.route('/paginate').get(
   //auth('common'),
-  validateFiltersForQuery(optionValidationChecking(['_id', 'creatorId', ...paginationOptions])),
+  validateFiltersForQuery(optionValidationChecking(['_id', 'creatorId', 'siteId', ...paginationOptions])),
   controller.getAllWithPagination
 );
 
@@ -56,7 +56,7 @@ router.route('/create').post(
   //     { name: 'attachments', maxCount: 15 }, // Allow up to 5 cover photos
   //   ]),
   // ],
-  auth('user'),
+  auth('common'),
   validateRequest(validation.createConversationValidationSchema),
   controller.create // 2️⃣
 );

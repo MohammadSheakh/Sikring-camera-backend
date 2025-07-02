@@ -32,9 +32,19 @@ export class ConversationController extends GenericController<typeof Conversatio
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
 
+
+    const populateOptions: (string | {path: string, select: string}[]) = [
+      // {
+      //   path: 'personId',
+      //   select: 'name role' // name 
+      // },
+      // 'personId'
+      
+    ];
+
     let dontWantToInclude = '-embedding -isDeleted -updatedAt -createdAt -__v'; // Specify fields to exclude from the result
     
-    const result = await this.service.getAllWithPagination(filters, options, dontWantToInclude);
+    const result = await this.service.getAllWithPagination(filters, options,populateOptions,dontWantToInclude);
 
     sendResponse(res, {
       code: StatusCodes.OK,

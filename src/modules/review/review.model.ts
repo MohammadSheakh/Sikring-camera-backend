@@ -8,9 +8,13 @@ const ReviewSchema = new Schema<IReview>(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    message: {
-      type: String,
+    rating: {
+      type: Number,
       required: [true, 'dateOfBirth is required'],
+    },
+    comment : {
+      type: String,
+      required: [false, 'comment is not required'],
     },
     isDeleted: {
       type: Boolean,

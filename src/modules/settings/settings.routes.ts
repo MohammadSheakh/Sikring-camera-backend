@@ -12,5 +12,5 @@ router
   .route('/')
   .get(auth('common'), SettingsController.getDetailsByType)
   // FIXME : FormData te details send korle kaj hocche na .. raw kaj kortese
-  .post(auth('projectManager'), SettingsController.createOrUpdateSettings);
+  .post(auth('common'), SettingsController.createOrUpdateSettings);
 export const SettingsRoutes = router;

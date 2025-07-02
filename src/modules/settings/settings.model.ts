@@ -7,10 +7,10 @@ const settingsSchema = new Schema<ISettings>(
     type: {
       type: String,
       enum: [
-        settingsType.aboutUs,
-        settingsType.contactUs,
-        settingsType.privacyPolicy,
-        settingsType.termsAndConditions,
+        settingsType.aboutUs, // Imp
+        settingsType.contactUs, // this will not work
+        settingsType.privacyPolicy, // Imp
+        settingsType.termsAndConditions, // Imp
       ],
       required: true,
     },

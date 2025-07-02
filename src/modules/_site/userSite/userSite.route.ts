@@ -75,6 +75,17 @@ router.route('/manager/paginate').get(
   controller.getAllWithPaginationForManagerDashboard
 );
 
+/***********
+ * 
+ * App (Customer) : ConversationList : get all Related Person And Conversation 🟡🟡🟡 its not working .. 
+ * // 🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴 issue  for conversation
+ * *********** */ 
+router.route('/conversation/paginate').get(
+  auth('common'), // TODO : role fix korte hobe 
+  validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role', 'siteId', ...paginationOptions])),
+  controller.getAllWithPaginationForUserConversation
+);
+
 router.route('/:id').get(
   // auth('common'),
   controller.getById

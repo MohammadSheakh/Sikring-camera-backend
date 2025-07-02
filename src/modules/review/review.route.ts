@@ -60,7 +60,7 @@ router.route('/create').post(
   //   ]),
   // ],
   auth('common'),
-  validateRequest(validation.createHelpMessageValidationSchema),
+  validateRequest(validation.createReviewValidationSchema),
   controller.create
 );
 

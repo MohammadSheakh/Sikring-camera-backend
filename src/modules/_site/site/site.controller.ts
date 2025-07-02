@@ -68,6 +68,12 @@ export class SiteController extends GenericController<
             type: req.body.type || "other",
         });
 
+        const createdUserForSite = await userSiteService.create({
+            personId: req.user.userId,
+            siteId: result._id,
+            role: TRole.admin,
+          });
+
         let actionPerformed = '';
 
         if(req.body.assignedManagerId && result){

@@ -162,6 +162,22 @@ export class userSiteController extends GenericController<
       success: true,
     });
   });
+
+
+  // 🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴 issue  for conversation
   // add more methods here if needed or override the existing ones 
-  
+  //[🚧][🧑‍💻][🧪] // ✅🆗
+  getAllWithPaginationForUserConversation = catchAsync(async (req: Request, res: Response) => {
+    
+    const results = await  userSite.find()
+
+    console.log('results 🧪🧪🧪🧪🧪', results);
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: null,
+      message: `All ${this.modelName} with pagination`,
+      success: true,
+    });
+  });
 }

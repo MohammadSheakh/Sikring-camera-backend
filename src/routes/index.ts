@@ -13,6 +13,7 @@ import { siteRoute } from '../modules/_site/site/site.route';
 import { userSiteRoute } from '../modules/_site/userSite/userSite.route';
 import { auditLogRoute } from '../modules/auditLog/auditLog.route';
 import { CameraPersonRoute } from '../modules/_camera/cameraPerson/cameraPerson.route';
+import { ReviewRoute } from '../modules/review/review.route';
 
 // import { ChatRoutes } from '../modules/chat/chat.routes';
 // import { MessageRoutes } from '../modules/message/message.routes';
@@ -86,6 +87,11 @@ const apiRoutes = [
     // 🌀
     path: '/notification',
     route: NotificationRoutes,
+  },
+  {
+    // 🌀
+    path: '/review',
+    route: ReviewRoute,
   },
 ];
 

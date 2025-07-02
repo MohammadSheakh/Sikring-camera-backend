@@ -1,23 +1,24 @@
 import { z } from 'zod';
 
-export const createHelpMessageValidationSchema = z.object({
+export const createReviewValidationSchema = z.object({
   body: z.object({
-    Review: z  
-    .string({
-        required_error: 'Review is required, Review must be a string.',
-        invalid_type_error: 'dateOfBirth must be a string.',
-      }).min(5, {
-      message: 'Review must be at least 5 characters long.',
-    }).max(500, {
-      message: 'Review must be at most 500 characters long.',
+    rating: z  
+    .number({
+        required_error: 'rating is required, rating must be a number.',
+        invalid_type_error: 'rating must be a number.',
+      }).min(1, {
+      message: 'Rating must be at least 1.',
+    }).max(5, {
+      message: 'Rating must be at most 5.',
     }),
-    
-    // TODO : FIXME : userId jodi mongoose er objectId hoy tahole zod er objectId validation use kora lagbe
-    userId: z
+    comment: z
     .string({
-        required_error: 'userId is required, userId must be a string.',
-        invalid_type_error: 'userId must be a string.',
-     }),
+      required_error: 'Comment is required.',
+      invalid_type_error: 'Comment must be a string.',
+    })
+    .min(1, {
+      message: 'Comment must be at least 1 character long.',
+    }),
   }),
 
   // params: z.object({

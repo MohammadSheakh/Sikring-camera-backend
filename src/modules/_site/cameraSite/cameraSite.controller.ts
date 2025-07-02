@@ -153,7 +153,10 @@ export class cameraSiteController extends GenericController<
     let siteRes;
 
     if(req.query.siteId){
-      siteRes = await Site.findById(req.query.siteId).select('name');
+      siteRes = await Site.findById(req.query.siteId).select('name attachments').populate({
+        path: 'attachments',
+        select: 'attachment',
+      });
       
     }
     

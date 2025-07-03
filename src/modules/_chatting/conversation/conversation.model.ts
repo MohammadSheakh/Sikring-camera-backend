@@ -2,14 +2,13 @@ import { model, Schema } from 'mongoose';
 import paginate from '../../../common/plugins/paginate';
 import { IConversation, IConversationModel } from './conversation.interface';
 import { ConversationType } from './conversation.constant';
-import { RoleType } from '../message/message.constant';
 
 const conversationSchema = new Schema<IConversation>(
   {
     creatorId: { //🔗
       type: Schema.Types.ObjectId,
       ref: 'User',
-    required: [true, 'User Id is required'],
+      required: [true, 'User Id is required'],
     },
     type: {
       type: String,

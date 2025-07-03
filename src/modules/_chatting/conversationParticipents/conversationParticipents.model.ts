@@ -21,22 +21,6 @@ const conversationParticipentsSchema = new Schema<IConversationParticipents>(
       default: Date.now,
     },
     
-    // TODO : role jodi thake .. taile user er role e jeno thake ekhane .. 
-
-    // role: {
-    //       type: String,
-    //       enum: [
-    //         RoleType.bot,
-    //         RoleType.user,
-    //       ],
-    //       required: [
-    //         true,
-    //         `RoleType is required it can be ${Object.values(
-    //           RoleType
-    //         ).join(', ')}`,
-    //       ],
-    //     },
-    
     isDeleted: {
       type: Boolean,
       required: [false, 'isDeleted is not required'],

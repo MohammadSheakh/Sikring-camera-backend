@@ -2,6 +2,7 @@ import express from 'express';
 import { validateFiltersForQuery } from '../../../middlewares/queryValidation/paginationQueryValidationMiddleware';
 import { ConversationParticipentsController } from './conversationParticipents.controller';
 import { IConversationParticipents } from './conversationParticipents.interface';
+import auth from '../../../middlewares/auth';
 
 const multer = require('multer');
 const storage = multer.memoryStorage();
@@ -28,6 +29,17 @@ router.route('/paginate').get(
   //auth('common'),
   validateFiltersForQuery(optionValidationChecking(['_id', 'userId', ...paginationOptions])),
   controller.getAllWithPagination 
+);
+
+/**********
+ * 
+ * (req.query.otherUserId) otherUserId
+ * get conversation participents by conversationId
+ * 
+ * ********* */
+router.route('/check-conversation').get(
+  auth('common'),
+  controller.hasConversationWithUser
 );
 
 router.route('/:id').get(
@@ -68,5 +80,6 @@ router
 .put(
   //auth('common'),
   controller.softDeleteById);
+
 
 export const ConversationParticipentsRoute = router;

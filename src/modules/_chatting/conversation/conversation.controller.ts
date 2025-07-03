@@ -16,6 +16,7 @@ import { User } from '../../user/user.model';
 import omit from '../../../shared/omit';
 import pick from '../../../shared/pick';
 import { populate } from 'dotenv';
+import mongoose from 'mongoose';
 
 let conversationParticipantsService = new ConversationParticipentsService();
 let messageService = new MessagerService();
@@ -99,8 +100,6 @@ export class ConversationController extends GenericController<typeof Conversatio
     }
   );
 
-
- 
   create = catchAsync(async (req: Request, res: Response) => {
     let type;
     let result: IConversation;

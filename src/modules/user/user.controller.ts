@@ -208,7 +208,7 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
        * ******** */
 
       let attachments = [];
-        
+      
       if (req.files && req.files.attachments) {
       attachments.push(
         ...(await Promise.all(

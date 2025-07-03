@@ -32,7 +32,7 @@ const paginationOptions: Array<'sortBy' | 'page' | 'limit' | 'populate'> = [
 
 /***********
  * 
- * App (Customer) : Home : get all site by personId and customer type |🔴|//TODO :  eta pagination kora jabe na
+ * App (Customer) : Home : get all site by personId and customer type
  * 
  * *********** */ 
 router.route('/paginate').get(
@@ -66,7 +66,7 @@ router.route('/paginate/manager/siteId').get(
 
 /***********
  * 
- * Web (Manager) : Dashboard : get all site by personId and customer type |🔴|//TODO :  eta pagination kora jabe na
+ * Web (Manager) : Dashboard : get all site by personId and customer type 
  * 
  * *********** */ 
 router.route('/manager/paginate').get(
@@ -144,8 +144,5 @@ router.route('/softDelete/:id').put(
 //[🚧][🧑‍💻✅][🧪] // 🆗
 
 // TODO : assign multiple users to a site 
-//                                        💡
-
-
 
 export const userSiteRoute = router;

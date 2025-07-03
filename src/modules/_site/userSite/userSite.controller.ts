@@ -118,7 +118,7 @@ export class userSiteController extends GenericController<
   
 /***********
  * 
- * Web (Manager) : Dashboard : get all site by personId and customer type |🔴|//TODO :  eta pagination kora jabe na
+ * Web (Manager) : Dashboard : get all site by personId and customer type 
  * 
  * *********** */ 
   //[🚧][🧑‍💻][🧪] // ✅🆗

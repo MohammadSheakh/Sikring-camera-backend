@@ -21,6 +21,7 @@ export class MessageController extends GenericController<typeof Message, IMessag
         super(new MessagerService(), "Message")
     }
 
+    /**********
     create = catchAsync(async (req: Request, res: Response) => {
         
         const {conversationId} = req.query;
@@ -78,28 +79,26 @@ export class MessageController extends GenericController<typeof Message, IMessag
           success: true,
         });
     });
+    ******** */
 
     getAllWithPagination = catchAsync(async (req: Request, res: Response) => {
-    //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
-    const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
-    const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
-    
-    let dontWantToInclude = '-embedding -attachments -isDeleted -updatedAt -__v'; // Specify fields to exclude from the result
-    // -createdAt
+        //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
+        const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
+        const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+        
+        let dontWantToInclude = '-embedding -attachments -isDeleted -updatedAt -__v'; // Specify fields to exclude from the result
+        // -createdAt
 
-    const result = await this.service.getAllWithPagination(filters, options, dontWantToInclude);
+        const result = await this.service.getAllWithPagination(filters, options, dontWantToInclude);
 
-    sendResponse(res, {
-      code: StatusCodes.OK,
-      data: result,
-      message: `All ${this.modelName} with pagination`,
-      success: true,
+        sendResponse(res, {
+        code: StatusCodes.OK,
+        data: result,
+        message: `All ${this.modelName} with pagination`,
+        success: true,
+        });
     });
-  });
 
-   
-    
-    
     // 🟢 i think we dont need this .. because we need pagination in this case .. and pagination 
     // is already implemented ..  
     getAllMessageByConversationId = catchAsync(

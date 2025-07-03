@@ -43,7 +43,7 @@ export class ConversationController extends GenericController<typeof Conversatio
       
     ];
 
-    let dontWantToInclude = '-embedding -isDeleted -updatedAt -createdAt -__v'; // Specify fields to exclude from the result
+    let dontWantToInclude = '-groupName -groupProfilePicture -groupBio -groupAdmins -blockedUsers -deletedFor -isDeleted -updatedAt -createdAt -__v'; // Specify fields to exclude from the result
     
     const result = await this.service.getAllWithPagination(filters, options,populateOptions,dontWantToInclude);
 

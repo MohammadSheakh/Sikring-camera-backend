@@ -173,25 +173,6 @@ export class userSiteController extends GenericController<
   //[🚧][🧑‍💻][🧪] // ✅🆗
   getAllWithPaginationForUserConversation = catchAsync(async (req: Request, res: Response) => {
     
-    /*****************************
-
-    const sitesRelatedToUser = await  userSite.find({
-      personId: req.user.userId,
-      isDeleted: false,
-    }).select('siteId')
-
-   sitesRelatedToUser.map((site) => {
-    // now for every siteId.. we have to get related PersonId and set those id into a set .. 
-    // so that we can get unique personId
-
-    const personIdsRelatedToSite = userSite.find({
-      siteId: site.siteId,
-      isDeleted: false,
-    }).select('personId');
-
-    *****************************/
-
-
     // Step 1: Retrieve all siteIds related to the user
     const sitesRelatedToUser = await userSite.find(
       { personId: req.user.userId, isDeleted: false },

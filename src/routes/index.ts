@@ -15,6 +15,8 @@ import { auditLogRoute } from '../modules/auditLog/auditLog.route';
 import { CameraPersonRoute } from '../modules/_camera/cameraPerson/cameraPerson.route';
 import { ReviewRoute } from '../modules/review/review.route';
 import { SettingsRoutes } from '../modules/settings/settings.routes';
+import { ConversationParticipents } from '../modules/_chatting/conversationParticipents/conversationParticipents.model';
+import { ConversationParticipentsRoute } from '../modules/_chatting/conversationParticipents/conversationParticipents.route';
 
 // import { ChatRoutes } from '../modules/chat/chat.routes';
 // import { MessageRoutes } from '../modules/message/message.routes';
@@ -38,6 +40,11 @@ const apiRoutes = [
     // 🌀
     path: '/conversation',
     route: ConversationRoute,
+  },
+  {
+    // 🌀
+    path: '/conversation-participants',
+    route: ConversationParticipentsRoute,
   },
   {
     // 🌀

@@ -100,17 +100,6 @@ const updateUserProfile = async (
 };
 
 
-const updateProfileImage = async (
-  userId: string,
-  payload: Partial<TUser>
-): Promise<TUser | null> => {
-  const result = await User.findByIdAndUpdate(userId, payload, { new: true });
-  if (!result) {
-    throw new ApiError(StatusCodes.NOT_FOUND, 'User not found');
-  }
-  return result;
-};
-
 //[🚧][🧑‍💻✅][🧪🆗]
 const getMyProfile = async (userId: string): Promise<TUser | null> => {
   const result = await User.findById(userId);
@@ -152,7 +141,7 @@ export const UserService = {
   
   updateUserProfile,
   getMyProfile,
-  updateProfileImage,
+  //updateProfileImage,
   deleteMyProfile,
   getUserByEmail,
   ///////////////  ...  Related Service ///////////

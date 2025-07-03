@@ -66,6 +66,10 @@ const getDetails = catchAsync(async (req, res, next) => {
 
   const result = await settingsService.getDetails();
 
+  if (!result || result.length === 0) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'No settings found');
+  }
+
   sendResponse(res, {
     code: StatusCodes.OK,
     message: `All settings fetched successfully`,

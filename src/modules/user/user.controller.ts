@@ -412,8 +412,6 @@ const deleteAllDataFromCollection = async (req: Request, res: Response) => {
 };
 
 
-
-
 /*************
 const createAdminOrSuperAdmin = catchAsync(async (req, res) => {
   const payload = req.body;
@@ -438,30 +436,6 @@ const getSingleUser = catchAsync(async (req, res) => {
     message: 'User fetched successfully',
   });
 });
-
-/************
-//update profile image
-const updateProfileImage = catchAsync(async (req, res) => {
-  const userId = req.user.userId;
-  if (!userId) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
-  }
-  if (req.file) {
-    req.body.profile_image = {
-      imageUrl: '/uploads/users/' + req.file.filename,
-      file: req.file,
-    };
-  }
-  const result = await UserService.updateMyProfile(userId, req.body);
-  sendResponse(res, {
-    code: StatusCodes.OK,
-    data: result,
-    message: 'Profile image updated successfully',
-  });
-});
-********* */
-
-
 
 //get my profile //[🚧][🧑‍💻✅][🧪🆗]
 const getMyProfile = catchAsync(async (req, res) => {
@@ -617,34 +591,22 @@ const getAllAdminForAdminDashboard = catchAsync(async (req, res) => {
  * 
  * From AIM Construction -> Sikring
  * 
- * Update Profile
+ * Update Profile Basic Info
  * 
  * *********** */
 
 
-//update profile image
+//update profile 
 const updateProfile = catchAsync(async (req, res) => {
   const userId = req.user.userId;
   if (!userId) {
     throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
   }
-  if (req.file) {
-    const attachmentResult = await attachmentService.uploadSingleAttachment(
-      req.file,
-      TFolderName.user,
-      userId,
-      TAttachedToType.user
-    );
-
-    req.body.profileImage = {
-      imageUrl: attachmentResult.attachment,
-    };
-  }
-  const result = await UserService.updateMyProfile(userId, req.body);
+  const result = await UserService.updateUserProfile(userId, req.body);
   sendResponse(res, {
     code: StatusCodes.OK,
     data: result,
-    message: 'Profile image updated successfully',
+    message: 'Profile updated successfully',
   });
 });
 
@@ -672,7 +634,7 @@ const updateProfileImage = catchAsync(async (req, res) => {
       imageUrl: attachmentResult.attachment,
     };
   }
-  const result = await UserService.updateMyProfile(userId, req.body);
+  const result = await UserService.updateUserProfile(userId, req.body);
   sendResponse(res, {
     code: StatusCodes.OK,
     data: result,
@@ -684,9 +646,9 @@ const updateProfileImage = catchAsync(async (req, res) => {
 export const UserController = {
    //createAdminOrSuperAdmin, // recent 
   getSingleUser,
-  updateMyProfile,
-  updateProfileImage,
-
+  updateMyProfile, // This is For Admin Dashboard
+  updateProfileImage,  // update Profile Image
+  updateProfile, // Update Profile Basic Info
 
   updateUserProfile,
   getMyProfile,

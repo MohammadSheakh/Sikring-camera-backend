@@ -7,6 +7,7 @@ export interface ISettings {
     | settingsType.contactUs
     | settingsType.privacyPolicy
     | settingsType.termsAndConditions;
+  contactUs? : Object;
   details: string;
   createdAt: Date;
   updatedAt: Date;

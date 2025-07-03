@@ -43,10 +43,14 @@ export class SettingsService extends GenericService<typeof Settings> {
     if (existingSetting) {
       // existingSetting.set(payload.details); // ISSUE : not working ..
       existingSetting.details = payload.details;
+      if(type === settingsType.contactUs) {
+        existingSetting.contactUs = payload.contactUs; // Update contactUs if provided
+      }
       return await existingSetting.save();
     } else {
       // Ensure payload contains the correct type
       payload.type = type;
+
       return await Settings.create(payload);
     }
   }

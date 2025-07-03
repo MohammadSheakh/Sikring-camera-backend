@@ -16,8 +16,12 @@ const settingsSchema = new Schema<ISettings>(
     },
     details: {
       type: String,
-      required: true,
+      required: false,
     },
+    contactUs:{
+      type: Object,
+      required: false, // This is optional
+    }
   },
   {
     timestamps: true,

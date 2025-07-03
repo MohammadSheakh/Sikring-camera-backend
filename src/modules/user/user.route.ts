@@ -91,9 +91,15 @@ router.post('/delete/:collectionName',
 // TODO : update users basic info by user id 
 
 
+router
+.route('/profile')
+.put(
+  auth('common'),
+  UserController.updateProfile
+);
+
 
 // TODO : Admin : edit customer by id 
-
 
 
 //[🚧][🧑‍💻✅][🧪🆗] // query :: userId  SC
@@ -116,7 +122,7 @@ router.route('/edit-user/:userId')
  * ********************* */
 router
 .route('/profile-image')
-.post(
+.put(
   auth('common'),
   [upload.single('profileImage')],
   UserController.updateProfileImage

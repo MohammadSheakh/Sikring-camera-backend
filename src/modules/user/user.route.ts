@@ -94,6 +94,8 @@ router.post('/delete/:collectionName',
 
 // TODO : Admin : edit customer by id 
 
+
+
 //[🚧][🧑‍💻✅][🧪🆗] // query :: userId  SC
 router.route('/edit-user/:userId')
   .put(
@@ -106,6 +108,20 @@ router.route('/edit-user/:userId')
     // validateRequest(UserValidation.editUserValidationSchema), // TODO : Must Valisation add kora lagbe .. 
     UserController.updateUserProfile
   );
+
+/*************************
+ * // Working Perfectly .. 
+ * // (App) | Customer , User | Upload profile image ... 
+ * 
+ * ********************* */
+router
+.route('/profile-image')
+.post(
+  auth('common'),
+  [upload.single('profileImage')],
+  UserController.updateProfileImage
+);
+
 
 ////////////////////////////////////////////////
 

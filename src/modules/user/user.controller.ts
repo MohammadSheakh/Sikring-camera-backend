@@ -20,55 +20,18 @@ import { TAttachedToType, TFolderName } from '../attachments/attachment.constant
 import bcryptjs from 'bcryptjs';
 import { config } from '../../config';
 import { userSite } from '../_site/userSite/userSite.model';
+import { FolderName } from '../../enums/folderNames';
 
 
 const userCustomService = new UserCustomService();
 const attachmentService = new AttachmentService();
 
-const createAdminOrSuperAdmin = catchAsync(async (req, res) => {
-  const payload = req.body;
-  const result = await UserService.createAdminOrSuperAdmin(payload);
-  sendResponse(res, {
-    code: StatusCodes.CREATED,
-    data: result,
-    message: `${
-      payload.role === 'admin' ? 'Admin' : 'Super Admin'
-    } created successfully`,
-  });
-});
 
-//get single user from database
-const getSingleUser = catchAsync(async (req, res) => {
-  const { userId } = req.params;
-  const result = await UserService.getSingleUser(userId);
-  sendResponse(res, {
-    code: StatusCodes.OK,
-    data: result,
-    message: 'User fetched successfully',
-  });
-});
-
-//update profile image
-const updateProfileImage = catchAsync(async (req, res) => {
-  const userId = req.user.userId;
-  if (!userId) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
-  }
-  if (req.file) {
-    req.body.profile_image = {
-      imageUrl: '/uploads/users/' + req.file.filename,
-      file: req.file,
-    };
-  }
-  const result = await UserService.updateMyProfile(userId, req.body);
-  sendResponse(res, {
-    code: StatusCodes.OK,
-    data: result,
-    message: 'Profile image updated successfully',
-  });
-});
-
-
+/*************
+ * 
+ * This is For Admin Dashboard ... 
+ * 
+ * ************ */
 //[🚧][🧑‍💻][🧪] // ✅ 🆗 // SC
 //update user from database
 const updateMyProfile = catchAsync(async (req, res) => {
@@ -104,7 +67,7 @@ const updateMyProfile = catchAsync(async (req, res) => {
   req.body.companyLogoImage = attachments[0].attachment;
   }
   
-  const result = await UserService.updateMyProfile(userId, req.body);
+  const result = await UserService.updateUserProfile(userId, req.body);
   sendResponse(res, {
     code: StatusCodes.OK,
     data: result,
@@ -112,7 +75,13 @@ const updateMyProfile = catchAsync(async (req, res) => {
   });
 });
 
-// 
+/*************
+ * 
+ * 
+ * This is For Admin Dashboard ... 
+ * 
+ * ************ */
+
 //update user profile from database
 const updateUserProfile = catchAsync(async (req, res) => {
   const { userId } = req.params;
@@ -183,153 +152,6 @@ const updateUserProfile = catchAsync(async (req, res) => {
   });
 });
 
-
-//get my profile //[🚧][🧑‍💻✅][🧪🆗]
-const getMyProfile = catchAsync(async (req, res) => {
-  const userId = req.user.userId;
-  if (!userId) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
-  }
-  const result = await UserService.getMyProfile(userId);
-  sendResponse(res, {
-    code: StatusCodes.OK,
-    data: result,
-    message: 'User fetched successfully',
-  });
-});
-
-//get my profile //[🚧][🧑‍💻✅][🧪🆗]
-const getMyProfileOnlyRequiredField = catchAsync(async (req, res) => {
-  const userId = req.user.userId;
-  if (!userId) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
-  }
-  const result = await UserService.getMyProfileOnlyRequiredField(userId);
-  sendResponse(res, {
-    code: StatusCodes.OK,
-    data: result,
-    message: 'User fetched successfully',
-  });
-});
-
-//delete user from database
-const deleteMyProfile = catchAsync(async (req, res) => {
-  const userId = req.user.userId;
-  if (!userId) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
-  }
-  const result = await UserService.deleteMyProfile(userId);
-  sendResponse(res, {
-    code: StatusCodes.OK,
-    data: result,
-    message: 'User deleted successfully',
-  });
-});
-
-//////////////////////////////////////////////////////////
-
-/*********
- * 
- *  Admin:  Register Customer
- *   
- *  But we dont need to register customer .. since we have send
- *  invitation line functionality .. lets use that function  
- * ********* */
-
-//[🚧][🧑‍💻][🧪] // ✅ 🆗  
-// const createCustomer = catchAsync(async (req, res) => {
-
-// }
-
-
-/*********
- * 
- *  {{shob}}v1/user/paginate?role=manager  [role = manager / user]
- *  Admin:  Register Customer
- *    
- * ********* */
-//[🚧][🧑‍💻][🧪] // ✅ 🆗
-const getAllUserForAdminDashboard = catchAsync(async (req, res) => {
-  const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
-  const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
-  
-  const populateOptions: (string | {path: string, select: string}[]) = [
-    // {
-    //   path: 'cameraId',
-    //   select: ''
-    // },
-    // // 'personId'
-    // {
-    //   path: 'siteId',
-    //   select: ''
-    // }
-  ];
-
-  // const dontWantToInclude = ['-localLocation -attachments']; // -role
-
-  const dontWantToInclude = 'name address phoneNumber status' ; // -role
-  
-  const result = await userCustomService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
-
-  sendResponse(res, {
-    code: StatusCodes.OK,
-    data: result,
-    message: `All data with pagination`,
-    success: true,
-  });
-  
-  /*********************
-  
-  const filters = req.query;
-  const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
-
-  const query = {};
-
-  // Create a copy of filter without isPreview to handle separately
-  const mainFilter = { ...filters };
-
-  // Loop through each filter field and add conditions if they exist
-  for (const key of Object.keys(mainFilter)) {
-    if (key === 'name' && mainFilter[key] !== '') {
-      query[key] = { $regex: mainFilter[key], $options: 'i' }; // Case-insensitive regex search for name
-    } else {
-      query[key] = mainFilter[key];
-    }
-  }
-
-  const result = await userCustomService.getAllWithPagination(query, options);
-
-  sendResponse(res, {
-    code: StatusCodes.OK,
-    data: result,
-
-    message: 'All users fetched successfully',
-  });
-
-  ***************** */
-});
-
-//[🚧][🧑‍💻][🧪] // ✅ 🆗
-const getAllAdminForAdminDashboard = catchAsync(async (req, res) => {
-  // const filters = req.query;
-
-  const filters = { ...req.query };
-
-  // If role is not specified in query, set default to show both admin and superAdmin
-  if (!filters.role) {
-    filters.role = { $in: ['admin', 'superAdmin'] };
-  }
-
-  const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
-
-  const result = await userCustomService.getAllWithPagination(filters, options);
-
-  sendResponse(res, {
-    code: StatusCodes.OK,
-    data: result,
-    message: 'All admin fetched successfully',
-  });
-});
 
 //[🚧][🧑‍💻][🧪] // ✅ 🆗 // SC
 // send Invitation Link for a admin
@@ -592,8 +414,275 @@ const deleteAllDataFromCollection = async (req: Request, res: Response) => {
 
 
 
+/*************
+const createAdminOrSuperAdmin = catchAsync(async (req, res) => {
+  const payload = req.body;
+  const result = await UserService.createAdminOrSuperAdmin(payload);
+  sendResponse(res, {
+    code: StatusCodes.CREATED,
+    data: result,
+    message: `${
+      payload.role === 'admin' ? 'Admin' : 'Super Admin'
+    } created successfully`,
+  });
+});
+************ */
+
+//get single user from database
+const getSingleUser = catchAsync(async (req, res) => {
+  const { userId } = req.params;
+  const result = await UserService.getSingleUser(userId);
+  sendResponse(res, {
+    code: StatusCodes.OK,
+    data: result,
+    message: 'User fetched successfully',
+  });
+});
+
+/************
+//update profile image
+const updateProfileImage = catchAsync(async (req, res) => {
+  const userId = req.user.userId;
+  if (!userId) {
+    throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
+  }
+  if (req.file) {
+    req.body.profile_image = {
+      imageUrl: '/uploads/users/' + req.file.filename,
+      file: req.file,
+    };
+  }
+  const result = await UserService.updateMyProfile(userId, req.body);
+  sendResponse(res, {
+    code: StatusCodes.OK,
+    data: result,
+    message: 'Profile image updated successfully',
+  });
+});
+********* */
+
+
+
+//get my profile //[🚧][🧑‍💻✅][🧪🆗]
+const getMyProfile = catchAsync(async (req, res) => {
+  const userId = req.user.userId;
+  if (!userId) {
+    throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
+  }
+  const result = await UserService.getMyProfile(userId);
+  sendResponse(res, {
+    code: StatusCodes.OK,
+    data: result,
+    message: 'User fetched successfully',
+  });
+});
+
+//get my profile //[🚧][🧑‍💻✅][🧪🆗]
+const getMyProfileOnlyRequiredField = catchAsync(async (req, res) => {
+  const userId = req.user.userId;
+  if (!userId) {
+    throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
+  }
+  const result = await UserService.getMyProfileOnlyRequiredField(userId);
+  sendResponse(res, {
+    code: StatusCodes.OK,
+    data: result,
+    message: 'User fetched successfully',
+  });
+});
+
+//delete user from database
+const deleteMyProfile = catchAsync(async (req, res) => {
+  const userId = req.user.userId;
+  if (!userId) {
+    throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
+  }
+  const result = await UserService.deleteMyProfile(userId);
+  sendResponse(res, {
+    code: StatusCodes.OK,
+    data: result,
+    message: 'User deleted successfully',
+  });
+});
+
+//////////////////////////////////////////////////////////
+
+/*********
+ * 
+ *  Admin:  Register Customer
+ *   
+ *  But we dont need to register customer .. since we have send
+ *  invitation line functionality .. lets use that function  
+ * ********* */
+
+//[🚧][🧑‍💻][🧪] // ✅ 🆗  
+// const createCustomer = catchAsync(async (req, res) => {
+
+// }
+
+
+/*********
+ * 
+ *  {{shob}}v1/user/paginate?role=manager  [role = manager / user]
+ *  Admin:  Register Customer
+ *    
+ * ********* */
+//[🚧][🧑‍💻][🧪] // ✅ 🆗
+const getAllUserForAdminDashboard = catchAsync(async (req, res) => {
+  const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
+  const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+  
+  const populateOptions: (string | {path: string, select: string}[]) = [
+    // {
+    //   path: 'cameraId',
+    //   select: ''
+    // },
+    // // 'personId'
+    // {
+    //   path: 'siteId',
+    //   select: ''
+    // }
+  ];
+
+  // const dontWantToInclude = ['-localLocation -attachments']; // -role
+
+  const dontWantToInclude = 'name address phoneNumber status' ; // -role
+  
+  const result = await userCustomService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
+
+  sendResponse(res, {
+    code: StatusCodes.OK,
+    data: result,
+    message: `All data with pagination`,
+    success: true,
+  });
+  
+  /*********************
+  
+  const filters = req.query;
+  const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+
+  const query = {};
+
+  // Create a copy of filter without isPreview to handle separately
+  const mainFilter = { ...filters };
+
+  // Loop through each filter field and add conditions if they exist
+  for (const key of Object.keys(mainFilter)) {
+    if (key === 'name' && mainFilter[key] !== '') {
+      query[key] = { $regex: mainFilter[key], $options: 'i' }; // Case-insensitive regex search for name
+    } else {
+      query[key] = mainFilter[key];
+    }
+  }
+
+  const result = await userCustomService.getAllWithPagination(query, options);
+
+  sendResponse(res, {
+    code: StatusCodes.OK,
+    data: result,
+
+    message: 'All users fetched successfully',
+  });
+
+  ***************** */
+});
+
+//[🚧][🧑‍💻][🧪] // ✅ 🆗
+const getAllAdminForAdminDashboard = catchAsync(async (req, res) => {
+  // const filters = req.query;
+
+  const filters = { ...req.query };
+
+  // If role is not specified in query, set default to show both admin and superAdmin
+  if (!filters.role) {
+    filters.role = { $in: ['admin', 'superAdmin'] };
+  }
+
+  const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+
+  const result = await userCustomService.getAllWithPagination(filters, options);
+
+  sendResponse(res, {
+    code: StatusCodes.OK,
+    data: result,
+    message: 'All admin fetched successfully',
+  });
+});
+
+
+
+
+/**************
+ * 
+ * From AIM Construction -> Sikring
+ * 
+ * Update Profile
+ * 
+ * *********** */
+
+
+//update profile image
+const updateProfile = catchAsync(async (req, res) => {
+  const userId = req.user.userId;
+  if (!userId) {
+    throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
+  }
+  if (req.file) {
+    const attachmentResult = await attachmentService.uploadSingleAttachment(
+      req.file,
+      TFolderName.user,
+      userId,
+      TAttachedToType.user
+    );
+
+    req.body.profileImage = {
+      imageUrl: attachmentResult.attachment,
+    };
+  }
+  const result = await UserService.updateMyProfile(userId, req.body);
+  sendResponse(res, {
+    code: StatusCodes.OK,
+    data: result,
+    message: 'Profile image updated successfully',
+  });
+});
+
+/**************
+ * 
+ * From AIM Construction -> Sikring
+ * 
+ * Update Profile ... Working Perfectly For sikring camera .. 
+ * 
+ * *********** */
+
+//update profile image
+const updateProfileImage = catchAsync(async (req, res) => {
+  const userId = req.user.userId;
+  
+  if (req.file) {
+    const attachmentResult = await attachmentService.uploadSingleAttachment(
+      req.file,
+      TFolderName.user,
+      req.user.userId,
+      TAttachedToType.user
+    );
+
+    req.body.profileImage = {
+      imageUrl: attachmentResult.attachment,
+    };
+  }
+  const result = await UserService.updateMyProfile(userId, req.body);
+  sendResponse(res, {
+    code: StatusCodes.OK,
+    data: result,
+    message: 'Profile image updated successfully',
+  });
+});
+
+
 export const UserController = {
-  createAdminOrSuperAdmin,
+   //createAdminOrSuperAdmin, // recent 
   getSingleUser,
   updateMyProfile,
   updateProfileImage,

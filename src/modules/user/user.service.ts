@@ -82,17 +82,12 @@ const getSingleUser = async (userId: string): Promise<TUser | null> => {
   return result;
 };
 
-const updateMyProfile = async (
-  userId: string,
-  payload: Partial<TUser>
-): Promise<TUser | null> => {
-  const result = await User.findByIdAndUpdate(userId, payload, { new: true });
-  if (!result) {
-    throw new ApiError(StatusCodes.NOT_FOUND, 'User not found');
-  }
-  return result;
-};
-
+/********
+ * 
+ * Sikring Camera 
+ * this is for update my profile ..
+ * 
+ * ********* */
 const updateUserProfile = async (
   userId: string,
   payload: Partial<TUser>
@@ -154,7 +149,6 @@ export const UserService = {
 
   /////////////////////////////////////////////////
   getSingleUser,
-  updateMyProfile,
   
   updateUserProfile,
   getMyProfile,

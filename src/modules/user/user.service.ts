@@ -44,7 +44,7 @@ const createAdminOrSuperAdmin = async (
 
   await result.save();
   //send email for the new admin or super admin via email service
-  // todo
+  
   sendAdminOrSuperAdminCreationEmail(
     payload.email,
     payload.role,

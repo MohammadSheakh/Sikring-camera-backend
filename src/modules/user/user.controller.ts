@@ -39,13 +39,14 @@ const updateMyProfile = catchAsync(async (req, res) => {
   if (!userId) {
     throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
   }
+
   /*******
    * 
    * if req.file is present then we will update the profile image 
    * 
    * // TODO : image thik moto update hocche kina check korte hobe ..  
    * 
-   * ***** */
+   *******/
 
   let attachments = [];
         
@@ -222,12 +223,9 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
         })
         ))
       );
-
         req.body.attachments = attachments;
       }
       
-      
-
       const newUser = await AuthService.createUser({
         email: req.body.email,
         password: req.body.password,

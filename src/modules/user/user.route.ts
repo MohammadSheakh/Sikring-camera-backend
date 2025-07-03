@@ -43,7 +43,6 @@ router.route('/paginate/admin').get(
 );
 
 //[🚧][🧑‍💻][🧪] // ✅ 🆗
-// TODO : companyLogo upload korte parte hobe .. 
 router.post(
   "/create-customer-and-send-mail",
   [
@@ -83,14 +82,6 @@ router.post('/delete/:collectionName',
  *
  */
 
-//[🚧][🧑‍💻✅][🧪🆗] // query :: userId
-// TODO : update profile image by user id 
-
-//[🚧][🧑‍💻✅][🧪🆗] // query :: userId
-
-// TODO : update users basic info by user id 
-
-
 router
 .route('/profile')
 .put(
@@ -98,10 +89,11 @@ router
   UserController.updateProfile
 );
 
-
-// TODO : Admin : edit customer by id 
-
-
+/***********
+ * 
+ * Admin : edit customer by id 
+ * 
+ * ********* */
 //[🚧][🧑‍💻✅][🧪🆗] // query :: userId  SC
 router.route('/edit-user/:userId')
   .put(
@@ -127,14 +119,5 @@ router
   [upload.single('profileImage')],
   UserController.updateProfileImage
 );
-
-
-////////////////////////////////////////////////
-
-// sub routes must be added after the main routes
-//[🚧][🧑‍💻✅][🧪🆗]
-
-///////////////////////////////////////////////
-  
 
 export const UserRoutes = router;

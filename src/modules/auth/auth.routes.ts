@@ -14,7 +14,7 @@ router.post(
   AuthController.register,
 );
 
-// TODO  : Login er shomoy  FCM token store korte hobe .. 
+// INFO : Login er shomoy  FCM token store korte hobe .. 
 //[🚧][🧑‍💻✅][🧪] // 🆗 
 router.post(
   '/login',

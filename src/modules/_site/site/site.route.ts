@@ -105,11 +105,7 @@ router.route('/softDelete/:id').put(
  * 
  * ************* */
 
-
-
-
-// TODO: update location of a site by site id
-// INFO :  try korte hobe .. location update korar api ta update site er maddhome korar try korte hobe..  
+// INFO : location update korar api ta update site er maddhome korar try korte hobe..  
 
 /*************
  * 

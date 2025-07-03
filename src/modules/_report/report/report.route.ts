@@ -29,8 +29,6 @@ const paginationOptions: Array<'sortBy' | 'page' | 'limit' | 'populate'> = [
   'populate',
 ];
 
-// TODO : Report template thing
-
 //info : pagination route must be before the route with params
 // get all report organized by category 💡
 // get all todays report 💡 
@@ -84,8 +82,6 @@ router.route('/softDelete/:id').put(
 ////////////
 //[🚧][🧑‍💻✅][🧪] // 🆗
 
-// TODO : change report status ..  try korte hobe update by id diye e jeno kore fela jay .. 
-
 /******************
  *  story
  *  when customer create a report .. then it goes to admin... 
@@ -102,12 +98,6 @@ router.route('/change-status/:id').put(
   controller.changeReportStatus
 );
 
-// TODO : get all report organized by category .. 
-
-// router.route('/category/all').get(
-//   auth('common'),
-//   controller.getAllReportByCategory
-// );
 
 
 export const reportRoute = router;

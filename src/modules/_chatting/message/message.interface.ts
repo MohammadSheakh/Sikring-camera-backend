@@ -10,7 +10,6 @@ export interface IMessage {
   attachments?: Types.ObjectId[];
   senderId :  Types.ObjectId; // 🔗
   conversationId : Types.ObjectId; // 🔗
-  senderRole : RoleType.user | RoleType.bot ; // TODO : Enum gula fix korte hobe ..
   isDeleted? : boolean;
   createdAt?: Date;
   updatedAt?: Date;

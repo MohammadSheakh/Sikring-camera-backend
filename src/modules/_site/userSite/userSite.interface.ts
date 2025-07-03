@@ -7,7 +7,6 @@ export interface IuserSite {
   _id?: Types.ObjectId; // undefined |  Types.ObjectId |
   personId: Types.ObjectId;
   siteId: Types.ObjectId;
-  // message : String; // TODO : why this message is here .. need to investigate .. 
   role: Role;
   workHours?: Number;
 

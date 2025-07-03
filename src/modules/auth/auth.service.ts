@@ -92,17 +92,13 @@ const handleSocialLogin = async (user, fcmToken) => {
   };
 };
 
-const login = async (email: string, reqpassword: string, fcmToken : string) => {
-
+const login = async (email: string, reqpassword: string) => { // , fcmToken : string
 
   const user = await User.findOne({ email }).select('+password');
-
-
 
   if (!user) {
     throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid credentials');
   }
-
 
   if (user.authProvider != TAuthProvider.local) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Authorization failed .... ');
@@ -141,6 +137,7 @@ const login = async (email: string, reqpassword: string, fcmToken : string) => {
         `Account locked for ${config.auth.lockTime} minutes due to too many failed attempts`,
       );
     }
+    
     // user.fcmToken = fcmToken;
 
     await user.save();

@@ -36,7 +36,7 @@ const paginationOptions: Array<'sortBy' | 'page' | 'limit' | 'populate'> = [
  * 
  * *********** */ 
 router.route('/paginate').get(
-  auth('common'), // TODO : role fix korte hobe 
+  auth('common'),
   validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role', 'siteId', ...paginationOptions])),
   controller.getAllWithPagination
 );
@@ -48,7 +48,7 @@ router.route('/paginate').get(
  * 
  * *********** */ 
 router.route('/paginate/siteId').get(
-  auth('common'), // TODO : role fix korte hobe 
+  auth('common'), 
   validateFiltersForQuery(optionValidationChecking(['_id', 'role', 'siteId', ...paginationOptions])),
   controller.getAllWithPagination
 );
@@ -59,7 +59,7 @@ router.route('/paginate/siteId').get(
  * 
  * *********** */ 
 router.route('/paginate/manager/siteId').get(
-  auth('common'), // TODO : role fix korte hobe 
+  auth('common'),
   validateFiltersForQuery(optionValidationChecking(['_id', 'role', 'siteId', ...paginationOptions])),
   controller.getAllWithPaginationForManager
 );
@@ -70,7 +70,7 @@ router.route('/paginate/manager/siteId').get(
  * 
  * *********** */ 
 router.route('/manager/paginate').get(
-  auth('common'), // TODO : role fix korte hobe 
+  auth('common'), 
   validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role', 'siteId', ...paginationOptions])),
   controller.getAllWithPaginationForManagerDashboard
 );
@@ -81,7 +81,7 @@ router.route('/manager/paginate').get(
  * // 🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴 issue  for conversation
  * *********** */ 
 router.route('/conversation/paginate').get(
-  auth('common'), // TODO : role fix korte hobe 
+  auth('common'), 
   validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role', 'siteId', ...paginationOptions])),
   controller.getAllWithPaginationForUserConversation
 );
@@ -92,7 +92,7 @@ router.route('/conversation/paginate').get(
  * 
  * ************* */
 router.route('/conversation/admin/paginate').get(
-  auth('common'), // TODO : role fix korte hobe 
+  auth('common'), 
   validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role', 'siteId', ...paginationOptions])),
   controller.getAllWithPaginationForAdminConversation
 );

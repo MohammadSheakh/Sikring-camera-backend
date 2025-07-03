@@ -12,7 +12,6 @@ export const createHelpMessageValidationSchema = z.object({
       message: 'customerReport must be at most 500 characters long.',
     }),
     
-    // TODO : FIXME : userId jodi mongoose er objectId hoy tahole zod er objectId validation use kora lagbe
     userId: z
     .string({
         required_error: 'userId is required, userId must be a string.',

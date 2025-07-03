@@ -27,7 +27,8 @@ const userSchema = new Schema<TUser, UserModal>(
       required: [false, 'User custom ID is not required'],
       trim: true,
     },
-    // TODO : this can be an issue .. 
+
+
     conversation_restrict_with: {
       type: [String],
     },
@@ -98,7 +99,7 @@ const userSchema = new Schema<TUser, UserModal>(
     },
     address : {
       type: String,
-      required: false, // but we need this address info // TODO : 
+      required: false, 
     },
 
     fcmToken: { type: String, default: null }, // Store Firebase Token
@@ -188,7 +189,7 @@ const userSchema = new Schema<TUser, UserModal>(
 
     designation : {  // for user [employee]
       type: String,
-      required: false, // but we need this address info // TODO : 
+      required: false, 
     },
 
   },

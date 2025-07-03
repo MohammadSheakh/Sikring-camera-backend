@@ -8,9 +8,6 @@ const eventEmitterForAuditLog = new EventEmitter(); // functional way
 
 
 eventEmitterForAuditLog.on('eventEmitForAuditLog', (valueFromRequest: IauditLog) => {
- 
-  // console.log('event fired for audit log!  ', valueFromRequest); // TODO: must removed this line .. 
-
   try {
       auditLog.create({
         userId: valueFromRequest.userId,

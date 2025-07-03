@@ -2,7 +2,6 @@ import { Model, Types } from 'mongoose';
 import { PaginateOptions, PaginateResult } from '../../types/paginate';
 import {AttachmentType, TAttachedToType } from './attachment.constant';
 
-// FIX  // TODO : joto jaygay role ase .. role gula check dite hobe .. 
 export interface IAttachment {
   _id?: Types.ObjectId;
   attachment: string;

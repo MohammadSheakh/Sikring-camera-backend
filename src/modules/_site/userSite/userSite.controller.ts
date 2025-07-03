@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-
 import { GenericController } from '../../__Generic/generic.controller';
 import { userSite } from './userSite.model';
 import { IuserSite } from './userSite.interface';
@@ -9,8 +8,10 @@ import catchAsync from '../../../shared/catchAsync';
 import omit from '../../../shared/omit';
 import pick from '../../../shared/pick';
 import sendResponse from '../../../shared/sendResponse';
-import { GenericService } from '../../__Generic/generic.services';
 import { User } from '../../user/user.model';
+import { Roles } from '../../../middlewares/roles';
+import { TRole } from '../../user/user.constant';
+import ApiError from '../../../errors/ApiError';
 
 
 // let conversationParticipantsService = new ConversationParticipentsService();
@@ -236,26 +237,22 @@ export class userSiteController extends GenericController<
     
     /*****************************
 
-    const sitesRelatedToUser = await  userSite.find({
-      personId: req.user.userId,
-      isDeleted: false,
-    }).select('siteId')
-
-   sitesRelatedToUser.map((site) => {
-    // now for every siteId.. we have to get related PersonId and set those id into a set .. 
-    // so that we can get unique personId
-
-    const personIdsRelatedToSite = userSite.find({
-      siteId: site.siteId,
-      isDeleted: false,
-    }).select('personId');
+      sitesRelatedToUser.map((site) => {
+      // now for every siteId.. we have to get related PersonId and set those id into a set .. 
+      // so that we can get unique personId
 
     *****************************/
 
-    // TODO : req.params.role e valid role pass kortese kina .. sheta check dite hobe 
-    // TODO : userSite e ..  
+    const allowedTypes = [
+      TRole.admin,
+      TRole.manager,
+      TRole.user,
+      TRole.customer
+    ];
 
-    console.log('role 🧪🧪', req.query.role);
+    if(!allowedTypes.includes(req.query.role)){
+      throw new ApiError(StatusCodes.BAD_REQUEST, `Invalid type .. Allowed types are ${allowedTypes.join(', ')}`);
+    }
 
     // Step 1: Retrieve all siteIds related to the user
     const sitesRelatedToUser = await userSite.find(
@@ -284,7 +281,6 @@ export class userSiteController extends GenericController<
             siteId: person.siteId
           }
       }  
-      
     ).filter(personId => {
 
       // console.log('personId =====', personId);
@@ -292,15 +288,11 @@ export class userSiteController extends GenericController<
       return personId.personId.toString() !== req.user.userId.toString()  && 
       personId.personId.role === req.query.role; // Exclude logged-in user and filter by role
 
-    } ) // Exclude logged-in user
+    }) // Exclude logged-in user
     );
 
     // Convert the Set to an array if needed
     const uniquePersonIdsArray = Array.from(uniquePersonIds);
-
-    // console.log('Unique Person IDs:', uniquePersonIdsArray);
-
-    // console.log('req.user.userId', req.user.userId);
 
     sendResponse(res, {
       code: StatusCodes.OK,

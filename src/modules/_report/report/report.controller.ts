@@ -37,7 +37,7 @@ export class reportController extends GenericController<
   create = catchAsync(async (req: Request, res: Response) => {
     
     // console.log('req.body 🧪🧪🧪', req.body);
-    // TODO : req.body te assignedManager and assignedUser er nam nite hobe abu sayeed vai er kas theke .. 
+    // INFO : req.body te assignedManager and assignedUser er nam nite hobe abu sayeed vai er kas theke .. 
     // INFO :  karon shei nam ta audit log e dekhano lagbe .. 
 
     let attachments = [];

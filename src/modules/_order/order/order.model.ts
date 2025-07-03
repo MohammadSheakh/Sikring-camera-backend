@@ -18,7 +18,7 @@ const orderSchema = new Schema<IOrder>(
       required : [true, 'totalAmount is needed']
     },
     orderType : {
-      // TODO: orderType niye chinta korte hboe  🔥🔥
+      // INFO : orderType niye chinta korte hboe  🔥🔥
       // like eta ki store er order .. naki training program er order .. 
       // naki virtual workout class er order .. naki 
       // subscription er order ... 

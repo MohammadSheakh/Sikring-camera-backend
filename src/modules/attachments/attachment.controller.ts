@@ -30,37 +30,7 @@ const createAttachment = catchAsync(async (req, res) => {
       ))
     );
   }
-
-  /*
-
-  // TODO : notification er title ta change kora lagte pare ..
-  // Save Notification to Database
-  const notificationPayload = {
-    title: `New attachment has been uploaded  by ${req.user.userName}`,
-    // message: `A new task "${result.title}" has been created by `,
-    receiverId: null, //TODO : obosshoi id pass korte hobe
-    role: UploaderRole.projectSupervisor, // If receiver is the projectManager
-    // linkId: result._id, // FIXME  // TODO : attachment related notifiation e click korle .. kothay niye jabe ?
-  };
-
-  const notification = await NotificationService.addNotification(
-    notificationPayload
-  );
-
-  // 3️⃣ Send Real-Time Notification using Socket.io
-  io.to(projectNameAndSuperVisorId.projectSuperVisorId.toString()).emit(
-    'newNotification',
-    {
-      code: StatusCodes.OK,
-      message: 'New notification',
-      data: notification,
-    }
-  );
-
-  */
-
-  // }
-
+  
   const result = await attachmentService.create(req.body);
 
   sendResponse(res, {
@@ -141,7 +111,6 @@ const deleteById = catchAsync(async (req, res) => {
         results = await attachmentService.deleteById(req.params.attachmentId);
       }
     }
-    // TODO :  task er jonno kaj korte hobe ...
   } else {
     throw new ApiError(
       StatusCodes.UNAUTHORIZED,

@@ -122,7 +122,6 @@ export class cameraController extends GenericController<
           })
         }
 
-        // TODO : better hoito jodi manager er nam dekhano jaito .. 
         actionPerformed+= `Provide View Access ${result._id} for ${managerIdForSite?.personId} ${managerIdForSite?.role}`;
 
         actionPerformed+= `Assign a camera ${result._id} for ${req.body.siteName}`;

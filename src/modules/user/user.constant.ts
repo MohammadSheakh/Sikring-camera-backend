@@ -7,7 +7,6 @@ export enum TRole{
   admin = 'admin',
 }
 
-// TODO : fix korte hobe .. 
 export type TUserStatus = 'active' | 'delete' | 'block';
 
 export const UserStatus: TUserStatus[] = ['active', 'block', 'delete'];

@@ -4,7 +4,7 @@ import { PaginateOptions } from '../../types/paginate';
 import { Model, Mongoose } from 'mongoose';
 
 export class GenericService<  ModelType , InterfaceType> {
-  model: ModelType | any;  // TODO : any add korar pore check korte hobe .. 
+  model: ModelType | any; 
 
   constructor(model: ModelType ) {
     this.model = model;
@@ -139,7 +139,7 @@ export class GenericService<  ModelType , InterfaceType> {
     return await this.model.findByIdAndDelete(id).select('-__v');
   }
 
-  // TODO :  eta kothao call kora hoy nai ba eta niye kaj kora hoy nai .. 
+  // TODO :  need to use this service .. 
   async aggregate(pipeline: any[]) {
     return await this.model.aggregate(pipeline);
   }

@@ -39,7 +39,7 @@ const cameraSchema = new Schema<Icamera>(
           TStatus
         ).join(', ')}`,
       ],
-      default: TStatus.offline, // TODO : change to proper status .. 
+      default: TStatus.offline,
     },
 
     attachments: [
@@ -50,7 +50,6 @@ const cameraSchema = new Schema<Icamera>(
       }
     ],
 
-    // TODO : changed to required true  // no need for this 
     assignedManagerId : {
       type: Schema.Types.ObjectId,
       ref: 'User',

@@ -86,5 +86,4 @@ router.route('/softDelete/:id').put(
 
 //////////////////////////////////////////💡💡
 
-
 export const cameraRoute = router;

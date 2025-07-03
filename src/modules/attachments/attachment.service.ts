@@ -54,8 +54,6 @@ export class AttachmentService extends GenericService<typeof Attachment, IAttach
         StatusCodes.INTERNAL_SERVER_ERROR,
         'Failed to delete image'
       );
-      // TODO : kon image delete kortesi shetar hint dite hobe ..
-      // FIXME
     }
   }
 

@@ -28,21 +28,7 @@ const createUserValidationSchema = z.object({
         required_error: 'Role is required.',
         invalid_type_error: 'Role must be a string.',
     })
-    // TODO : eta fix korte hobe : sikring
-    // .refine(role => role === 'user', {
-    //     message: 'Role must be "user".',
-    // }),
-
-    /*
-    role: z
-      .string({
-        required_error: 'Role is required.',
-        invalid_type_error: 'Role must be a string.',
-      })
-      .refine(role => Roles.includes(role as Role), {
-        message: `Role must be one of the following: ${Roles.join(', ')}`,
-      }),
-    */
+    
   }),
 });
 

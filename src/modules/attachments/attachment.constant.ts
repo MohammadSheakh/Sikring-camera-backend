@@ -13,7 +13,7 @@ export enum TFolderName {
     review = "sikring-camera/review",
 }
 
-// TODO: attachment er model eo update korte hobe .. 
+// INFO : attachment er model eo update korte hobe .. 
 export enum TAttachedToType {
     site = 'site',
     user = 'user',

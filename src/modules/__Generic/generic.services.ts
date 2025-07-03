@@ -11,8 +11,7 @@ export class GenericService<  ModelType , InterfaceType> {
   }
 
   async create(data:InterfaceType) : Promise<InterfaceType> {
-    // | null
-    // console.log('req.body from generic create 🧪🧪', data); 
+   
       return await this.model.create(data);
   }
 

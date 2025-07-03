@@ -38,8 +38,7 @@ export class cameraController extends GenericController<
      * 
      * *********** */
     create = catchAsync(async (req: Request, res: Response) => {
-    
-      // console.log('req.body 🧪🧪🧪', req.body);
+  
       // TODO : req.body te siteId and siteName nite hobe abu sayeed vai er kas theke .. 
       // INFO :  karon shei nam ta audit log e dekhano lagbe .. 
 
@@ -52,30 +51,15 @@ export class cameraController extends GenericController<
           cameraPassword: req.body.cameraPassword,
           cameraIp: req.body.cameraIp || '',
           cameraPort: req.body.cameraPort, 
-          rtspUrl: `rtsp://${req.body.cameraUsername}:${req.body.cameraPassword}@${req.body.cameraIp.replace("http://", "")}:${req.body.cameraPort}/stream`
-      };
+          rtspUrl: `rtsp://${req.body.cameraUsername}:${req.body.cameraPassword}@${req.body.cameraIp.replace("http://", "")}:${req.body.cameraPort}/stream`,
+          ...(req.body.globalLocation && { globalLocation: req.body.globalLocation }),
+          ...(req.body.lat && { lat: req.body.lat }),
+          ...(req.body.long && { long: req.body.long }),
+        };
 
-      if(req.body.globalLocation){
-        payload = {
-          ...payload,
-          globalLocation: req.body.globalLocation,
-        }
-      }
-      if(req.body.lat){
-        payload = {
-          ...payload,
-          lat: req.body.lat,
-        }
-      }
-      if(req.body.long){
-        payload = {
-          ...payload,
-          long: req.body.long,
-        }
-      }
       
-
       const result = await this.service.create(payload);
+      
       /*******
       {
           // siteName: req.body.siteName,

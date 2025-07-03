@@ -21,5 +21,4 @@ export class DemoController extends GenericController<
   }
 
   // add more methods here if needed or override the existing ones 
-  
 }

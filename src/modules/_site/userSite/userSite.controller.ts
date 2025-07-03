@@ -9,7 +9,6 @@ import omit from '../../../shared/omit';
 import pick from '../../../shared/pick';
 import sendResponse from '../../../shared/sendResponse';
 import { User } from '../../user/user.model';
-import { Roles } from '../../../middlewares/roles';
 import { TRole } from '../../user/user.constant';
 import ApiError from '../../../errors/ApiError';
 

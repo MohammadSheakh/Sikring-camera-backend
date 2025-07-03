@@ -14,11 +14,11 @@ export const createHelpMessageValidationSchema = z.object({
     }),
   
      userId: z.string({
-           required_error: 'id is required in params.',
-           invalid_type_error: 'id must be a mongoose object.',
-         }).refine(value => mongoose.Types.ObjectId.isValid(value), {
-           message: 'id must be a valid mongoose ObjectId.',
-         }),
+        required_error: 'id is required in params.',
+        invalid_type_error: 'id must be a mongoose object.',
+      }).refine(value => mongoose.Types.ObjectId.isValid(value), {
+        message: 'id must be a valid mongoose ObjectId.',
+      }),
   }),
 
   // params: z.object({

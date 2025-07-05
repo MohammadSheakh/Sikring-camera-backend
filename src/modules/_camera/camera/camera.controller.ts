@@ -17,6 +17,8 @@ import { CameraPerson } from '../cameraPerson/cameraPerson.model';
 import { Site } from '../../_site/site/site.model';
 import { userSite } from '../../_site/userSite/userSite.model';
 import { IuserSite } from '../../_site/userSite/userSite.interface';
+import { cameraSite } from '../../_site/cameraSite/cameraSite.model';
+import mongoose from 'mongoose';
 
 // let conversationParticipantsService = new ConversationParticipentsService();
 // let messageService = new MessagerService();
@@ -38,7 +40,11 @@ export class cameraController extends GenericController<
      * 
      * *********** */
     create = catchAsync(async (req: Request, res: Response) => {
-  
+      
+      // Start a session for MongoDB transaction
+      const session = await mongoose.startSession();
+      session.startTransaction();
+
       // TODO : req.body te siteId and siteName nite hobe abu sayeed vai er kas theke .. 
       // INFO :  karon shei nam ta audit log e dekhano lagbe .. 
 
@@ -57,8 +63,12 @@ export class cameraController extends GenericController<
           ...(req.body.long && { long: req.body.long }),
         };
 
-      
-      const result = await this.service.create(payload);
+      /*
+       * const result = await this.service.create(payload);
+       */
+
+      //const result = await camera.create(payload)
+      const result = await camera.create([payload], { session })  // updated with the session for transaction
       
       /*******
       {
@@ -78,10 +88,19 @@ export class cameraController extends GenericController<
 
         // need to check if the manager exist or not  
 
-        const assignCameraForSite = await this.cameraSiteService.create({
-          cameraId: result._id,
-          siteId:  req.body.siteId,
-        });
+        /*
+         *const assignCameraForSite = await this.cameraSiteService.create({
+         * cameraId: result._id,
+         * siteId:  req.body.siteId,
+         *});
+         */
+
+        const assignCameraForSite = await cameraSite.create([
+      {
+        cameraId: result[0]._id,
+        siteId: req.body.siteId,
+      }
+    ], { session });
 
         /************
          * 
@@ -94,22 +113,25 @@ export class cameraController extends GenericController<
         const managerIdForSite : IuserSite | null = await userSite.findOne({
           siteId: req.body.siteId,
           role: 'manager',
-        }).select('personId role');
+        }).select('personId role').session(session);
 
         if(managerIdForSite && managerIdForSite.personId){
-          await CameraPerson.create({
+          await CameraPerson.create([{
             cameraId: result._id,
             personId : managerIdForSite?.personId,
             siteId : req.body.siteId,
             status: 'enable', // default status
             role: managerIdForSite?.role, // default role if not specified
-          })
+          }], { session });
         }
 
         actionPerformed+= `Provide View Access ${result._id} for ${managerIdForSite?.personId} ${managerIdForSite?.role}`;
 
         actionPerformed+= `Assign a camera ${result._id} for ${req.body.siteName}`;
       }
+
+      // Commit the transaction
+      await session.commitTransaction();
       
       let valueForAuditLog : IauditLog = {
         userId: req.user.userId,
@@ -120,6 +142,9 @@ export class cameraController extends GenericController<
 
       eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
       
+      // End the session
+      session.endSession();
+
       sendResponse(res, {
         code: StatusCodes.OK,
         data: result,

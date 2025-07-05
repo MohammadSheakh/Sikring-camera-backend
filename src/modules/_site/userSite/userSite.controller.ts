@@ -45,7 +45,11 @@ export class userSiteController extends GenericController<
       // 'personId'
       {
         path: 'siteId',
-        select: 'name createdAt type'
+        select: 'name createdAt type attachments',
+        populate: {
+          path: 'attachments', // deep populate attachments
+          select: 'attachment' // only pick attachmentName
+        }
       }
     ];
 
@@ -58,6 +62,59 @@ export class userSiteController extends GenericController<
     
     if(req.user.userId){
       userInfo = await User.findById(req.user.userId).select('name role');
+    }
+
+    const result = await this.userSiteService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
+
+    if(userInfo){
+      result.userInfo  = userInfo;
+    }
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `All ${this.modelName} with pagination`,
+      success: true,
+    });
+  });
+
+
+  getAllWithPaginationWithManagerInfo = catchAsync(async (req: Request, res: Response) => {
+    //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
+    const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
+    const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+    
+    const populateOptions: (string | {path: string, select: string}[]) = [
+      // {
+      //   path: 'personId',
+      //   select: 'name role' // name 
+      // },
+      // 'personId'
+      {
+        path: 'siteId',
+        select: 'name createdAt type attachments',
+        populate: {
+          path: 'attachments', // deep populate attachments
+          select: 'attachment' // only pick attachmentName
+        }
+      }
+    ];
+
+    const dontWantToInclude = '-role -workHours -isDeleted -updatedAt -createdAt -__v';
+    //const dontWantToInclude = ['']; // -role
+
+     let userInfo;
+
+    if(req.query.siteId){
+      userInfo = await userSite.find({
+        siteId : req.query.siteId,
+        role: TRole.manager
+      }).select('personId').populate(
+        {
+          path: 'personId',
+          select: 'name role profileImage'
+        }
+      );
     }
 
     const result = await this.userSiteService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);

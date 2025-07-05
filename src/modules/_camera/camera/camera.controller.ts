@@ -89,21 +89,12 @@ export class cameraController extends GenericController<
 
       if(req.body.siteId && result[0]._id){
 
-        // need to check if the manager exist or not  
-
-        /*
-         *const assignCameraForSite = await this.cameraSiteService.create({
-         * cameraId: result._id,
-         * siteId:  req.body.siteId,
-         *});
-         */
-
         const assignCameraForSite = await cameraSite.create([
-      {
-        cameraId: result[0]._id,
-        siteId: req.body.siteId,
-      }
-    ], { session });
+          {
+            cameraId: result[0]._id,
+            siteId: req.body.siteId,
+          }
+        ], { session });
 
         /************
          * 

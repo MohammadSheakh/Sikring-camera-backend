@@ -41,13 +41,15 @@ export class CameraPersonService extends GenericService<
         //status: 'enable', // Check if the person already has 'enable' status
       });
 
+      const userRole = await User.findById(personIdToEnableAccess).select('role');
+
       if(!alreadyEnables){
         await CameraPerson.insertOne({
           cameraId,
           personId : personIdToEnableAccess,
           siteId,
           status: 'enable', // default status
-          //role: user?.role , // default role if not specified
+          role: userRole?.role , // default role if not specified
         })
       }else{
         // lets update the status 
@@ -145,6 +147,27 @@ export class CameraPersonService extends GenericService<
     // console.log('usersWithStatus', result);
 
     return result;
+  }
+
+
+  /*************
+   * 
+   *  App (Customer) : Live View of Camera that user is given access to:  
+   * 
+   * ************* */
+  getAccessedCameraByPersonId = async (personId: string, siteId:string) => {
+    // Find all cameras where the person has access
+    const accessedCameras = await CameraPerson.find({
+      personId,
+      siteId,
+      status: 'enable', // Only consider enabled access
+    }).select('cameraId').populate({
+      path: 'cameraId',
+      select: 'rtspUrl cameraName',
+    })
+  
+    // Return the list of cameras with access
+    return accessedCameras;
   }
 
 

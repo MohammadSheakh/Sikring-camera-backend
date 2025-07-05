@@ -61,6 +61,33 @@ export class CameraPersonController extends GenericController<
     });
   });
 
+  /*************
+   * 
+   *  App (Customer) : Live View of Camera that user is given access to:  
+   * 
+   * ************* */
+  getAccessedCameraByPersonId = catchAsync(async (req: Request, res: Response) => {
+    const { personId, siteId } = req.query;
+    
+    if (!personId || !siteId) {
+      return sendResponse(res, {
+        code: StatusCodes.BAD_REQUEST,
+        message: 'Person ID and Site ID are required',
+        success: false,
+      });
+    }
+    
+    // Call service method
+    const result = await this.CameraPersonService.getAccessedCameraByPersonId(personId, siteId);
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: 'Fetched accessed camera by person id',
+      success: true,
+    });
+  })
+
   // add more methods here if needed or override the existing ones 
   
 }

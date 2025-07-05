@@ -77,6 +77,18 @@ router.route('/paginate/siteId').get(
 
 /***********
  * 
+ * App (Customer) : Home : get al site by siteId And role manager 
+ * Web (Manager) : Site Management
+ * 
+ * *********** */ 
+router.route('/paginate/for-customer/siteId').get(
+  auth('common'), 
+  validateFiltersForQuery(optionValidationChecking(['_id', 'role', 'siteId', ...paginationOptions])),
+  controller.getAllWithPaginationWithManagerInfo
+);
+
+/***********
+ * 
  * Web (Manager) : Site Management
  * 
  * *********** */ 

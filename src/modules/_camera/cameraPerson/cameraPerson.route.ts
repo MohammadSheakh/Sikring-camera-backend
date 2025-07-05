@@ -35,6 +35,16 @@ router.route('/paginate').get(
   controller.getAllWithPagination
 );
 
+/*************
+ * 
+ *  App (Customer) : Live View of Camera that user is given access to:  
+ * 
+ * ************* */
+router.route('/live-view').get(
+  auth('common'),
+  controller.getAccessedCameraByPersonId
+);
+
 router.route('/:id').get(
   // auth('common'),
   controller.getById
@@ -96,6 +106,9 @@ router.route('/all-persons-with-or-without-access-byCameraId/:cameraId').get(
   auth('common'),
   controller.getUsersWithAccessToCamera
 );
+
+
+
 
 export const CameraPersonRoute = router;
 

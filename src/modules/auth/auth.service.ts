@@ -152,10 +152,10 @@ const login = async (email: string, reqpassword: string) => { // , fcmToken : st
 
   const tokens = await TokenService.accessAndRefreshToken(user);
 
-  if(fcmToken){
-    user.fcmToken = fcmToken;
-    await user.save();  // INFO :  ekhane fcmToken save kora hocche 
-  }
+  // if(fcmToken){
+  //   user.fcmToken = fcmToken;
+  //   await user.save();  // INFO :  ekhane fcmToken save kora hocche 
+  // }
 
   const { password, ...userWithoutPassword } = user.toObject();
 

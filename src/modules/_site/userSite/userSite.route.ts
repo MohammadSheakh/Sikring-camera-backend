@@ -41,6 +41,28 @@ router.route('/paginate').get(
   controller.getAllWithPagination
 );
 
+
+/***********
+ * 
+ * Dashboard (Admin) : Work Hours : get all site and work hour of employee ... 
+ * 
+ * *********** */ 
+router.route('/work-hour/paginate').get(
+  auth('common'),
+  validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role', 'siteId', ...paginationOptions])),
+  controller.getAllWithPaginationForWorkHour
+);
+
+/*********
+ * 
+ * Dashboard (Admin) : Work Hours : add work hour for a user to a site 💡 
+ * 
+ * ******** */
+router.route('/work-hour/update/:userSiteId').put(
+  auth('common'),
+  controller.updateWorkHourByUserSiteId
+);
+
 /***********
  * 
  * App (Customer) : Home : get al site by siteId And role manager 
@@ -98,7 +120,6 @@ router.route('/conversation/admin/paginate').get(
 );
 
 
-
 router.route('/:id').get(
   // auth('common'),
   controller.getById
@@ -117,8 +138,6 @@ router.route('/').get(
 );
 
 //[🚧][🧑‍💻✅][🧪] // 🆗
-// add work hour for a user to a site 💡
-
 router.route('/create').post(
   // [
   //   upload.fields([

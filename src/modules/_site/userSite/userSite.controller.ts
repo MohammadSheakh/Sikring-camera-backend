@@ -74,6 +74,42 @@ export class userSiteController extends GenericController<
     });
   });
 
+/***********
+ * 
+ * Dashboard (Admin) : Work Hours : get all site and work hour of employee ... 
+ * 
+ * *********** */ 
+  //[🚧][🧑‍💻][🧪] // ✅🆗
+  getAllWithPaginationForWorkHour = catchAsync(async (req: Request, res: Response) => {
+    //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
+    const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
+    const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+    
+    const populateOptions: (string | {path: string, select: string}[]) = [
+      {
+        path: 'personId',
+        select: 'name' // name 
+      },
+      // 'personId'
+      {
+        path: 'siteId',
+        select: 'name'
+      }
+    ];
+
+    const dontWantToInclude = '-isDeleted -updatedAt -createdAt -__v';
+    //const dontWantToInclude = ['']; // -role
+
+    const result = await this.userSiteService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `All ${this.modelName} with pagination`,
+      success: true,
+    });
+  });
+
 
   getAllWithPaginationForManager = catchAsync(async (req: Request, res: Response) => {
     //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
@@ -301,6 +337,41 @@ export class userSiteController extends GenericController<
     });
   });
 
+  /*********
+   * 
+   * Dashboard (Admin) : Work Hours : add work hour for a user to a site 💡 
+   * 
+   * ******** */
+  updateWorkHourByUserSiteId = catchAsync(async (req: Request, res: Response) => {
+    
+    /****
+     * 
+     * 
+     * 
+     * **** */
+
+    const {
+      workHours
+    } = req.body;
+
+    if(!req.params.userSiteId || !workHours){
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'userSiteId and workHours are required');
+    }
+
+    const updatedUserSitesWorkHour = await userSite.findByIdAndUpdate(
+      req.params.userSiteId,
+      {$set: { workHours: workHours }},
+      { new: true } // runValidators: true
+    )
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: updatedUserSitesWorkHour,
+      message: `work hours updated successfully`,
+      success: true,
+    });
+
+  });
 
   // add more methods here if needed or override the existing ones 
 }

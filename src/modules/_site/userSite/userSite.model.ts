@@ -3,7 +3,6 @@ import { IuserSite, IuserSiteModel } from './userSite.interface';
 import paginate from '../../../common/plugins/paginate';
 import { Roles } from '../../../middlewares/roles';
 
-
 const userSiteSchema = new Schema<IuserSite>(
   {
     personId: {
@@ -15,19 +14,18 @@ const userSiteSchema = new Schema<IuserSite>(
       ref: 'Site',
     },
     role: {
-          type: String,
-          enum: {
-            values: Roles,
-            message: '${VALUE} is not a valid role', // 🔥 fix korte hobe .. 
-          },
-          required: [true, 'Role is required'],
+      type: String,
+      enum: {
+        values: Roles,
+        message: '${VALUE} is not a valid role', // 🔥 fix korte hobe .. 
+      },
+      required: [true, 'Role is required'],
     },
     workHours: {
       type: Number,
       required: [false, 'Work hours is not required'],
       default: 0,
     },
-
     isDeleted: {
       type: Boolean,
       required: [false, 'isDeleted is not required'],

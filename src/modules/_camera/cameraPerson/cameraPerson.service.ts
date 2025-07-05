@@ -56,27 +56,24 @@ export class CameraPersonService extends GenericService<
           { status: 'enable' }, // Update status to 'enable'
           { upsert: true } // Create a new document if it doesn't exist
         );
-
       }
+    });
+      if(personIdsToDisableAccess.length !== 0){
 
-    })
-    if(personIdsToDisableAccess.length !== 0){
+        personIdsToDisableAccess.forEach(async(personIdToEnableAccess) => {
+          // if (typeof personIdToEnableAccess !== 'string') {
+          //   throw new Error('Invalid personId in personIds array');
+          // }
 
-      personIdsToDisableAccess.forEach(async(personIdToEnableAccess) => {
-        // if (typeof personIdToEnableAccess !== 'string') {
-        //   throw new Error('Invalid personId in personIds array');
-        // }
+          // let user = await User.findById(personIdToEnableAccess);
 
-        // let user = await User.findById(personIdToEnableAccess);
-
-        await CameraPerson.findOneAndUpdate(
-          { cameraId, personId: personIdToEnableAccess, siteId },
-          { status: 'disable' }, // Update status to 'disable'
-          { upsert: true } // Create a new document if it doesn't exist
-        );
-      })
-    }
-
+          await CameraPerson.findOneAndUpdate(
+            { cameraId, personId: personIdToEnableAccess, siteId },
+            { status: 'disable' }, // Update status to 'disable'
+            { upsert: true } // Create a new document if it doesn't exist
+          );
+        })
+      }
     }
     catch(error){
       console.error('Error assigning multiple persons for view access to camera:', error);

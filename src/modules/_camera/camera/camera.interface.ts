@@ -21,8 +21,10 @@ export interface Icamera {
   cameraPort: String;
   cameraUsername: String;
   cameraPassword: String;
-  rtspUrl?: String;
+  cameraPath: String;
 
+  rtspUrl?: String;
+  
   isDeleted? : Boolean;  
   createdAt?: Date;
   updatedAt?: Date;

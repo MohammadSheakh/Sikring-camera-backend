@@ -54,10 +54,13 @@ export class cameraController extends GenericController<
           localLocation: req.body.localLocation,
           cameraName: req.body.cameraName,
           cameraUsername : req.body.cameraUsername,
-          cameraPassword: req.body.cameraPassword,
+          cameraPassword: req.body.cameraPassword,  
           cameraIp: req.body.cameraIp || '',
           cameraPort: req.body.cameraPort, 
-          rtspUrl: `rtsp://${req.body.cameraUsername}:${req.body.cameraPassword}@${req.body.cameraIp.replace("http://", "")}:${req.body.cameraPort}/stream`,
+          cameraPath: req.body.cameraPath || '',
+          // ${req.body.cameraPort ?? ''}
+          //  cameraPath er age must ekta / thakbe .. 
+          rtspUrl: `rtsp://${req.body.cameraUsername}:${req.body.cameraPassword}@${req.body.cameraIp.replace("http://", "")}${req.body.cameraPath}`,
           ...(req.body.globalLocation && { globalLocation: req.body.globalLocation }),
           ...(req.body.lat && { lat: req.body.lat }),
           ...(req.body.long && { long: req.body.long }),
@@ -82,9 +85,9 @@ export class cameraController extends GenericController<
       }
       ******* */
 
-      let actionPerformed = '';
+      let actionPerformed = `Create a new camera ${result[0]._id} | `;
 
-      if(req.body.siteId && result._id){
+      if(req.body.siteId && result[0]._id){
 
         // need to check if the manager exist or not  
 
@@ -117,7 +120,7 @@ export class cameraController extends GenericController<
 
         if(managerIdForSite && managerIdForSite.personId){
           await CameraPerson.create([{
-            cameraId: result._id,
+            cameraId: result[0]._id,
             personId : managerIdForSite?.personId,
             siteId : req.body.siteId,
             status: 'enable', // default status
@@ -125,9 +128,9 @@ export class cameraController extends GenericController<
           }], { session });
         }
 
-        actionPerformed+= `Provide View Access ${result._id} for ${managerIdForSite?.personId} ${managerIdForSite?.role}`;
+        actionPerformed+= `Provide View Access ${result[0]._id} for ${managerIdForSite?.personId} ${managerIdForSite?.role} | `;
 
-        actionPerformed+= `Assign a camera ${result._id} for ${req.body.siteName}`;
+        actionPerformed+= `Assign a camera ${result[0]._id} for ${req.body.siteName}`;
       }
 
       // Commit the transaction

@@ -20,12 +20,9 @@ import { TAttachedToType, TFolderName } from '../attachments/attachment.constant
 import bcryptjs from 'bcryptjs';
 import { config } from '../../config';
 import { userSite } from '../_site/userSite/userSite.model';
-import { FolderName } from '../../enums/folderNames';
-
 
 const userCustomService = new UserCustomService();
 const attachmentService = new AttachmentService();
-
 
 /*************
  * 
@@ -357,11 +354,11 @@ const deleteAllDataFromCollection = async (req: Request, res: Response) => {
 
     // Validate collectionName - only allow known collections for safety
     const allowedCollections = [
-      'DailyCycleInsights',
-      'Users',
-      'Message',
-      'Notification',
-      'LabTestLog',
+      'auditLog',
+      // 'Users',
+      // 'Message',
+      // 'Notification',
+      // 'LabTestLog',
     ]; // example allowed list
     if (!allowedCollections.includes(collectionName)) {
       sendResponse(res, {
@@ -582,9 +579,6 @@ const getAllAdminForAdminDashboard = catchAsync(async (req, res) => {
   });
 });
 
-
-
-
 /**************
  * 
  * From AIM Construction -> Sikring
@@ -592,7 +586,6 @@ const getAllAdminForAdminDashboard = catchAsync(async (req, res) => {
  * Update Profile Basic Info
  * 
  * *********** */
-
 
 //update profile 
 const updateProfile = catchAsync(async (req, res) => {

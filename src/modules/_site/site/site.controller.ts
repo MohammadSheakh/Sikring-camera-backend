@@ -32,7 +32,6 @@ export class SiteController extends GenericController<
 
   create = catchAsync(async (req: Request, res: Response) => {
     
-        // console.log('req.body 🧪🧪🧪', req.body);
         // TODO : req.body te assignedManager and assignedUser er nam nite hobe abu sayeed vai er kas theke .. 
         // INFO :  karon shei nam ta audit log e dekhano lagbe .. 
 
@@ -87,18 +86,7 @@ export class SiteController extends GenericController<
           });
 
           actionPerformed+= `Assign a manager for ${this.modelName} whoose id is ${req.body.assignedManagerId} `
-
-          /******************
-          let valueForAuditLog : IauditLog = {
-            userId: req.user.userId,
-            role: req.user.role,
-            actionPerformed: `Assign a manager for ${this.modelName} whoose id is ${req.body.assignedManagerId} `,
-            status: TStatus.success,
-          }
-
-          eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
-          
-          ************* */
+        
         }
         if(req.body.assignedUserId  && result){
           // need to check if the manager exist or not  
@@ -111,16 +99,6 @@ export class SiteController extends GenericController<
 
           actionPerformed+= `| Assign a user for ${this.modelName} whoose id is ${req.body.assignedUserId} `
 
-          /******************
-          let valueForAuditLog : IauditLog = {
-            userId: req.user.userId,
-            role: req.user.role,
-            actionPerformed: `Assign a user for ${this.modelName} whoose id is ${req.body.assignedUserId} `,
-            status: TStatus.success,
-          }
-
-          eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
-          *************** */
         }
 
         let valueForAuditLog : IauditLog = {
@@ -205,15 +183,6 @@ export class SiteController extends GenericController<
 
       actionPerformed+= `| Assign a manager for ${this.modelName} whoose id is ${req.body.assignedManagerId} `
 
-      // let valueForAuditLog : IauditLog = {
-      //   userId: req.user.userId,
-      //   role: req.user.role,
-      //   actionPerformed: `${actionPerformed} | Assign a manager for ${this.modelName} whoose id is ${req.body.assignedManagerId} `,
-      //   status: TStatus.success,
-      // }
-
-      // eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
-    
     }
     if(req.body.assignedUserId  && result){
       // need to check if the manager exist or not  
@@ -226,7 +195,6 @@ export class SiteController extends GenericController<
 
       actionPerformed+=`| Assign a user for ${this.modelName} whoose id is ${req.body.assignedUserId} `
 
-      
     }
 
     let valueForAuditLog : IauditLog = {

@@ -20,7 +20,6 @@ import mongoose from 'mongoose';
 import { IuserSite } from '../../_site/userSite/userSite.interface';
 import { IcustomerReport } from '../customerReport/customerReport.interface';
 
-// let conversationParticipantsService = new ConversationParticipentsService();
 let attachmentService = new AttachmentService();
 
 export class reportController extends GenericController<
@@ -35,8 +34,7 @@ export class reportController extends GenericController<
   }
 
   create = catchAsync(async (req: Request, res: Response) => {
-    
-    // console.log('req.body 🧪🧪🧪', req.body);
+   
     // INFO : req.body te assignedManager and assignedUser er nam nite hobe abu sayeed vai er kas theke .. 
     // INFO :  karon shei nam ta audit log e dekhano lagbe .. 
 
@@ -65,7 +63,6 @@ export class reportController extends GenericController<
             path: 'attachments',
             select: 'attachment'
         },
-        //'siteId' // This will populate all fields for siteId
       ];
 
     /**************** 
@@ -135,7 +132,6 @@ export class reportController extends GenericController<
           path: 'attachments',
           select: 'attachment'
       },
-      //'siteId' // This will populate all fields for siteId
       {
         path: 'siteId',
         select: 'name address'
@@ -143,7 +139,6 @@ export class reportController extends GenericController<
     ];
   
     const result = await this.service.getById(id, 
-     /* ['attachments', 'siteId'] */
       populateOptions
     );
 
@@ -167,8 +162,6 @@ export class reportController extends GenericController<
     } else {
       result.person = [];
     }
-
-    
 
     sendResponse(res, {
       code: StatusCodes.OK,
@@ -317,8 +310,6 @@ export class reportController extends GenericController<
         return;
       }
 
-      console.log('🔴===================================🔴🔴', status);
-
       /****************
        * 
        *  if not .. // lets assign this report to the first employee
@@ -327,7 +318,6 @@ export class reportController extends GenericController<
        *  accept hoilei user ke assign korbo .. 
        *  deny hoile user ke assign korbo na .. 
        * ************* */
-
 
       if(status === 'accept'){
 

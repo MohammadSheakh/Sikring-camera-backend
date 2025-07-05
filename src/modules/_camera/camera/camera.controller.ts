@@ -152,23 +152,10 @@ export class cameraController extends GenericController<
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
     
-    const populateOptions: (string | {path: string, select: string}[]) = [
-      // {
-      //   path: 'userId',
-      //   select: 'name email'
-      // },
-      // 'personId'
-      // {
-      //   path: 'personId',
-      //   select: 'name email phoneNumber'
-      // }
-    ];
-
-    // const dontWantToInclude = ['-localLocation -attachments']; // -role
+    const populateOptions: (string | {path: string, select: string}[]) = [];
 
     const dontWantToInclude = '-localLocation -attachments -cameraPassword -cameraIp -cameraPort -isDeleted -createdAt -updatedAt -__v'; // -role
-    // -localLocation -attachments 
-
+    
     const result = await this.service.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
 
     sendResponse(res, {

@@ -11,9 +11,6 @@ import pick from '../../shared/pick';
 import sendResponse from '../../shared/sendResponse';
 
 
-// let conversationParticipantsService = new ConversationParticipentsService();
-// let messageService = new MessagerService();
-
 export class auditLogController extends GenericController<
   typeof auditLog,
   IauditLog

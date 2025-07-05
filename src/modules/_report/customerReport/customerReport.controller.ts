@@ -10,9 +10,7 @@ import omit from '../../../shared/omit';
 import pick from '../../../shared/pick';
 import sendResponse from '../../../shared/sendResponse';
 
-
 // let conversationParticipantsService = new ConversationParticipentsService();
-
 
 export class customerReportController extends GenericController<
   typeof customerReport,
@@ -34,15 +32,9 @@ export class customerReportController extends GenericController<
           path: 'reportId',
           select: 'title incidentSevearity reportType'
         },
-        // 'personId'
-        // {
-        //   path: 'personId',
-        //   select: 'name email phoneNumber'
-        // }
       ];
 
-      // const dontWantToInclude = "-personId"; // 🟢 working prefectly alhamdulillah
-      const dontWantToInclude = ['']; // 🟢 working prefectly alhamdulillah
+      const dontWantToInclude = ['']; 
 
       const result = await this.service.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
   
@@ -61,7 +53,6 @@ export class customerReportController extends GenericController<
    * 
    * ********** */
   getAllWithPaginationForCustomer = catchAsync(async (req: Request, res: Response) => {
-      //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
       const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
       const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
       
@@ -70,11 +61,6 @@ export class customerReportController extends GenericController<
           path: 'reportId',
           select: 'title incidentSevearity reportType'
         },
-        // 'personId'
-        // {
-        //   path: 'personId',
-        //   select: 'name email phoneNumber'
-        // }
       ];
 
       const dontWantToInclude = "-__v -updatedAt -isDeleted -reportType"; 

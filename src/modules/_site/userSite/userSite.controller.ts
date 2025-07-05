@@ -12,10 +12,6 @@ import { User } from '../../user/user.model';
 import { TRole } from '../../user/user.constant';
 import ApiError from '../../../errors/ApiError';
 
-
-// let conversationParticipantsService = new ConversationParticipentsService();
-// let messageService = new MessagerService();
-
 export class userSiteController extends GenericController<
   typeof userSite,
   IuserSite
@@ -38,11 +34,6 @@ export class userSiteController extends GenericController<
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
     
     const populateOptions: (string | {path: string, select: string}[]) = [
-      // {
-      //   path: 'personId',
-      //   select: 'name role' // name 
-      // },
-      // 'personId'
       {
         path: 'siteId',
         select: 'name createdAt type attachments',
@@ -54,12 +45,9 @@ export class userSiteController extends GenericController<
     ];
 
     const dontWantToInclude = '-role -workHours -isDeleted -updatedAt -createdAt -__v';
-    //const dontWantToInclude = ['']; // -role
 
-     let userInfo;
+    let userInfo;
 
-   
-    
     if(req.user.userId){
       userInfo = await User.findById(req.user.userId).select('name role');
     }
@@ -80,16 +68,10 @@ export class userSiteController extends GenericController<
 
 
   getAllWithPaginationWithManagerInfo = catchAsync(async (req: Request, res: Response) => {
-    //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
     
     const populateOptions: (string | {path: string, select: string}[]) = [
-      // {
-      //   path: 'personId',
-      //   select: 'name role' // name 
-      // },
-      // 'personId'
       {
         path: 'siteId',
         select: 'name createdAt type attachments',
@@ -101,9 +83,8 @@ export class userSiteController extends GenericController<
     ];
 
     const dontWantToInclude = '-role -workHours -isDeleted -updatedAt -createdAt -__v';
-    //const dontWantToInclude = ['']; // -role
-
-     let userInfo;
+  
+    let userInfo;
 
     if(req.query.siteId){
       userInfo = await userSite.find({
@@ -147,7 +128,6 @@ export class userSiteController extends GenericController<
         path: 'personId',
         select: 'name' // name 
       },
-      // 'personId'
       {
         path: 'siteId',
         select: 'name'
@@ -155,7 +135,6 @@ export class userSiteController extends GenericController<
     ];
 
     const dontWantToInclude = '-isDeleted -updatedAt -createdAt -__v';
-    //const dontWantToInclude = ['']; // -role
 
     const result = await this.userSiteService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
 
@@ -178,7 +157,6 @@ export class userSiteController extends GenericController<
         path: 'personId',
         select: 'name role' // name 
       },
-      // 'personId'
       {
         path: 'siteId',
         select: 'name createdAt type attachments',
@@ -190,13 +168,10 @@ export class userSiteController extends GenericController<
     ];
 
     const dontWantToInclude = '-role -workHours -isDeleted -updatedAt -createdAt -__v';
-    //const dontWantToInclude = ['']; // -role
-
-     let userInfo;
-
+  
+    let userInfo;
 
     const result = await this.userSiteService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
-
    
     sendResponse(res, {
       code: StatusCodes.OK,
@@ -220,11 +195,6 @@ export class userSiteController extends GenericController<
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
     
     const populateOptions: (string | {path: string, select: string}[]) = [
-      // {
-      //   path: 'personId',
-      //   select: 'name role' // name 
-      // },
-      // 'personId'
       {
         path: 'siteId',
         select: 'name address status'
@@ -232,12 +202,9 @@ export class userSiteController extends GenericController<
     ];
 
     const dontWantToInclude = '-role -workHours -isDeleted -updatedAt -createdAt -__v';
-    //const dontWantToInclude = ['']; // -role
-
-     let userInfo;
-
-   
     
+    let userInfo;
+
     if(req.user.userId){
       userInfo = await User.findById(req.user.userId).select('name role');
     }
@@ -400,13 +367,6 @@ export class userSiteController extends GenericController<
    * 
    * ******** */
   updateWorkHourByUserSiteId = catchAsync(async (req: Request, res: Response) => {
-    
-    /****
-     * 
-     * 
-     * 
-     * **** */
-
     const {
       workHours
     } = req.body;

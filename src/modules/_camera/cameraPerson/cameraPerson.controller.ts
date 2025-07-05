@@ -49,10 +49,9 @@ export class CameraPersonController extends GenericController<
    * ************* */
   getUsersWithAccessToCamera = catchAsync(async (req: Request, res: Response) => {
     const { cameraId } = req.params;
-    // Call service method
+    
     const result = await this.CameraPersonService.getUsersWithAccessToCamera(cameraId);
-    //getUsersWithAccessToCameraV
-    // getUsersWithAccessToCameraV1
+    
     sendResponse(res, {
       code: StatusCodes.OK,
       data: result,

@@ -12,9 +12,6 @@ import pick from '../../../shared/pick';
 import { Site } from '../site/site.model';
 
 
-// let conversationParticipantsService = new ConversationParticipentsService();
-// let messageService = new MessagerService();
-
 export class cameraSiteController extends GenericController<
   typeof cameraSite,
   IcameraSite
@@ -40,23 +37,15 @@ export class cameraSiteController extends GenericController<
       {
         path: 'cameraId',
         select: 'cameraName localLocation  status ',
-      }, // lat long  // assignedManagerId assignedUserId description
-      // 'personId'
+      }, 
       {
         path: 'siteId',
         select: 'name'
       }
     ];
 
-    // const dontWantToInclude = ['-localLocation -attachments']; // -role
-
-    const dontWantToInclude = '-createdAt -updatedAt -__v'; // -role
-    // -localLocation -attachments
-    // -localLocation -attachments -cameraPassword -cameraIp -cameraPort -isDeleted -createdAt -updatedAt -__v 
-
+    const dontWantToInclude = '-createdAt -updatedAt -__v'; 
     
-    
-
     const result = await this.service.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
 
     
@@ -83,25 +72,15 @@ export class cameraSiteController extends GenericController<
       {
         path: 'cameraId',
         select: 'rtspUrl cameraName',
-      }, // lat long  // assignedManagerId assignedUserId description
-      //  'cameraId'
-      // {
-      //   path: 'siteId',
-      //   select: 'name'
-      // }
+      }, 
     ];
 
-    // const dontWantToInclude = ['-localLocation -attachments']; // -role
-
-    const dontWantToInclude = '-createdAt -updatedAt -__v'; // -role
-    // -localLocation -attachments
-    // -localLocation -attachments -cameraPassword -cameraIp -cameraPort -isDeleted -createdAt -updatedAt -__v 
+    const dontWantToInclude = '-createdAt -updatedAt -__v';
     
     let siteRes;
 
     if(req.query.siteId){
       siteRes = await Site.findById(req.query.siteId).select('name createdAt');
-      
     }
     
     const result = await this.service.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
@@ -136,19 +115,10 @@ export class cameraSiteController extends GenericController<
       {
         path: 'cameraId',
         select: 'cameraName',
-      }, // lat long  // assignedManagerId assignedUserId description
-      //  'cameraId'
-      // {
-      //   path: 'siteId',
-      //   select: 'name'
-      // }
+      },
     ];
 
-    // const dontWantToInclude = ['-localLocation -attachments']; // -role
-
-    const dontWantToInclude = '-createdAt -updatedAt -__v -isDeleted'; // -role
-    // -localLocation -attachments
-    // -localLocation -attachments -cameraPassword -cameraIp -cameraPort -isDeleted -createdAt -updatedAt -__v 
+    const dontWantToInclude = '-createdAt -updatedAt -__v -isDeleted';
     
     let siteRes;
 

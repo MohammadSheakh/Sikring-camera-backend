@@ -107,8 +107,5 @@ router.route('/all-persons-with-or-without-access-byCameraId/:cameraId').get(
   controller.getUsersWithAccessToCamera
 );
 
-
-
-
 export const CameraPersonRoute = router;
 

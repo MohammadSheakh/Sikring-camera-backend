@@ -86,10 +86,10 @@ export class CameraPersonService extends GenericService<
   }
 
   /************
-     * 
-     *  Get all users who have access to a specific camera (Best Version)
-     * 
-     * *********** */
+   * 
+   * Dashboard: (Admin) : Get all users who have access to a specific camera (Best Version)
+   * 
+   * *********** */
   getUsersWithAccessToCamera = async (cameraId) =>  {
     
     const cameraPersons = await CameraPerson.find({
@@ -136,10 +136,67 @@ export class CameraPersonService extends GenericService<
           personId: userSite.personId,
           // siteId: userSite.siteId,
           role: userSite.role,
-          // isDeleted: userSite.isDeleted,
-          // createdAt: userSite.createdAt,
-          // updatedAt: userSite.updatedAt,
-          // __v: userSite.__v,
+          status: status, // Access status: enable or disable
+        };
+      });
+
+    // console.log('usersWithStatus', result);
+
+    return result;
+  }
+
+  /************
+   * 
+   * Dashboard: ( Manager ) : Get customers who have access to a specific camera (Best Version)
+   * 
+   * *********** */
+  getUsersWithAccessToCameraForManager = async (cameraId) =>  {
+    
+    const cameraPersons = await CameraPerson.find({
+      cameraId,
+    })
+
+    /***
+     * 
+     * cameraPersons gives us all users who have access to the camera
+     *  cameraId personId siteId status (disable enable)  role
+     * 
+     ***/
+
+    // Map cameraPersons by personId and siteId for quick access
+    const cameraPersonStatusMap = {};
+
+    let siteIdForThisCamera;
+
+    if(cameraPersons[0]?.siteId){
+      siteIdForThisCamera = cameraPersons[0].siteId;
+    }
+
+    const userSites = await userSite.find({
+      siteId: siteIdForThisCamera,
+      isDeleted: false,
+      role: { $in: ['customer', 'manager'] } // Only include customers and managers
+    }).select('-workHours');
+
+    // console.log('userSites', userSites);
+    // console.log('cameraPersons', cameraPersons);
+
+    // Combine userSites and cameraPersons
+      const result = userSites.map((userSite) => {
+        // Find the corresponding entry in cameraPersons
+        const cameraPerson = cameraPersons.find(
+          (cp) => cp.personId.toString() === userSite.personId.toString()
+        );
+
+        // Determine the status based on cameraPerson existence
+        const status = cameraPerson ? cameraPerson.status : 'disable';
+
+        // Return the combined user details and status
+        return {
+          _id: userSite._id,
+          personId: userSite.personId,
+          // siteId: userSite.siteId,
+          role: userSite.role,
           status: status, // Access status: enable or disable
         };
       });
@@ -169,7 +226,5 @@ export class CameraPersonService extends GenericService<
     // Return the list of cameras with access
     return accessedCameras;
   }
-
-
 }
 

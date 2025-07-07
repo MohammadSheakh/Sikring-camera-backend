@@ -9,6 +9,7 @@ import { Morgan } from './shared/morgen';
 import i18next from './i18n/i18n'; // Import the i18next configuration
 import i18nextMiddleware from 'i18next-http-middleware';
 // import i18nextFsBackend from 'i18next-fs-backend';
+import monitor from 'express-monitor'
 
 const app = express();
 
@@ -41,6 +42,8 @@ app.use(i18nextMiddleware.handle(i18next));
 
 // router
 app.use('/api/v1', router);
+// app.use('/monitor', monitor)
+app.use(require('express-status-monitor')());
 
 // live response
 app.get('/test', (req: Request, res: Response) => {

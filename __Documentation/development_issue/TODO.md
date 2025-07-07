@@ -1,14 +1,12 @@
 # TODO
 
-This document tracks the issues and their current statuses. Each issue is followed by a checkbox to mark its resolution.
-
 <details>
 
   <summary>Admin Part Issue </summary>
 
-  - [ ] for admin part .. in case of site create and update .. we need to keep users name in the audit log 🚦
+  - [] for admin part .. in case of site create and update .. we need to keep users name in the audit log 🚦
   
-  - [ ]  {{shob}}v1/user-site/paginate?role=customer 
+  - []  {{shob}}v1/user-site/paginate?role=customer 
         for this route .. admin part .. we have to show employee Name also for user Id 
   > ~~~~
 
@@ -26,7 +24,7 @@ This document tracks the issues and their current statuses. Each issue is follow
 
 ##### Global Issue 
 
-  - [x] ~~Test~~
+  - [x] ~~~~
   - [ ] 
   >  
 - [ ] 

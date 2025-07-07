@@ -27,7 +27,7 @@ const myFormat = printf(
 
 const logger = createLogger({
   level: 'info',
-  format: combine(label({ label: 'Fertie-Backend' }), timestamp(), myFormat),
+  format: combine(label({ label: 'Sikring-Camera-Backend' }), timestamp(), myFormat),
   transports: [
     new transports.Console(),
     new DailyRotateFile({

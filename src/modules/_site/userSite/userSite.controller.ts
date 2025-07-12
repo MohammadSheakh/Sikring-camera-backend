@@ -49,7 +49,7 @@ export class userSiteController extends GenericController<
     let userInfo;
 
     if(req.user.userId){
-      userInfo = await User.findById(req.user.userId).select('name role');
+      userInfo = await User.findById(req.user.userId).select('name role profileImage');
     }
 
     const result = await this.userSiteService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);

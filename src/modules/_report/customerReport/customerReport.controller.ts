@@ -56,6 +56,30 @@ export class customerReportController extends GenericController<
       const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
       const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
       
+       // Handle createdAt date filtering for today's reports
+      if (filters.createdAt) {
+        const inputDate = new Date(filters.createdAt as string);
+        
+        // Check if the date is valid
+        if (!isNaN(inputDate.getTime())) {
+          // Create start and end of the day for the given date
+          const startOfDay = new Date(inputDate);
+          startOfDay.setUTCHours(0, 0, 0, 0);
+          
+          const endOfDay = new Date(inputDate);
+          endOfDay.setUTCHours(23, 59, 59, 999);
+          
+          // Replace the exact date with a date range
+          filters.createdAt = {
+            $gte: startOfDay,
+            $lte: endOfDay
+          };
+        } else {
+          // If invalid date, remove the filter
+          delete filters.createdAt;
+        }
+      }
+
       const populateOptions = [
         {
           path: 'reportId',

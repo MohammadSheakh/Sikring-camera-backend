@@ -83,7 +83,7 @@ export class customerReportController extends GenericController<
       const populateOptions = [
         {
           path: 'reportId',
-          select: 'title incidentSevearity reportType'
+          select: 'title incidentSevearity reportType description'
         },
       ];
 

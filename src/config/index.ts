@@ -33,7 +33,7 @@ export const config = {
     verifyEmailTokenExpiration:
       process.env.VERIFY_EMAIL_TOKEN_EXPIRATION_TIME || '10m',
     resetPasswordTokenExpiration:
-      process.env.RESET_PASSWORD_TOKEN_EXPIRATION_TIME || '5m',
+      process.env.RESET_PASSWORD_TOKEN_EXPIRATION_TIME || '10m',
   },
 
   otp: {
@@ -41,7 +41,7 @@ export const config = {
       process.env.VERIFY_EMAIL_OTP_EXPIRATION_TIME || '10',
     ),
     resetPasswordOtpExpiration: parseInt(
-      process.env.RESET_PASSWORD_OTP_EXPIRATION_TIME || '5',
+      process.env.RESET_PASSWORD_OTP_EXPIRATION_TIME || '10',
     ),
     maxOtpAttempts: parseInt(process.env.MAX_OTP_ATTEMPTS || '5'),
     attemptWindowMinutes: parseInt(process.env.ATTEMPT_WINDOW_MINUTES || '10'),

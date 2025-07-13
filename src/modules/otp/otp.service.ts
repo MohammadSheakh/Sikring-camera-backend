@@ -54,12 +54,14 @@ const verifyOTP = async (userEmail: string, otp: string, type: string) => {
   const otpDoc = await OTP.findOne({
     userEmail,
     type,
-    verified: false,
+    otp
+    // verified: true,
   });
 
   if (!otpDoc || otpDoc.expiresAt < new Date()) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'OTP not found or expired');
   }
+
   otpDoc.attempts += 1;
   otpDoc.lastAttemptAt = new Date();
   if (otpDoc.attempts > config.otp.maxOtpAttempts) {

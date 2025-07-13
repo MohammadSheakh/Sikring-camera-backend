@@ -104,6 +104,13 @@ const login = async (email: string, reqpassword: string) => { // , fcmToken : st
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Authorization failed .... ');
   }
 
+  if(user.isEmailVerified === false){ 
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      'User not verified, Please verify your email, Check your email.',
+    );
+  }
+
   validateUserStatus(user);
 
   // if (!user.isEmailVerified) {

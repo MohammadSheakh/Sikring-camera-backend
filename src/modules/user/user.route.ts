@@ -120,4 +120,15 @@ router
   UserController.updateProfileImage
 );
 
+/*************************
+ *  
+ * (App) | Customer , User | get profile Details... 
+ * 
+ * ********************* */
+router.route('/get-profile-info').get(
+  auth('common'),
+  UserController.getMyProfile
+);
+
+
 export const UserRoutes = router;

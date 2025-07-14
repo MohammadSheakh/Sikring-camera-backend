@@ -102,7 +102,7 @@ const updateUserProfile = async (
 
 //[🚧][🧑‍💻✅][🧪🆗]
 const getMyProfile = async (userId: string): Promise<TUser | null> => {
-  const result = await User.findById(userId);
+  const result = await User.findById(userId).select('id name profileImage');
   if (!result) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'User not found');
   }

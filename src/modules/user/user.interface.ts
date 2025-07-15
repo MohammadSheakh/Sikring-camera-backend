@@ -3,7 +3,7 @@ import { Role } from '../../middlewares/roles';
 import { TAuthProvider, TStatusType, TSubscriptionType } from './user.constant';
 import { PaginateOptions, PaginateResult } from '../../types/paginate';
 
-export type TProfileImage = { // test 2
+export type TProfileImage = {
   imageUrl: string;
   // file: Record<string, any>;
 };

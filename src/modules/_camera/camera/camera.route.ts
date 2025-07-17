@@ -65,7 +65,7 @@ router.route('/create').post(
   // ],
   auth('admin'),
   validateRequest(validation.createCameraValidationSchema),
-  controller.create
+  controller.createV2//create
 );
 
 router.route('/delete/:id').delete(

@@ -11,6 +11,7 @@ import catchAsync from '../../../shared/catchAsync';
 import { IauditLog } from '../../auditLog/auditLog.interface';
 import { TStatus } from '../../auditLog/auditLog.constant';
 import eventEmitterForAuditLog from '../../auditLog/auditLog.service';
+import eventEmitForCheckCameraRTSPURL from './camera.service';
 import omit from '../../../shared/omit';
 import pick from '../../../shared/pick';
 import { CameraPerson } from '../cameraPerson/cameraPerson.model';
@@ -179,6 +180,21 @@ export class cameraController extends GenericController<
       //const result = await camera.create(payload)
       const result = await camera.create([payload], { session })  // updated with the session for transaction
       
+      /********
+       * 
+       * lets call event emitter to check the rtsp url in background ..
+       * 
+       * ******* */
+
+      console.log('⚡⚡⚡⚡⚡')
+      eventEmitForCheckCameraRTSPURL.emit('eventEmitForCheckCameraRTSPURL', {
+        /********
+         *  we need to pass cameraId .. as if url is not valid then we have to update the camera status .. 
+         * ***** */
+        cameraId: result[0]._id,
+        rtspUrl: result[0].rtspUrl,
+      });
+
       let actionPerformed = `Create a new camera ${result[0]._id} | `;
 
       if(req.body.siteId && result[0]._id){

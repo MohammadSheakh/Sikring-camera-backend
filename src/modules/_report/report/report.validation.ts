@@ -20,7 +20,7 @@ export const createReportValidationSchema = z.object({
         invalid_type_error: 'reportType must be a string.',
       })
       .refine(reportType => Object.keys(TReportType).includes(reportType as keyof typeof TReportType), {
-        message: `reportType must be one of the following: ${Object.keys(TReportType).join(', ')}`,
+        message: `reportType must be one of the following: ${Object.keys(TReportType).join(', ')} `,
       }),
 
     incidentSevearity :  z

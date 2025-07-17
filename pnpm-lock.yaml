@@ -107,6 +107,9 @@ importers:
       node-cron:
         specifier: ^3.0.3
         version: 3.0.3
+      node-rtsp-stream:
+        specifier: ^0.0.9
+        version: 0.0.9
       nodemailer:
         specifier: ^6.9.16
         version: 6.10.0
@@ -2278,6 +2281,9 @@ packages:
   node-gyp-build-optional-packages@5.2.2:
     resolution: {integrity: sha512-s+w+rBWnpTMwSFbaE0UXsRlg7hU4FjekKU4eyAih5T8nJuNZT1nNsskXpxmeqSK9UzkBl6UgRlnKc8hz8IEqOw==}
     hasBin: true
+
+  node-rtsp-stream@0.0.9:
+    resolution: {integrity: sha512-ynSkdHL4fuhctl1GeK890De7n8Dw+37D6IAZGrzsFSrd4TYho6neFQpMS1t0ZRDGsAegKh2p6kl1l9Vo3pJk8w==}
 
   nodemailer@6.10.0:
     resolution: {integrity: sha512-SQ3wZCExjeSatLE/HBaXS5vqUOQk6GtBdIIKxiFdmm01mOQZX/POJkO3SUX1wDiYcwUOJwT23scFSC9fY2H8IA==}
@@ -5729,6 +5735,13 @@ snapshots:
     dependencies:
       detect-libc: 2.0.3
     optional: true
+
+  node-rtsp-stream@0.0.9:
+    dependencies:
+      ws: 7.5.10
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
 
   nodemailer@6.10.0: {}
 

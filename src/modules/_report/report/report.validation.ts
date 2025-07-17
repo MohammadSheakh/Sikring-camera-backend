@@ -57,7 +57,7 @@ export const createReportValidationSchema = z.object({
     personName: z.string().optional(), 
 
     attachments: z
-      .array(z.string(), {
+      .array(z.string().optional(), {
         required_error: 'attachments is required, attachments must be an array of strings.',
         invalid_type_error: 'attachments must be an array of strings.',
       }).optional(),

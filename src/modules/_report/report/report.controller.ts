@@ -154,7 +154,7 @@ export class reportController extends GenericController<
       reportId: id
     }).select('personId role').populate({
       path: 'personId',
-      select: 'name email phoneNumber'
+      select: 'name email phoneNumber profileImage',
     });
 
     if (customerReportRes && customerReportRes.length > 0) {

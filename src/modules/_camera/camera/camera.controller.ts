@@ -36,7 +36,10 @@ export class cameraController extends GenericController<
 
     /*************
      * 
-     *  // TODO :  Must Need to implement mongodb transaction here
+     *  // This is working fine .. but we need to check the rtsp url which is provided by the user .. that is working or not .. 
+     *  so, for that we have to check that rtsp url in background .. 
+     * 
+     *  with this functionality we should create a updated function ..  📁 createV2
      * 
      * *********** */
     create = catchAsync(async (req: Request, res: Response) => {
@@ -146,6 +149,99 @@ export class cameraController extends GenericController<
         success: true,
       });
     });
+
+    /**********
+     * 
+     *  here we implement the rtsp url checking functionality .. 
+     *  we will check the rtsp url in background ..
+     * 
+     * ******** */
+    createV2 = catchAsync(async (req: Request, res: Response) => {
+      
+      // Start a session for MongoDB transaction
+      const session = await mongoose.startSession();
+      session.startTransaction();
+
+      let payload = {
+          localLocation: req.body.localLocation,
+          cameraName: req.body.cameraName,
+          cameraUsername : req.body.cameraUsername,
+          cameraPassword: req.body.cameraPassword,  
+          cameraIp: req.body.cameraIp || '',
+          cameraPort: req.body.cameraPort, 
+          cameraPath: req.body.cameraPath || '',
+          rtspUrl: `rtsp://${req.body.cameraUsername}:${req.body.cameraPassword}@${req.body.cameraIp.replace("http://", "")}${req.body.cameraPath}`,
+          ...(req.body.globalLocation && { globalLocation: req.body.globalLocation }),
+          ...(req.body.lat && { lat: req.body.lat }),
+          ...(req.body.long && { long: req.body.long }),
+        };
+
+      //const result = await camera.create(payload)
+      const result = await camera.create([payload], { session })  // updated with the session for transaction
+      
+      let actionPerformed = `Create a new camera ${result[0]._id} | `;
+
+      if(req.body.siteId && result[0]._id){
+
+        const assignCameraForSite = await cameraSite.create([
+          {
+            cameraId: result[0]._id,
+            siteId: req.body.siteId,
+          }
+        ], { session });
+
+        /************
+         * 
+         * as we got the siteId .. that means .. site has already a manager Id .. 
+         * so, lets assign the camera to that manager .. 
+         * 
+         * *********** */
+
+        // Manager For Site 
+        const managerIdForSite : IuserSite | null = await userSite.findOne({
+          siteId: req.body.siteId,
+          role: 'manager',
+        }).select('personId role').session(session);
+
+        if(managerIdForSite && managerIdForSite.personId){
+          await CameraPerson.create([{
+            cameraId: result[0]._id,
+            personId : managerIdForSite?.personId,
+            siteId : req.body.siteId,
+            status: 'enable', // default status
+            role: managerIdForSite?.role, // default role if not specified
+          }], { session });
+        }
+
+        actionPerformed+= `Provide View Access ${result[0]._id} for ${managerIdForSite?.personId} ${managerIdForSite?.role} | `;
+
+        actionPerformed+= `Assign a camera ${result[0]._id} for ${req.body.siteName}`;
+      }
+
+      // Commit the transaction
+      await session.commitTransaction();
+      
+      let valueForAuditLog : IauditLog = {
+        userId: req.user.userId,
+        role: req.user.role,
+        actionPerformed: `${actionPerformed}`,
+        status: TStatus.success,
+      }
+
+      eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
+      
+      // End the session
+      session.endSession();
+
+      sendResponse(res, {
+        code: StatusCodes.OK,
+        data: result,
+        message: `${this.modelName} created successfully`,
+        success: true,
+      });
+    });
+
+
 
     getAllWithPagination = catchAsync(async (req: Request, res: Response) => {
     //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router

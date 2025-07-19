@@ -1,7 +1,6 @@
 import { model, Schema } from 'mongoose';
 import paginate from '../../../common/plugins/paginate';
 import { IMessage, IMessageModel } from './message.interface';
-import { RoleType } from '../conversationParticipents/conversationParticipents.constant';
 
 const messageSchema = new Schema<IMessage>(
   {
@@ -9,12 +8,6 @@ const messageSchema = new Schema<IMessage>(
       type: String,
       required: [true, 'text is required'],
     },
-    // Add these fields for vector search and RAG 
-    // embedding: {
-    //   type: [Number], // This will hold the vector embedding
-    //   required: false,
-    //   //index: '2dsphere' // Optional: for geospatial queries; not needed for vector search
-    // },
     attachments: [
       {
         type: Schema.Types.ObjectId,
@@ -32,20 +25,7 @@ const messageSchema = new Schema<IMessage>(
       ref: 'Conversation',
       required: [true, 'Conversation Id is required'],
     },
-    // senderRole: {
-    //   type: String,
-    //   enum: [
-    //     RoleType.bot,
-    //     RoleType.user,
-    //   ],
-    //   required: [
-    //     true,
-    //     `senderRole is required it can be ${Object.values(
-    //       RoleType
-    //     ).join(', ')}`,
-    //   ],
-    // },
-
+    
     isDeleted: {
       type: Boolean,
       required: [false, 'isDeleted is not required'],

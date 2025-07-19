@@ -100,8 +100,9 @@ export class ConversationController extends GenericController<typeof Conversatio
   create = catchAsync(async (req: Request, res: Response) => {
     let type;
     let result: IConversation;
+    
     // creatorId ta req.user theke ashbe
-    //req.body.creatorId = req.user.userId;
+    
     let { participants, message } = req.body; // type, attachedToId, attachedToCategory
 
     // type is based on participants count .. if count is greater than 2 then group else direct
@@ -156,6 +157,13 @@ export class ConversationController extends GenericController<typeof Conversatio
 
           let user = await User.findById(participant).select('role');
 
+          if (!user) {
+            throw new ApiError(
+              StatusCodes.NOT_FOUND,
+              `User with id ${participant} not found`
+            );
+          }
+
           const res1 = await conversationParticipantsService.create({
             userId: participant,
             conversationId: result._id 
@@ -179,7 +187,6 @@ export class ConversationController extends GenericController<typeof Conversatio
             text: message,
             senderId: req.user.userId,
             conversationId: result?._id,
-            senderRole: req.user.role === RoleType.user ? RoleType.user : RoleType.bot,
           });
           if (!res1) {
             throw new ApiError(
@@ -188,44 +195,25 @@ export class ConversationController extends GenericController<typeof Conversatio
             );
           }
         }
-
-        if(!message){
-          const res1: IMessage | null = await messageService.create({
-            text: "How are you feeling today ?",
-            senderId: new mongoose.Types.ObjectId('68206aa9e791351fc9fdbcde'),  // this is bot id .. eta process.env file theke ashbe .. 
-            conversationId: result?._id,
-            senderRole: RoleType.bot,
-          });
-
-          // TODO :  there is nothing called lastMessageSenderRole in conversation model ..
-          
-          // also update the last message of the conversation 
-          await Conversation.findByIdAndUpdate(
-            result?._id,
-            { lastMessageSenderRole: RoleType.bot}, // FIX ME : last message sender role bolte kichui nai .. 
-            { new: true }
-          ).select('-isDeleted -updatedAt -createdAt -__v');
-        }
-      }
 
       // dont need to create conversation .. 
       // just send message to the existing conversation
 
       let res1 ;
       if (message && existingConversation?._id && existingConversation?.canConversate) {
-          let res1 : IMessage | null = await messageService.create({
-            text: message,
-            senderId: req.user.userId,
-            conversationId: existingConversation?._id,
-            senderRole: req.user.role === RoleType.user ? RoleType.user : RoleType.bot,
-          });
-          if (!res1) {
-            throw new ApiError(
-              StatusCodes.BAD_REQUEST,
-              'Unable to create conversation participant'
-            );
-          }
+        let res1 : IMessage | null = await messageService.create({
+          text: message,
+          senderId: req.user.userId,
+          conversationId: existingConversation?._id,
+        });
+        if (!res1) {
+          throw new ApiError(
+            StatusCodes.BAD_REQUEST,
+            'Unable to create conversation participant'
+          );
         }
+      }
+    }
 
       sendResponse(res, {
         code: StatusCodes.OK,

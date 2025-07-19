@@ -227,6 +227,8 @@ export class userSiteController extends GenericController<
   /**************
    * 
    *  (App) (Customer) : Show all Related User For Create Conversation
+   *  
+   *  /conversation/paginate
    * 
    * ************* */
   
@@ -244,7 +246,7 @@ export class userSiteController extends GenericController<
 
     // Step 2: Retrieve all personIds related to the retrieved siteIds
     const personIdsRelatedToSites = await userSite.find(
-      { siteId: { $in: siteIds }, isDeleted: false },
+      {  personId: req.user.userId, siteId: { $in: siteIds }, isDeleted: false },//⚡⚡
       'personId siteId' // Select only the 'personId' field
     ).populate({
       path: 'personId',
@@ -289,6 +291,8 @@ export class userSiteController extends GenericController<
    * 
    *  (Dashboard) (Admin) : Show all Related User For Create Conversation
    * 
+   * /conversation/admin/paginate
+   * 
    * ************* */
   
   //[🚧][🧑‍💻][🧪] // ✅🆗
@@ -302,16 +306,19 @@ export class userSiteController extends GenericController<
 
     *****************************/
 
-    const allowedTypes = [
-      TRole.admin,
-      TRole.manager,
-      TRole.user,
-      TRole.customer
-    ];
+    
+      const allowedTypes = [
+        TRole.admin,
+        TRole.manager,
+        TRole.user,
+        TRole.customer
+      ];
+    
 
-    if(!allowedTypes.includes(req.query.role)){
-      throw new ApiError(StatusCodes.BAD_REQUEST, `Invalid type .. Allowed types are ${allowedTypes.join(', ')}`);
-    }
+      if(!allowedTypes.includes(req.query.role)){
+        throw new ApiError(StatusCodes.BAD_REQUEST, `Invalid type .. Allowed types are ${allowedTypes.join(', ')}`);
+      }
+    
 
     // Step 1: Retrieve all siteIds related to the user
     const sitesRelatedToUser = await userSite.find(
@@ -330,6 +337,33 @@ export class userSiteController extends GenericController<
       path: 'personId',
       select: 'name role canMessage',
     });
+
+
+     // Step 3: Use Map to ensure unique personIds
+      const uniquePersonsMap = new Map();
+
+
+      personIdsRelatedToSites.forEach(person => {
+  
+        const personIdStr = person.personId._id.toString();
+        
+        // Filter conditions
+        if (personIdStr !== req.user.userId.toString() && 
+            person.personId.role === req.query.role) {
+          
+          // If person not already in map, add them
+          if (!uniquePersonsMap.has(personIdStr)) {
+            uniquePersonsMap.set(personIdStr, {
+              personId: person.personId,
+              siteId: person.siteId // This will be the first site they're associated with
+            });
+          }
+        }
+      });
+
+      console.log('uniquePersonsMap::', uniquePersonsMap);
+
+    /*****************
 
     // Step 3: Aggregate unique personIds into a Set
     const uniquePersonIds = new Set(personIdsRelatedToSites.map(person => 
@@ -350,8 +384,99 @@ export class userSiteController extends GenericController<
     }) // Exclude logged-in user
     );
 
+    **************** */
+
     // Convert the Set to an array if needed
-    const uniquePersonIdsArray = Array.from(uniquePersonIds);
+    ////const uniquePersonIdsArray = Array.from(uniquePersonIds);
+    const uniquePersonIdsArray = Array.from(uniquePersonsMap.values());
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: uniquePersonIdsArray,
+      message: `All ${this.modelName} with pagination`,
+      success: true,
+    });
+  });
+
+  /**************
+   * 
+   *  (Dashboard) (Admin) : Show all Related User For Create Conversation
+   * 
+   * /conversation/person/paginate
+   * 
+   * ************* */
+  
+  //[🚧][🧑‍💻][🧪] // ✅🆗
+  getAllWithPaginationForPersonConversation = catchAsync(async (req: Request, res: Response) => {
+  
+    // Step 1: Retrieve all siteIds related to the user
+    const sitesRelatedToUser = await userSite.find(
+      { personId: req.user.userId, isDeleted: false },
+      'siteId' // Select only the 'siteId' field
+    );
+
+    // Extract siteIds from the result
+    const siteIds = sitesRelatedToUser.map(site => site.siteId);
+
+    // Step 2: Retrieve all personIds related to the retrieved siteIds
+    const personIdsRelatedToSites = await userSite.find(
+      { siteId: { $in: siteIds }, isDeleted: false },
+      'personId siteId' // Select only the 'personId' field
+    ).populate({
+      path: 'personId',
+      select: 'name role canMessage',
+    });
+
+
+     // Step 3: Use Map to ensure unique personIds
+      const uniquePersonsMap = new Map();
+
+
+      personIdsRelatedToSites.forEach(person => {
+  
+        const personIdStr = person.personId._id.toString();
+        
+        // Filter conditions
+        if (personIdStr !== req.user.userId.toString()) {
+          
+          // If person not already in map, add them
+          if (!uniquePersonsMap.has(personIdStr)) {
+            uniquePersonsMap.set(personIdStr, {
+              personId: person.personId,
+              siteId: person.siteId // This will be the first site they're associated with
+            });
+          }
+        }
+      });
+
+      console.log('uniquePersonsMap::', uniquePersonsMap);
+
+    /*****************
+
+    // Step 3: Aggregate unique personIds into a Set
+    const uniquePersonIds = new Set(personIdsRelatedToSites.map(person => 
+      {
+        // console.log('person::', person)
+          return {
+            personId: person.personId,
+            siteId: person.siteId
+          }
+      }  
+    ).filter(personId => {
+
+      // console.log('personId =====', personId);
+
+      return personId.personId.toString() !== req.user.userId.toString()  && 
+      personId.personId.role === req.query.role; // Exclude logged-in user and filter by role
+
+    }) // Exclude logged-in user
+    );
+
+    **************** */
+
+    // Convert the Set to an array if needed
+    ////const uniquePersonIdsArray = Array.from(uniquePersonIds);
+    const uniquePersonIdsArray = Array.from(uniquePersonsMap.values());
 
     sendResponse(res, {
       code: StatusCodes.OK,

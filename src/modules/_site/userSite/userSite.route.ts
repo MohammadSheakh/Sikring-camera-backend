@@ -131,6 +131,20 @@ router.route('/conversation/admin/paginate').get(
   controller.getAllWithPaginationForAdminConversation
 );
 
+/**************
+ * 
+ *  (App) (Customer | User) : Show all Related User For Create Conversation
+ * 
+ * 🧪 need testing for both customer | user 
+ * 
+ * ************* */
+router.route('/conversation/person/paginate').get(
+  auth('common'), 
+  validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role', 'siteId', ...paginationOptions])),
+  controller.getAllWithPaginationForPersonConversation
+);
+
+
 
 router.route('/:id').get(
   // auth('common'),

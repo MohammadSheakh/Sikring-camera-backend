@@ -501,12 +501,12 @@ const getAllUserForAdminDashboard = catchAsync(async (req, res) => {
   const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
   const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
   
-  const populateOptions: (string | {path: string, select: string}[]) = [
+  const populateOptions = [ // : (string | {path: string, select: string}[])
     // {
     //   path: 'cameraId',
     //   select: ''
     // },
-    // // 'personId'
+     //'user_custom_id name address phoneNumber status'
     // {
     //   path: 'siteId',
     //   select: ''
@@ -515,7 +515,7 @@ const getAllUserForAdminDashboard = catchAsync(async (req, res) => {
 
   // const dontWantToInclude = ['-localLocation -attachments']; // -role
 
-  const dontWantToInclude = 'name address phoneNumber status' ; // -role
+  const dontWantToInclude = 'name address phoneNumber status' ; // -role // name address phoneNumber status
   
   const result = await userCustomService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
 

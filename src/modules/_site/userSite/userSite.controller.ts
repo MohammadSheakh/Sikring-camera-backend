@@ -66,6 +66,48 @@ export class userSiteController extends GenericController<
     });
   });
 
+  getAllWithPaginationForAdmin = catchAsync(async (req: Request, res: Response) => {
+    //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
+    const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
+    const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+    
+    const populateOptions: (string | {path: string, select: string}[]) = [
+      {
+        path: 'siteId',
+        select: 'name createdAt type ', // attachments
+        // populate: {
+        //   path: 'attachments', // deep populate attachments
+        //   select: 'attachment' // only pick attachmentName
+        // }
+      },
+      {
+        path: 'personId',
+        select: 'name role user_custom_id email address' // only pick name, role and profileImage
+      }
+    ];
+
+    const dontWantToInclude = '-role -workHours -isDeleted -updatedAt -createdAt -__v';
+
+    let userInfo;
+
+    if(req.user.userId){
+      userInfo = await User.findById(req.user.userId).select('name role profileImage');
+    }
+
+    const result = await this.userSiteService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
+
+    if(userInfo){
+      result.userInfo  = userInfo;
+    }
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `All ${this.modelName} with pagination`,
+      success: true,
+    });
+  });
+
 
   getAllWithPaginationWithManagerInfo = catchAsync(async (req: Request, res: Response) => {
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;

@@ -10,8 +10,9 @@ export class AdminController {
   getAllKeyMetricsWithReportCountByMonths = catchAsync(
     async(req: Request, res: Response) => {
       // console.log("hit ⚡", req.user.userId);
+      console.log("hit req.query.year ⚡", req.query.year);
       
-      const keyMetrics = await this.adminService.getAllKeyMetricsWithReportCountByMonths();
+      const keyMetrics = await this.adminService.getAllKeyMetricsWithReportCountByMonths(req.query.year);
       // res.status(200).json({
       //   success: true,
       //   message: "Key metrics fetched successfully",

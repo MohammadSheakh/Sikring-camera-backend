@@ -41,6 +41,17 @@ router.route('/paginate').get(
   controller.getAllWithPagination
 );
 
+/***********
+ * 
+ * Dashboard (Admin) : Home : get all site by personId and customer type
+ * 
+ * *********** */ 
+router.route('/paginate/admin').get(
+  auth('common'),
+  validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role', 'siteId', ...paginationOptions])),
+  controller.getAllWithPaginationForAdmin
+);
+
 
 /***********
  * 

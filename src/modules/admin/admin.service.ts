@@ -11,8 +11,10 @@ export class adminService {
   }
   
 
-  getAllKeyMetricsWithReportCountByMonths = async () => {
+  getAllKeyMetricsWithReportCountByMonths = async (year) => {
     
+    console.log('year from service 🟢🟢', year)
+
     async function getReportCountOfLastTwentyFourHours () {
       const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
       return await report.countDocuments({
@@ -28,14 +30,17 @@ export class adminService {
       return null;
     }
 
-    async function getReportCountByMonths() {
+    async function getReportCountByMonths(year) {
+        
+        const targetYear = parseInt(year, 10) || new Date().getFullYear();
+        console.log('🟢targetYear🟢', targetYear)
         const reportsByMonth = await report.aggregate([
             {
                 $match: {
                     isDeleted: false,
                     createdAt: {
-                        $gte: new Date(new Date().getFullYear(), 0, 1), // Start of current year
-                        $lt: new Date(new Date().getFullYear() + 1, 0, 1) // Start of next year
+                        $gte: new Date(targetYear, 0, 1), // Start of current year
+                        $lt: new Date(targetYear + 1, 0, 1) // Start of next year
                     }
                 }
             },
@@ -87,7 +92,7 @@ export class adminService {
       
       await getRecentClientMessage(),  // TODO : we need to implement this 
       
-      await getReportCountByMonths()  // TODO: eta test korte hobe thik result dicche kina
+      await getReportCountByMonths(year)  // TODO: eta test korte hobe thik result dicche kina
     ])
 
     return {

@@ -310,6 +310,17 @@ export class SiteController extends GenericController<
     });
   });
 
+
+  getAll = catchAsync(async (req: Request, res: Response) => {
+    const result = await Site.find().select('name');
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `All ${this.modelName}s`,
+      success: true,
+    });
+  });
   // add more methods here if needed or override the existing ones 
   
 }

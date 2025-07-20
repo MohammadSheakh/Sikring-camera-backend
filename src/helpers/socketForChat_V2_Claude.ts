@@ -1,3 +1,8 @@
+/***********
+ * 
+ * This code is updated ... working perfectly
+ * 
+ * ********** */
 import colors from 'colors';
 import { Server, Socket } from 'socket.io';
 import { logger } from '../shared/logger';
@@ -199,11 +204,15 @@ const socketForChat_V2_Claude = (io: Server) => {
        * 
        * ********** */  
 
-      socket.on('join', async(conversationData: {conversationId: string}) => {
+      socket.on('join', async(conversationData: {conversationId: string}, callback) => {
         if (!conversationData.conversationId) {
           return emitError(socket, 'conversationId is required');
         }
+
+        console.log('🚮🚮🚮🚮🚮🚮')
+
         
+
         console.log(`User ${user.name} joining chat ${conversationData.conversationId}`);
         
         // console.log(`Current userSocketMap: ${Array.from(userSocketMap.entries()).map(([k, v]) => `${k}:${v}`).join(', ')}`);

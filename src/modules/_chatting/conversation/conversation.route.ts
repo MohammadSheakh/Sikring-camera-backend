@@ -33,16 +33,13 @@ router.route('/paginate').get(
   controller.getAllWithPagination
 );
 
+
 router.route('/:id').get(
   // auth('common'),
   controller.getById
 );
 
-router.route('/update/:id').put(
-  //auth('common'), // FIXME: Change to admin
-  // validateRequest(UserValidation.createUserValidationSchema),
-  controller.updateById
-);
+
 
 router.route('/').get(
   //auth('common'), // FIXME: maybe authentication lagbe na ..
@@ -60,6 +57,13 @@ router.route('/create').post(
   validateRequest(validation.createConversationValidationSchema),
   controller.create // 2️⃣
 );
+
+router.route('/update/:id').put(
+  //auth('common'), // FIXME: Change to admin
+  // validateRequest(UserValidation.createUserValidationSchema),
+  controller.updateById
+);
+
 
 router.route('/delete/:id').delete(
   //auth('common'),

@@ -9,10 +9,9 @@ import { logger } from '../shared/logger';
 import getUserDetailsFromToken from './getUesrDetailsFromToken';
 import { Message } from '../modules/_chatting/message/message.model';
 import { Conversation } from '../modules/_chatting/conversation/conversation.model';
-import { handle } from 'i18next-http-middleware';
 import { User } from '../modules/user/user.model';
 import { ConversationParticipents } from '../modules/_chatting/conversationParticipents/conversationParticipents.model';
-import { ConversationType } from '../modules/_chatting/conversation/conversation.constant';
+import { ObjectId } from 'mongodb';
 
 declare module 'socket.io' {
   interface Socket {
@@ -54,24 +53,13 @@ interface MessageData {
   // Add other message properties as needed
 }
 
-interface ConversationData {
-  creatorId: string;
-  type: ConversationType.direct | ConversationType.group;
-  groupName?: string;
-  groupProfilePicture?: string;
-  groupBio?: string;
-  groupAdmins?: string[];
-  blockedUsers?: string[];
-  deletedFor?: string[];
-
-  // lastMessage?: string; 
-}
-
+/**********
 interface TypingData {
   conversationId: string;
   status: boolean;
   users: Array<{ _id: string }>;
 }
+********** */
 
 // Helper function to emit errors
 function emitError(socket: any, message: string, disconnect: boolean = false) {
@@ -491,24 +479,15 @@ const socketForChat_V2_Claude = (io: Server) => {
         }
       });
 
-      /*************
-       * 
-       * Handle user logout - FIXED TO PASS PARAMETERS
-       * 
-       * ************* */
-
-      socket.on('logout', () => {
-        handleUserDisconnection(userId, socket.id, onlineUsers, userSocketMap, socketUserMap, io);
-      }); 
-
+      
       /*************
        * 
        * Handle disconnection - FIXED TO PASS PARAMETERS
        * 
        * ************* */
 
-      socket.on('disconnect', (reason) => {
-        console.log(`User ${user.name} disconnected: ${reason}`);
+      socket.on('disconnect', () => {
+        console.log(`User ${user.name} disconnected`);
         handleUserDisconnection(userId, socket.id, onlineUsers, userSocketMap, socketUserMap, io);
       });
 
@@ -525,7 +504,15 @@ const socketForChat_V2_Claude = (io: Server) => {
 
   // UTILITY FUNCTION TO GET ONLINE USERS (OPTIONAL)
   const getOnlineUsers = () => Array.from(onlineUsers);
-  const isUserOnline = (userId: string) => onlineUsers.has(userId);
+  const isUserOnline = (userId: string) =>
+  {
+    console.log("onlineUsers: ", onlineUsers);
+    // let res = onlineUsers.has(new ObjectId(userId));
+    const isOnline = Array.from(onlineUsers).some(id => id.toString() === userId);
+    console.log(`User ${userId} online 🟢 status: ${isOnline}`);
+    // onlineUsers.has(userId)
+    return isOnline;
+  }
   const getUserSocketId = (userId: string) => userSocketMap.get(userId);
 
   return { 

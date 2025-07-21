@@ -206,10 +206,12 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
 
       let attachments = [];
       
-      if (req.files && req.files.attachments) {
+      console.log('req.files 🌋🌋', req.files.companyLogo);
+
+      if (req.files && req.files.companyLogo) {
       attachments.push(
         ...(await Promise.all(
-        req.files.attachments.map(async file => {
+        req.files.companyLogo.map(async file => {
             const attachmenId = await attachmentService.uploadSingleAttachment(
                 file, // file to upload 
                 TFolderName.user, // folderName
@@ -220,8 +222,11 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
         })
         ))
       );
-        req.body.attachments = attachments;
+       
+        req.body.companyLogoImage = attachments;
       }
+
+      // console.log('attachments 🌋🌋', attachments);
       
       const newUser = await AuthService.createUser({
         email: req.body.email,
@@ -231,6 +236,7 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
         name : req.body.name,
         user_custom_id : req.body.customId, 
         address : req.body.address,
+        companyLogoImage : req.body.companyLogoImage,
         // TODO : Company Logo upload korte hobe 
       });
 
@@ -254,7 +260,7 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
             personId: newUser?.user._id,
             siteId: req.body.siteId,
             role: 'customer',
-          }  
+          }
         );
 
         console.log('userSiteRes ', userSiteRes);
@@ -515,7 +521,7 @@ const getAllUserForAdminDashboard = catchAsync(async (req, res) => {
 
   // const dontWantToInclude = ['-localLocation -attachments']; // -role
 
-  const dontWantToInclude = 'name address phoneNumber status' ; // -role // name address phoneNumber status
+  const dontWantToInclude = 'name address phoneNumber role status email' ; // -role // name address phoneNumber status
   
   const result = await userCustomService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
 

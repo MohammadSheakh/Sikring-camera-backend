@@ -65,10 +65,13 @@ const userSchema = new Schema<TUser, UserModal>(
       required: false,
       default: { imageUrl: '/uploads/users/user.png' },
     },
-    companyLogoImage: {
-      type: String,
-      required: false,
-    },
+    companyLogoImage: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Attachment',
+        required: [true, 'Attachments is required'],
+      }
+    ],
 
     status : {
       type: String,

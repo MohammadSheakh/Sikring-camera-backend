@@ -17,6 +17,9 @@ import { socketHelper } from './helpers/socketForChat_V2_Claude';
 // Number of CPU cores
 const numCPUs = os.cpus().length;
 
+// Global variable to store socket utilities
+let socketUtils: any = null;
+
 //uncaught exception
 process.on('uncaughtException', error => {
   errorLogger.error('UnhandleException Detected', error);
@@ -70,18 +73,25 @@ process.on('uncaughtException', error => {
       //socket
       const io = new Server(server, {
         pingTimeout: 60000,
+        pingInterval: 25000,
+        upgradeTimeout: 30000,
+        maxHttpBufferSize: 1e6,
         cors: {
           origin: '*',
         },
+        // Disable compression to avoid RSV1 issues
+        compression: false,
       });
 
       // // Use Redis adapter for socket communication between workers
       // io.adapter(socketIORedis({ pubClient, subClient }));
 
       // Setup socket helper for chatting .. 
-      //socketHelper.socketForChat(io);
+      
+      socketUtils = socketHelper.socketForChat_V2_Claude(io);
 
-      socketHelper.socketForChat_V2_Claude(io);
+      // Make socket utilities globally accessible
+      global.socketUtils = socketUtils;
 
       // @ts-ignore
       //global.io = io;

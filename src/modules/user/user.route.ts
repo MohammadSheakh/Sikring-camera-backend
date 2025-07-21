@@ -47,7 +47,7 @@ router.post(
   "/create-customer-and-send-mail",
   [
     upload.fields([
-      { name: 'attachments', maxCount: 15 }, // Allow up to 5 cover photos
+      { name: 'companyLogo', maxCount: 1 }, // Allow up to 5 cover photos
     ]),
   ],
   auth('admin'),
@@ -76,6 +76,8 @@ router.post('/delete/:collectionName',
   auth('admin'),
   UserController.deleteAllDataFromCollection
 )
+
+
 
 /**
  * App: Under Profile Section User Module Related End Points 
@@ -129,6 +131,10 @@ router.route('/get-profile-info').get(
   auth('common'),
   UserController.getMyProfile
 );
+
+router.get('/get-user-info/:userId', 
+  auth('common'), 
+  UserController.getSingleUser);
 
 
 export const UserRoutes = router;

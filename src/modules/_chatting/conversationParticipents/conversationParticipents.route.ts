@@ -31,6 +31,19 @@ router.route('/paginate').get(
   controller.getAllWithPagination 
 );
 
+/************
+ * 
+ * we need logged in users conversationsParticipents where we want to show only another person not logged in user  
+ * For App ... 
+ * 
+ * ************ */  
+router
+.route('/getRelatedUsers')
+.get(
+  auth('common'),
+  controller.getRelatedUsers
+);
+
 /**********
  * 
  * (req.query.otherUserId) otherUserId
@@ -80,6 +93,10 @@ router
 .put(
   //auth('common'),
   controller.softDeleteById);
+
+
+
+
 
 
 export const ConversationParticipentsRoute = router;

@@ -56,10 +56,10 @@ const createUser = async (userData: Partial<TUser>) => {
       //create verification email token
       const verificationToken =
         await TokenService.createVerifyEmailToken(existingUser);
+      
       //create verification email otp
-      await OtpService.createVerificationEmailOtp(existingUser.email);
 
-
+      // await OtpService.createVerificationEmailOtp(existingUser.email);
 
       return { verificationToken };
     }

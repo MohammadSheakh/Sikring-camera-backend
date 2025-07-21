@@ -289,6 +289,8 @@ export class SiteController extends GenericController<
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
     
+    filters.isDeleted = false; // only get non-deleted sites
+
     const result = await this.siteService.getAllSitesWithUsersAndManagers(filters, options);
 
     sendResponse(res, {
@@ -322,5 +324,4 @@ export class SiteController extends GenericController<
     });
   });
   // add more methods here if needed or override the existing ones 
-  
 }

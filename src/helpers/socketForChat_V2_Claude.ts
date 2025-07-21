@@ -12,6 +12,7 @@ import { Conversation } from '../modules/_chatting/conversation/conversation.mod
 import { User } from '../modules/user/user.model';
 import { ConversationParticipents } from '../modules/_chatting/conversationParticipents/conversationParticipents.model';
 import { ObjectId } from 'mongodb';
+import { ConversationParticipentsService } from '../modules/_chatting/conversationParticipents/conversationParticipents.service';
 
 declare module 'socket.io' {
   interface Socket {
@@ -222,11 +223,20 @@ const socketForChat_V2_Claude = (io: Server) => {
         socket.to(conversationData.conversationId).emit('user-joined-chat', {
           userId,
           userName: userProfile?.name || user.name,
-          conversationId: conversationData.conversationId
+          conversationId: conversationData.conversationId,
+          isOnline:true
         });
-
-
       });
+
+      socket.on('get-all-conversations', async(conversationData: {conversationId: string}, callback) =>{
+        try{
+          const conversations = await new ConversationParticipentsService().getAllConversationByUserId(userId);
+          callback?.({ success: true, data: conversations });
+        } catch (error) {
+          console.error('Error fetching conversations:', error);
+          callback?.({ success: false, message: 'Failed to fetch conversations' });
+        }
+      })
 
       /***********
        * 

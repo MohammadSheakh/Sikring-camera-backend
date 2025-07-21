@@ -32,6 +32,7 @@ export class userSiteController extends GenericController<
     //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+    filters.isDeleted = false; // only get non-deleted users
     
     const populateOptions: (string | {path: string, select: string}[]) = [
       {
@@ -70,6 +71,8 @@ export class userSiteController extends GenericController<
     //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+    
+    filters.isDeleted = false;
     
     const populateOptions: (string | {path: string, select: string}[]) = [
       {
@@ -113,6 +116,8 @@ export class userSiteController extends GenericController<
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
     
+    filters.isDeleted = false; // only get non-deleted users
+
     const populateOptions: (string | {path: string, select: string}[]) = [
       {
         path: 'siteId',
@@ -164,6 +169,8 @@ export class userSiteController extends GenericController<
     //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+
+    filters.isDeleted = false; // only get non-deleted users
     
     const populateOptions: (string | {path: string, select: string}[]) = [
       {
@@ -193,6 +200,8 @@ export class userSiteController extends GenericController<
     //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+
+    filters.isDeleted = false; // only get non-deleted users
     
     const populateOptions: (string | {path: string, select: string}[]) = [
       {
@@ -235,7 +244,9 @@ export class userSiteController extends GenericController<
     //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
-    
+
+    filters.isDeleted = false; // only get non-deleted users
+
     const populateOptions: (string | {path: string, select: string}[]) = [
       {
         path: 'siteId',

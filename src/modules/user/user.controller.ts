@@ -240,6 +240,13 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
         // TODO : Company Logo upload korte hobe 
       });
 
+      await sendAdminOrSuperAdminCreationEmail(
+      req?.body?.email,
+      req.body.role,
+      req?.body?.password,
+      req.body.message ?? 'Thank You For Joining Us'
+      );
+
       /***********
        * 
        * jei userId create hobe .. sheta ar req.body.siteId niye
@@ -293,6 +300,13 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
         address: req.body.address, // for user [employee] and manager 🟢
         isEmailVerified: true, // INFO: User dont need to verify Email
       });
+
+      await sendAdminOrSuperAdminCreationEmail(
+      req?.body?.email,
+      req.body.role,
+      req?.body?.password,
+      req.body.message ?? 'Thank You For Joining Us'
+      );
 
       let valueForAuditLog : IauditLog = {
           userId: req.user.userId,
@@ -472,7 +486,7 @@ const deleteMyProfile = catchAsync(async (req, res) => {
   if (!userId) {
     throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
   }
-  const result = await UserService.deleteMyProfile(userId);
+  const result = await UserService.deleteMyProfile(req.params.id);
   sendResponse(res, {
     code: StatusCodes.OK,
     data: result,
@@ -506,6 +520,8 @@ const deleteMyProfile = catchAsync(async (req, res) => {
 const getAllUserForAdminDashboard = catchAsync(async (req, res) => {
   const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
   const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+  
+  filters.isDeleted = false; // only get non-deleted users
   
   const populateOptions = [ // : (string | {path: string, select: string}[])
     // {

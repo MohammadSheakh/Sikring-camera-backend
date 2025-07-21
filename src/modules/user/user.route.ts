@@ -31,7 +31,7 @@ export const optionValidationChecking = <T extends keyof IUser>(
 
 router.route('/paginate').get(
   auth('commonAdmin'),
- validateFiltersForQuery(optionValidationChecking(['_id', 'role'])),
+ validateFiltersForQuery(optionValidationChecking(['_id', 'role', 'isDeleted'])),
   UserController.getAllUserForAdminDashboard
 );
 
@@ -135,6 +135,16 @@ router.route('/get-profile-info').get(
 router.get('/get-user-info/:userId', 
   auth('common'), 
   UserController.getSingleUser);
+
+/****
+ * 
+ * params e userId pass korte hobe .. 
+ * 
+ * ******* */
+router.route('/softDelete/:id').delete(
+  auth('common'),
+  UserController.deleteMyProfile
+);
 
 
 export const UserRoutes = router;

@@ -86,7 +86,7 @@ const sendAdminOrSuperAdminCreationEmail = async (
   password: string,
   message?: string // Optional custom message
 ) => {
-  const subject = `Congratulations! You are now an ${role}`;
+  const subject = `Congratulations! You are now an ${role} of our platform`;
   const html = `
     <div style="width: 45%; margin: 0 auto; font-family: Arial, sans-serif; padding: 20px; color: #333; border: 1px solid #ccc; border-radius: 20px;">
       <div style="text-align: center; margin-bottom: 20px;">

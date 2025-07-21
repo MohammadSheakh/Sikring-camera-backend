@@ -6,6 +6,8 @@ import { User } from './user.model';
 import { sendAdminOrSuperAdminCreationEmail } from '../../helpers/emailService';
 
 import { GenericService } from '../__Generic/generic.services';
+import { userSite } from '../_site/userSite/userSite.model';
+import { CameraPerson } from '../_camera/cameraPerson/cameraPerson.model';
 
 interface IAdminOrSuperAdminPayload {
   email: string;
@@ -120,10 +122,22 @@ const getMyProfileOnlyRequiredField = async (userId: string): Promise<TUser | nu
 
 const deleteMyProfile = async (userId: string): Promise<TUser | null> => {
   const result = await User.findById(userId);
+
+
   if (!result) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'User not found');
   }
+  if(result.isDeleted == true) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'User already deleted');
+  } 
+
+
+  // soft delete userSite relation .. and personCamera Relation .. 
+  await userSite.updateMany({ personId: userId }, { isDeleted: true });
+  await CameraPerson.updateMany({ userId }, { isDeleted: true });
+
   result.isDeleted = true;
+  
   await result.save();
   return result;
 };

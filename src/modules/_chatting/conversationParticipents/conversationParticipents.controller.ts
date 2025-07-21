@@ -12,6 +12,7 @@ import { Request, Response } from "express";
 import { Conversation } from "../conversation/conversation.model";
 import mongoose from "mongoose";
 
+const conversationParticipentsService = new ConversationParticipentsService();
 export class ConversationParticipentsController extends GenericController<typeof ConversationParticipents, IConversation> {
   constructor(){
       super(new ConversationParticipentsService(), "Conversation Participents")
@@ -257,11 +258,15 @@ export class ConversationParticipentsController extends GenericController<typeof
       }
     });
 
+
+
+    // let ress = await conversationParticipentsService.getAllConversationsOnlyPersonInformationByUserId(loggedInUserId);
+
     //return Object.values(uniqueUsers);
 
     sendResponse(res, {
       code: StatusCodes.OK,
-      data: Object.values(uniqueUsers),
+      data: Object.values(uniqueUsers),// ress, //Object.values(uniqueUsers),
       message: `All ${this.modelName} with pagination`,
       success: true,
     });

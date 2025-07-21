@@ -33,6 +33,8 @@ export class cameraSiteController extends GenericController<
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
     
+    filters.isDeleted = false; // only get non-deleted camera sites
+
     const populateOptions: (string | {path: string, select: string}[]) = [
       {
         path: 'cameraId',

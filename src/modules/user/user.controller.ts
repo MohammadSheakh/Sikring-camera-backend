@@ -634,6 +634,9 @@ const updateProfile = catchAsync(async (req, res) => {
 //update profile image
 const updateProfileImage = catchAsync(async (req, res) => {
   const userId = req.user.userId;
+  if(!req.file){
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'profileImage is required'); 
+  }
   
   if (req.file) {
     const attachmentResult = await attachmentService.uploadSingleAttachment(

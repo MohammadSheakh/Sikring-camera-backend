@@ -11,7 +11,7 @@ import { Message } from '../modules/_chatting/message/message.model';
 import { Conversation } from '../modules/_chatting/conversation/conversation.model';
 import { User } from '../modules/user/user.model';
 import { ConversationParticipents } from '../modules/_chatting/conversationParticipents/conversationParticipents.model';
-import { ObjectId } from 'mongodb';
+
 import { ConversationParticipentsService } from '../modules/_chatting/conversationParticipents/conversationParticipents.service';
 
 declare module 'socket.io' {
@@ -152,6 +152,24 @@ const socketForChat_V2_Claude = (io: Server) => {
     const userId = user._id;
 
     logger.info(colors.blue(`🔌🟢 User connected: :userId🔌: ${userId} :userName🔌: ${user.name} :socketId⚡💡: ${socket.id}`));
+
+
+    const usersWhohaveConversationWithThisUser = await new ConversationParticipentsService().getAllConversationsOnlyPersonInformationByUserId(userId);
+
+    /********** Response Structure ... 
+    
+    [
+        {
+            "userId": "685a211bcb3b476c53324c1b"
+        },
+    ]
+
+    // now we have to loop through this array and 
+    
+    ************ */
+
+    
+
 
     try {
       // Get user profile once at connection

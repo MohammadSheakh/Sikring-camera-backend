@@ -93,11 +93,9 @@ router.route('/delete/:id').delete(
 ); // FIXME : change to admin
 
 router.route('/softDelete/:id').put(
-  //auth('common'),
+  auth('common'),
   controller.softDeleteById
 );
-
-
 
 /*************
  * 

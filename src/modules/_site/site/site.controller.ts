@@ -16,6 +16,7 @@ import {UserSiteService }  from '../userSite/userSite.service';
 import { userSite } from '../userSite/userSite.model';
 import omit from '../../../shared/omit';
 import pick from '../../../shared/pick';
+import ApiError from '../../../errors/ApiError';
 
 const attachmentService = new AttachmentService();
 const userSiteService = new UserSiteService();
@@ -321,6 +322,36 @@ export class SiteController extends GenericController<
       data: result,
       message: `All ${this.modelName}s`,
       success: true,
+    });
+  });
+
+  getById = catchAsync(async (req: Request, res: Response) => {
+    const id = req.params.id;
+
+    const populateOptions = [
+        {
+            path: 'attachments',
+            select: 'attachment'
+        },
+        //'siteId' // This will populate all fields for siteId
+        // {
+        //   path: 'siteId',
+        //   select: 'name address'
+        // }
+      ];
+
+    const result = await this.service.getById(id, populateOptions);
+    if (!result) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        `Object with ID ${id} not found`
+      );
+    }
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `${this.modelName} retrieved successfully`,
     });
   });
   // add more methods here if needed or override the existing ones 

@@ -659,6 +659,31 @@ const updateProfileImage = catchAsync(async (req, res) => {
 });
 
 
+
+const getAllManagerAndUserForAdminDashboard = catchAsync(async (req, res) => {
+  
+  // if (!filters.role) {
+  //   filters.role = { $in: ['manager', 'user'] };
+  // }
+
+
+  // const select = 'name role'
+
+  const users = await User.find({role : 'user'}).select('name role')
+
+  const managers = await User.find({role : 'manager'}).select('name role')
+
+  sendResponse(res, {
+    code: StatusCodes.OK,
+    data: {
+      users,
+      managers,
+    },
+    message: 'All manager and users fetched successfully',
+  });
+});
+
+
 export const UserController = {
    //createAdminOrSuperAdmin, // recent 
   getSingleUser,
@@ -682,4 +707,6 @@ export const UserController = {
   ///////////////////////////////////////////
 
   getMyProfileOnlyRequiredField,
+
+  getAllManagerAndUserForAdminDashboard
 };

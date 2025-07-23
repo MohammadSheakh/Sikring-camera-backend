@@ -147,4 +147,15 @@ router.route('/softDelete/:id').delete(
 );
 
 
+/************
+ * 
+ * get all manager and user for admin dashboard .. create site 
+ * 
+ * ********** */
+
+router.route('/get-all-manager-and-user-for-admin-dashboard').get(
+  auth('admin'),
+  UserController.getAllManagerAndUserForAdminDashboard
+);
+
 export const UserRoutes = router;

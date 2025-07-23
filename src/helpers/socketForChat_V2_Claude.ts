@@ -111,9 +111,18 @@ const handleUserDisconnection = (
   onlineUsers.delete(userId);
   userSocketMap.delete(userId);
   socketUserMap.delete(socketId);
+
+  /***********
+   * 
+   *  
+   * 
+   * ****** */
   
   // Emit updated online users list
+  /************* we dont wanna provide all online users to everyone 🟢
+   * 
   io.emit('online-users-updated', Array.from(onlineUsers));
+  ************* */
 };
 
 const socketForChat_V2_Claude = (io: Server) => {
@@ -154,23 +163,6 @@ const socketForChat_V2_Claude = (io: Server) => {
     logger.info(colors.blue(`🔌🟢 User connected: :userId🔌: ${userId} :userName🔌: ${user.name} :socketId⚡💡: ${socket.id}`));
 
 
-    const usersWhohaveConversationWithThisUser = await new ConversationParticipentsService().getAllConversationsOnlyPersonInformationByUserId(userId);
-
-    /********** Response Structure ... 
-    
-    [
-        {
-            "userId": "685a211bcb3b476c53324c1b"
-        },
-    ]
-
-    // now we have to loop through this array and 
-    
-    ************ */
-
-    
-
-
     try {
       // Get user profile once at connection
       const userProfile = await User.findById(userId, 'name profileImage'); // TODO : profileImage userModel theke check korte hobe .. 
@@ -200,10 +192,71 @@ const socketForChat_V2_Claude = (io: Server) => {
       socketUserMap.set(socket.id, userId);
 
       // Emit updated online users list
-      io.emit('online-users-updated', Array.from(onlineUsers));
+      io.emit('all-online-users', Array.from(onlineUsers)); // 🟢 this will return all user of system 
+
+      // io.emit('only-related-online-users', {userId, filteredOnlineUsers}); // 🟢 this will return only those users who have conversation with this user
 
       // Join user to their personal room for direct notifications
       socket.join(userId);
+
+
+
+
+      /***********
+       * 
+       *   Handle Returning all related online users not all online users ..   🟢working perfectly
+       * 
+       * ********** */  
+
+      socket.on('only-related-online-users', async( userId: {userId: string}, callback) =>{
+        try{
+          
+          console.log("userId.userId: ", userId.userId);
+          let usersWhohaveConversationWithThisUser = await new ConversationParticipentsService().getAllConversationsOnlyPersonInformationByUserId(userId.userId);
+
+          /********** Response Structure ... 
+          
+          [
+            "685a211bcb3b476c53324c1b"
+          ]
+
+          // now we have to loop through this array and 
+          check if the userId is present in the onlineUsers set
+          if present then we will keep the userId in the array
+          
+          ************ */
+
+
+          console.log("online and offline related Users Array 🔊🔊", usersWhohaveConversationWithThisUser)
+
+          const filteredOnlineUsers = Array.from(onlineUsers).filter(onlineUserId => 
+            usersWhohaveConversationWithThisUser.some(conversationUserId => 
+              conversationUserId.equals(onlineUserId)
+            )
+          );
+
+          /*************
+          
+          const filteredOnlineUsers2 = new Set(
+            Array.from(onlineUsers).filter(onlineUserId => 
+              usersWhohaveConversationWithThisUser.some(conversationUserId => 
+                conversationUserId.equals(onlineUserId)
+              )
+            )
+          );
+
+          ************ */
+
+          console.log("system onlineUsers: ⚡", onlineUsers);
+          console.log("related online users array: ⚡", filteredOnlineUsers , " ⚡logged in userId⚡ ", userId.userId);
+
+          callback?.({ success: true, data: filteredOnlineUsers});
+        } catch (error) {
+          console.error('Error fetching conversations:', error);
+          callback?.({ success: false, message: 'Failed to fetch conversations' });
+        }
+      })
+
 
       /***********
        * 
@@ -246,10 +299,11 @@ const socketForChat_V2_Claude = (io: Server) => {
         });
       });
 
-      socket.on('get-all-conversations', async(conversationData: {conversationId: string}, callback) =>{
+      // conversationData: {conversationId: string}, 
+      socket.on('get-all-conversations', async( conversationData: {conversationId: string}, callback) =>{
         try{
           const conversations = await new ConversationParticipentsService().getAllConversationByUserId(userId);
-          callback?.({ success: true, data: conversations });
+          callback?.({ success: true, data: conversations});// 🟡🟡 fix korte hobe .. onlineUsers er part ta .. 
         } catch (error) {
           console.error('Error fetching conversations:', error);
           callback?.({ success: false, message: 'Failed to fetch conversations' });

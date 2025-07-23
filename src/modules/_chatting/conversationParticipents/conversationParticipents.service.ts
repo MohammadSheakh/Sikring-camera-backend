@@ -130,6 +130,7 @@ export class ConversationParticipentsService extends GenericService<
    * 
    * ********** */
   async getAllConversationsOnlyPersonInformationByUserId(userId: any) {
+    
     let loggedInUserId = userId;
     // Step 1: Find all conversations the logged-in user participates in
     const userConversations = await ConversationParticipents.find({
@@ -145,6 +146,7 @@ export class ConversationParticipentsService extends GenericService<
       userId: { $ne: loggedInUserId },
       isDeleted: false
     }).select('userId')
+
     // .populate({
     //   path: 'userId',
     //   select: 'name profileImage role'
@@ -160,7 +162,7 @@ export class ConversationParticipentsService extends GenericService<
     
     relatedParticipants.forEach(participant => {
       const userId = participant.userId._id.toString();
-      
+      /**************
       if (!uniqueUsers[userId]) {
         uniqueUsers[userId] = {
           userId: participant.userId._id 
@@ -179,6 +181,14 @@ export class ConversationParticipentsService extends GenericService<
           // }
         };
       }
+
+      ******** */
+
+      if (!uniqueUsers[userId]) {
+        uniqueUsers[userId] = 
+          participant.userId._id 
+      }
+
       /********
       
       // Add conversation if not already added

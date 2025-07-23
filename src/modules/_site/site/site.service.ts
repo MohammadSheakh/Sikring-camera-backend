@@ -34,7 +34,7 @@ export class siteService extends GenericService<
 
   // Step 4: Map userSites by siteId
   const siteUserMap = userSites.reduce((acc, us) => {
-    console.log("us 🧪3.5 🧪3.5🧪", us)
+    // console.log("us 🧪3.5 🧪3.5🧪", us)
     const key = us.siteId.toString();
     if (!acc[key]) acc[key] = { users: [], managers: [] };
 
@@ -47,7 +47,7 @@ export class siteService extends GenericService<
     return acc;
   }, {});
 
-  console.log("siteUserMap 🧪3.5🧪", siteUserMap)
+  // console.log("siteUserMap 🧪3.5🧪", siteUserMap)
 
   // Step 5: Format results to include userName and managerName
   const formattedResults = paginatedResult.results.map(site => {

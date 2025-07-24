@@ -325,7 +325,7 @@ const socketForChat_V2_Claude = (io: Server) => {
       socket.on('get-all-conversations-with-pagination', async( conversationData: {page: number, limit: number}, callback) =>{
         try{
           const conversations = await new ConversationParticipentsService().getAllConversationByUserIdWithPagination(userId, conversationData);
-          callback?.({ success: true, data: conversations});// 🟡🟡 fix korte hobe .. onlineUsers er part ta .. 
+          callback?.({ success: true, data: conversations});
         } catch (error) {
           console.error('Error fetching conversations:', error);
           callback?.({ success: false, message: 'Failed to fetch conversations' });
@@ -363,7 +363,7 @@ const socketForChat_V2_Claude = (io: Server) => {
             '' // select
           );
           console.log("messages: 🟢🟢 ", messages);
-          callback?.({ success: true, data: messages});// 🟡🟡 fix korte hobe .. onlineUsers er part ta .. 
+          callback?.({ success: true, data: messages});
         } catch (error) {
           console.error('Error fetching conversations:', error);
           callback?.({ success: false, message: 'Failed to fetch conversations' });

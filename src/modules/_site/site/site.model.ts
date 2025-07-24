@@ -72,6 +72,16 @@ const siteSchema = new Schema<ISite>(
 
     // }
 
+    assignedUserId: { // 🟢 just for show this userId
+      type: String,
+      required: [false, 'assignedUserId is not required'],
+    },
+
+    assignedManagerId: { // 🟢 just for show this managerId 
+      type: String,
+      required: [false, 'assignedManagerId is not required'],
+    },
+
     isDeleted: {
       type: Boolean,
       required: [false, 'isDeleted is not required'],

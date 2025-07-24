@@ -23,6 +23,9 @@ export interface ISite {
   customerName? : String;
   status: TStatusType.active | TStatusType.inactive;
   attachments: Types.ObjectId[];
+
+  assignedUserId? : String; // 🟢 just for show this userId
+  assignedManagerId? : String; // 🟢 just for show this managerId
   
   isDeleted? : Boolean;  
   createdAt?: Date;

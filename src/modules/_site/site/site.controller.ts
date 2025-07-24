@@ -80,11 +80,15 @@ export class SiteController extends GenericController<
 
           // need to check if the manager exist or not  
 
+
+
           const createdManagerForSite = await userSiteService.create({
             personId: req.body.assignedManagerId,
             siteId: result._id,
             role: TRole.manager,
           });
+
+          result.assignedManagerId = req.body.assignedManagerId;
 
           actionPerformed+= `Assign a manager for ${this.modelName} whoose id is ${req.body.assignedManagerId} `
         
@@ -97,6 +101,8 @@ export class SiteController extends GenericController<
             siteId: result._id,
             role: TRole.user,
           });
+
+          result.assignedUserId = req.body.assignedUserId;
 
           actionPerformed+= `| Assign a user for ${this.modelName} whoose id is ${req.body.assignedUserId} `
 
@@ -177,22 +183,28 @@ export class SiteController extends GenericController<
       // need to check if the manager exist or not  
 
       const updatedManagerForSite = await userSite.findOneAndUpdate(
-        { personId: req.body.assignedManagerId, siteId: result._id },
-        { role: TRole.manager },
+        { siteId: result._id },
+        { role: TRole.manager, personId: req.body.assignedManagerId , siteId: result._id  },
         { new: true, upsert: true } // upsert to create if not exists
       )
+
+      // TODO : issue hoile fix korte hobe 
+      result.assignedManagerId = req?.body?.assignedManagerId ? req.body.assignedManagerId : result.assignedManagerId;
 
       actionPerformed+= `| Assign a manager for ${this.modelName} whoose id is ${req.body.assignedManagerId} `
 
     }
     if(req.body.assignedUserId  && result){
-      // need to check if the manager exist or not  
+      // need to check if the user exist or not  
 
-      const updatedManagerForSite = await userSite.findOneAndUpdate(
-        { personId: req.body.assignedUserId, siteId: result._id },
-        { role: TRole.manager },
+      const updatedUserForSite = await userSite.findOneAndUpdate(
+        {  siteId: result._id },
+        { role: TRole.user , personId: req.body.assignedUserId , siteId: result._id },
         { new: true, upsert: true } // upsert to create if not exists
       )
+      
+      // TODO : issue hoile fix korte hobe 
+      result.assignedUserId = req?.body?.assignedUserId ? req.body.assignedUserId : result.assignedUserId;
 
       actionPerformed+=`| Assign a user for ${this.modelName} whoose id is ${req.body.assignedUserId} `
 
@@ -340,6 +352,18 @@ export class SiteController extends GenericController<
         // }
       ];
 
+    // we have to pull this sites manager and user id .. 
+    
+    const userForThisSite = await userSite.find({
+      siteId: id,
+      role: { $in: [TRole.user] } // Only get managers and users
+    })
+
+    const managerForThisSite = await userSite.find({
+      siteId: id,
+      role: { $in: [TRole.manager] } // Only get managers and users
+    })
+
     const result = await this.service.getById(id, populateOptions);
     if (!result) {
       throw new ApiError(
@@ -347,6 +371,12 @@ export class SiteController extends GenericController<
         `Object with ID ${id} not found`
       );
     }
+
+    // TODO:  🟡
+    // TODO : must handle if multiple user or manager exist for a site
+
+    result.assignedUserId = userForThisSite[0]?.personId ? userForThisSite[0].personId : null;
+    result.assignedManagerId = managerForThisSite[0]?.personId ? managerForThisSite[0].personId : null;
 
     sendResponse(res, {
       code: StatusCodes.OK,

@@ -79,7 +79,7 @@ router.route('/').get(
 router.route('/create').post(
   [
     upload.fields([
-      { name: 'attachments', maxCount: 1 }, // Allow up to 1 cover photos
+      { name: 'attachments', maxCount: 10 }, // Allow up to 1 cover photos
     ]),
   ],
   auth('admin'),

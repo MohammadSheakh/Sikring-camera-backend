@@ -299,10 +299,30 @@ const socketForChat_V2_Claude = (io: Server) => {
         });
       });
 
-      // conversationData: {conversationId: string}, 
-      socket.on('get-all-conversations', async( conversationData: {conversationId: string}, callback) =>{
+      /***********
+       * 
+       *   Handle fetching all conversations 🔴 working perfectly .. but we do not use this .. we use the same thing with pagination .. 
+       * 
+       * ********** */
+      socket.on('get-all-conversations', async(conversationData: {conversationId: string}, callback) =>{
         try{
           const conversations = await new ConversationParticipentsService().getAllConversationByUserId(userId);
+          console.log("conversations: 🟢🟢 ", conversations);
+          callback?.({ success: true, data: conversations});// 🟡🟡 fix korte hobe .. onlineUsers er part ta .. 
+        } catch (error) {
+          console.error('Error fetching conversations:', error);
+          callback?.({ success: false, message: 'Failed to fetch conversations' });
+        }
+      })
+
+      /***********
+       * 
+       *   Handle fetching all conversations with pagination 🟢 working perfectly
+       * 
+       * ********** */
+      socket.on('get-all-conversations-with-pagination', async( conversationData: {page: number, limit: number}, callback) =>{
+        try{
+          const conversations = await new ConversationParticipentsService().getAllConversationByUserIdWithPagination(userId, conversationData);
           callback?.({ success: true, data: conversations});// 🟡🟡 fix korte hobe .. onlineUsers er part ta .. 
         } catch (error) {
           console.error('Error fetching conversations:', error);

@@ -21,66 +21,6 @@ export class MessageController extends GenericController<typeof Message, IMessag
         super(new MessagerService(), "Message")
     }
 
-    /**********
-    create = catchAsync(async (req: Request, res: Response) => {
-        
-        const {conversationId} = req.query;
-
-        if (req.user.userId) {
-            req.body.senderId = req.user.userId;
-            req.body.senderRole =  req.user.role === 'user' ? 'member' : 'admin'; 
-            req.body.conversationId = conversationId;
-        }
-
-        let attachments = [];
-  
-        if (req.files && req.files.attachments) {
-        attachments.push(
-            ...(await Promise.all(
-            req.files.attachments.map(async file => {
-                const attachmenId = await attachmentService.uploadSingleAttachment(
-                    file,
-                    "folderNameSuplify",
-                    req.body.projectId,
-                    req.user,
-                    AttachedToType.message
-                );
-                return attachmenId;
-            })
-            ))
-        );
-        }
-
-        req.body.attachments = attachments;
-
-        const result = await this.service.create({
-            text: req.body.text,
-            senderId: req.body.senderId,
-            senderRole: req.body.senderRole,
-            conversationId: req.body.conversationId,
-            attachments: req.body.attachments,
-        });
-
-        if(!req.body.text && req.body.attachments){
-            // senderId er upor base kore sender name show korte hobe .. 
-            req.body.text = 'New Attachment Uploaded by ' + req.body.senderId
-        }
-
-        // 🔥 message create houar pore conversation er last 
-        // message update korte hobe .. 
-
-        await conversationService.updateLastMessageOfAConversation(req.body.conversationId, req.body.text)
-
-    
-        sendResponse(res, {
-          code: StatusCodes.OK,
-          data: result,
-          message: `${this.modelName} created successfully`,
-          success: true,
-        });
-    });
-    ******** */
-
     getAllWithPagination = catchAsync(async (req: Request, res: Response) => {
         //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
         const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;

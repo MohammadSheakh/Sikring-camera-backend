@@ -10,7 +10,13 @@ export interface ISite {
   // userId: Types.ObjectId;
   name : String;
   address? : String;
-  type: TSiteType.liveEvent | TSiteType.construction | TSiteType.other;
+  type: TSiteType.liveEvent | 
+  TSiteType.construction | 
+  TSiteType.residential | 
+  TSiteType.commercial | 
+  TSiteType.industrial | 
+  TSiteType.other;
+  
   lat? : String;
   long? : String;
   phoneNumber : String;

@@ -287,7 +287,7 @@ export class SiteController extends GenericController<
 
   //[🚧][🧑‍💻][🧪] // ✅🆗
   getAllWithPaginationWithUsersAndManagers = catchAsync(async (req: Request, res: Response) => {
-    const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
+    const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']);
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
     
     filters.isDeleted = false; // only get non-deleted sites

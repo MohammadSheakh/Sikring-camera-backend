@@ -54,9 +54,9 @@ export const createSiteValidationSchema = z.object({
     }).optional(),
 
     type: z
-    .enum([TSiteType.construction, TSiteType.liveEvent, TSiteType.other], {
-      required_error: 'type is required, type must be one of "construction" or "liveEvent" or "other".',
-      invalid_type_error: 'status must be one of "construction" or "liveEvent" or "other".',
+    .enum([TSiteType.construction, TSiteType.liveEvent, TSiteType.other, TSiteType.residential, TSiteType.commercial, TSiteType.industrial], {
+      required_error: 'type is required, type must be one of "construction" or "liveEvent" or "other" or "residential" or "commercial" or "industrial".',
+      invalid_type_error: 'status must be one of "construction" or "liveEvent" or "other" or "residential" or "commercial" or "industrial".',
     }).optional(),
 
     // We have to pass the attachments also 

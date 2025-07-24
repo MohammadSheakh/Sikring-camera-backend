@@ -34,7 +34,13 @@ const siteSchema = new Schema<ISite>(
 
     type : {
       type: String,
-      enum:  [TSiteType.liveEvent, TSiteType.construction, TSiteType.other],
+      enum:  [TSiteType.liveEvent,
+         TSiteType.construction,
+          TSiteType.residential,
+          TSiteType.commercial,
+          TSiteType.industrial,
+          TSiteType.other
+        ],
       required: [
         false,
         `Status is required it can be ${Object.values(

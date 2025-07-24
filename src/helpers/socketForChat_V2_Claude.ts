@@ -13,6 +13,8 @@ import { User } from '../modules/user/user.model';
 import { ConversationParticipents } from '../modules/_chatting/conversationParticipents/conversationParticipents.model';
 
 import { ConversationParticipentsService } from '../modules/_chatting/conversationParticipents/conversationParticipents.service';
+import { MessagerService } from '../modules/_chatting/message/message.service';
+import { populate } from 'dotenv';
 
 declare module 'socket.io' {
   interface Socket {
@@ -324,6 +326,44 @@ const socketForChat_V2_Claude = (io: Server) => {
         try{
           const conversations = await new ConversationParticipentsService().getAllConversationByUserIdWithPagination(userId, conversationData);
           callback?.({ success: true, data: conversations});// 🟡🟡 fix korte hobe .. onlineUsers er part ta .. 
+        } catch (error) {
+          console.error('Error fetching conversations:', error);
+          callback?.({ success: false, message: 'Failed to fetch conversations' });
+        }
+      })
+
+
+      /***********
+       * 
+       *   get all message by conversationId with pagination 🟢 working perfectly 
+       * 
+       * ********** */
+      socket.on('get-all-message-by-conversationId', async(conversationData: {
+        conversationId: string,
+        page: number,
+        limit: number
+      }, callback) =>{
+        
+        let populateOptions = [
+          {
+            path: 'senderId',
+            select: 'name profileImage'
+          },
+          {
+            path: 'attachments',
+            select: 'attachment profileImage'
+          }
+        ]
+
+        try{
+          const messages = await new MessagerService().getAllWithPagination(
+            { conversationId: conversationData.conversationId, isDeleted: false }, // filters
+            { page: conversationData.page, limit: conversationData.limit ||  Number.MAX_SAFE_INTEGER }, // options
+            populateOptions, 
+            '' // select
+          );
+          console.log("messages: 🟢🟢 ", messages);
+          callback?.({ success: true, data: messages});// 🟡🟡 fix korte hobe .. onlineUsers er part ta .. 
         } catch (error) {
           console.error('Error fetching conversations:', error);
           callback?.({ success: false, message: 'Failed to fetch conversations' });

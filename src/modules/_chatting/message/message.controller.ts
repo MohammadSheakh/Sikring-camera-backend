@@ -28,18 +28,18 @@ export class MessageController extends GenericController<typeof Message, IMessag
         
 
          const populateOptions: (string | {path: string, select: string}[]) = [
-            {
-              path: 'senderId',
-              select: 'name role profileImage' // name 
-            },
+            // {
+            //   path: 'senderId',
+            //   select: 'name role profileImage' // name 
+            // },
             // 'personId'
-            {
-              path: 'conversationId',
-              select: 'canConversate siteId' // name 
-            },
+            // {
+            //   path: 'conversationId',
+            //   select: 'canConversate siteId' // name 
+            // },
             ];
 
-        let select = ''; // Specify fields to exclude from the result
+        let select = 'senderId conversationId'; // Specify fields to exclude from the result
         // -createdAt
         const result = await this.service.getAllWithPagination(filters, options,populateOptions, select);
 

@@ -28,10 +28,10 @@ export class MessageController extends GenericController<typeof Message, IMessag
         
 
          const populateOptions: (string | {path: string, select: string}[]) = [
-            // {
-            //   path: 'personId',
-            //   select: 'name role' // name 
-            // },
+            {
+              path: 'senderId',
+              select: 'name role profileImage' // name 
+            },
             // 'personId'
             
             ];

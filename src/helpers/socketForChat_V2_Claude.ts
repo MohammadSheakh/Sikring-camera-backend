@@ -437,6 +437,12 @@ const socketForChat_V2_Claude = (io: Server) => {
 
           ****************************************/
 
+        /********
+         * 
+         *  TODO : event emitter er maddhome message create korar por
+         *  conversation er lastMessage update korte hobe ..
+         * 
+         * ******* */
           await Conversation.findByIdAndUpdate(messageData.conversationId, {
             lastMessage: newMessage._id,
           });

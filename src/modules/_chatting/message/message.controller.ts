@@ -11,6 +11,8 @@ import { IMessage } from "./message.interface";
 import { ConversationService } from "../conversation/conversation.service";
 import omit from "../../../shared/omit";
 import pick from "../../../shared/pick";
+import { Conversation } from "../conversation/conversation.model";
+import { ConversationParticipents } from "../conversationParticipents/conversationParticipents.model";
 
 const attachmentService = new AttachmentService();
 const conversationService = new ConversationService();
@@ -21,10 +23,28 @@ export class MessageController extends GenericController<typeof Message, IMessag
         super(new MessagerService(), "Message")
     }
 
-
+    /*****************
+     * 
+     * we need this to create a message with attachments
+     * or just to upload attachments in chat 
+     * 
+     * **************** */
     create = catchAsync(async (req: Request, res: Response) => {
         // const data = req.body;
 
+
+        // Get chat details
+        const {conversationData, conversationParticipants} = await getConversationById(req.body.conversationId);
+          
+
+        if(conversationData.canConversate === false){
+            return sendResponse(res, {
+                code: StatusCodes.BAD_REQUEST,
+                message: `You cannot send message in this conversation`,
+                success: false,
+            });
+        }
+        
         let attachments = [];
     
         if (req.files && req.files.attachments) {
@@ -52,6 +72,16 @@ export class MessageController extends GenericController<typeof Message, IMessag
 
 
         const result = await Message.create(req.body);
+
+        /********
+         * 
+         *  TODO : event emitter er maddhome message create korar por
+         *  conversation er lastMessage update korte hobe ..
+         * 
+         * ******* */
+        await Conversation.findByIdAndUpdate(result.conversationId, {
+        lastMessage: result._id,
+        });
     
         sendResponse(res, {
           code: StatusCodes.OK,
@@ -119,8 +149,27 @@ export class MessageController extends GenericController<typeof Message, IMessag
         }
     );
 
-    
-
-
     // add more methods here if needed or override the existing ones    
+}
+
+async function getConversationById(conversationId: string) {
+  try {
+    const conversationData = await Conversation.findById(conversationId)//.populate('users').exec();  // FIXME: user populate korar bishoy ta 
+    // FIXME : check korte hobe  
+    
+    const conversationParticipants = await ConversationParticipents.find({
+      conversationId: conversationId
+    });
+
+    if (!conversationData) {
+      throw new Error(`Conversation with ID ${conversationId} not found`);
+    }
+    return { 
+      conversationData: conversationData,
+      conversationParticipants: conversationParticipants
+    };
+  } catch (error) {
+    console.error('Error fetching chat:', error);
+    throw error;
+  }
 }

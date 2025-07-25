@@ -33,7 +33,10 @@ export class MessageController extends GenericController<typeof Message, IMessag
               select: 'name role profileImage' // name 
             },
             // 'personId'
-            
+            {
+              path: 'conversationId',
+              select: 'canConversate siteId' // name 
+            },
             ];
 
         let select = ''; // Specify fields to exclude from the result

@@ -26,10 +26,19 @@ export class MessageController extends GenericController<typeof Message, IMessag
         const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
         const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
         
-        let dontWantToInclude = '-embedding -attachments -isDeleted -updatedAt -__v'; // Specify fields to exclude from the result
-        // -createdAt
 
-        const result = await this.service.getAllWithPagination(filters, options, dontWantToInclude);
+         const populateOptions: (string | {path: string, select: string}[]) = [
+            // {
+            //   path: 'personId',
+            //   select: 'name role' // name 
+            // },
+            // 'personId'
+            
+            ];
+
+        let select = ''; // Specify fields to exclude from the result
+        // -createdAt
+        const result = await this.service.getAllWithPagination(filters, options,populateOptions, select);
 
         sendResponse(res, {
         code: StatusCodes.OK,

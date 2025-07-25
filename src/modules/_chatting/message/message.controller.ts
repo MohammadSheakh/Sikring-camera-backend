@@ -25,21 +25,20 @@ export class MessageController extends GenericController<typeof Message, IMessag
         //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
         const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
         const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
-        
 
          const populateOptions: (string | {path: string, select: string}[]) = [
-            // {
-            //   path: 'senderId',
-            //   select: 'name role profileImage' // name 
-            // },
-            // 'personId'
-            // {
-            //   path: 'conversationId',
-            //   select: 'canConversate siteId' // name 
-            // },
+            {
+              path: 'senderId',
+              select: 'name role profileImage' // name 
+            },
+            {
+              path: 'conversationId',
+              select: 'canConversate siteId' // name 
+            },
             ];
 
-        let select = 'senderId conversationId'; // Specify fields to exclude from the result
+
+        let select = ''; // Specify fields to exclude from the result
         // -createdAt
         const result = await this.service.getAllWithPagination(filters, options,populateOptions, select);
 

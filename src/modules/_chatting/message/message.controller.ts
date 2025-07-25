@@ -21,6 +21,49 @@ export class MessageController extends GenericController<typeof Message, IMessag
         super(new MessagerService(), "Message")
     }
 
+
+    create = catchAsync(async (req: Request, res: Response) => {
+        // const data = req.body;
+
+        let attachments = [];
+    
+        if (req.files && req.files.attachments) {
+          attachments.push(
+            ...(await Promise.all(
+            req.files.attachments.map(async file => {
+              const attachmenId = await attachmentService.uploadSingleAttachment(
+                  file, // file to upload 
+                  TFolderName.site, // folderName
+                  req.user.userId, // uploadedByUserId
+                  TAttachedToType.site
+              );
+              return attachmenId;
+              })
+            ))
+          );
+
+          if(!req.body.text){
+            req.body.text = `${attachments.length} attachments uploaded`;
+          }
+        }
+    
+        req.body.attachments = attachments;
+        req.body.senderId = req.user.userId; // Set the senderId from the authenticated user
+
+
+        const result = await Message.create(req.body);
+    
+        sendResponse(res, {
+          code: StatusCodes.OK,
+          data: result,
+          message: `${this.modelName} created successfully`,
+          success: true,
+        });
+      });
+
+    
+
+
     getAllWithPagination = catchAsync(async (req: Request, res: Response) => {
         //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
         const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;

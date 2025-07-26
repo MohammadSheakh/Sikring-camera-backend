@@ -672,3 +672,48 @@ const socketForChat_V2_Claude = (io: Server) => {
 };
 
 export const socketHelper = { socketForChat_V2_Claude };
+
+
+const notifyConversationListUpdate = async (conversationId: string, lastMessage: any, excludeUserId?: string) => {
+  try {
+    // Get all participants of this conversation
+    const conversationParticipants = await new ConversationParticipentsService()
+      .getParticipantsByConversationId(conversationId);
+    
+    // Prepare the conversation update data
+    const conversationUpdate = {
+      conversationId,
+      lastMessage: {
+        _id: lastMessage._id,
+        text: lastMessage.text,
+        senderId: lastMessage.senderId,
+        senderName: lastMessage.name,
+        senderImage: lastMessage.image,
+        createdAt: lastMessage.createdAt,
+        timestamp: lastMessage.timestamp
+      },
+      updatedAt: new Date()
+    };
+
+    // Notify each participant (except the sender if excludeUserId is provided)
+    conversationParticipants.forEach((participant: any) => {
+      const participantId = participant.userId?.toString();
+      
+      // Skip the sender if excludeUserId is provided
+      if (excludeUserId && participantId === excludeUserId) {
+        return;
+      }
+
+      // Check if participant is online
+      if (onlineUsers.has(participantId)) {
+        // Emit to participant's personal room
+        io.to(participantId).emit('conversation-list-updated', conversationUpdate);
+        
+        console.log(`📱 Notified user ${participantId} about conversation list update`);
+      }
+    });
+
+  } catch (error) {
+    console.error('Error notifying conversation list update:', error);
+  }
+};

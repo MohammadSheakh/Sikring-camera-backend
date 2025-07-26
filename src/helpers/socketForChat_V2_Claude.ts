@@ -477,23 +477,6 @@ const socketForChat_V2_Claude = (io: Server) => {
             senderId: userId,
           });
 
-          /**************************************
-
-          // Update chat's last message and handle deletedFor logic
-          let receiver: string | null = null;
-          if (conversationParticipants.length === 2) {
-            receiver = conversationParticipants.find((participant: any) => 
-              participant.userId?.toString() !== userId
-            )?.userId?.toString() || null;
-          }
-
-          let deletedFor = conversationData.deletedFor || [];
-          if (receiver) {
-            deletedFor = deletedFor.filter((id: any) => id.toString() !== receiver);
-          }
-
-          ****************************************/
-
         /********
          * 
          *  TODO : event emitter er maddhome message create korar por
@@ -559,11 +542,9 @@ const socketForChat_V2_Claude = (io: Server) => {
               });
               
             }else{
-              // .... push notification .. 
+              // .... TODO: push notification .. 
             }
           });
-
-
 
           //************************************************* */
 

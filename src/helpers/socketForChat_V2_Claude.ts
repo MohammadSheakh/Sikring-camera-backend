@@ -15,6 +15,7 @@ import { ConversationParticipents } from '../modules/_chatting/conversationParti
 import { ConversationParticipentsService } from '../modules/_chatting/conversationParticipents/conversationParticipents.service';
 import { MessagerService } from '../modules/_chatting/message/message.service';
 import { populate } from 'dotenv';
+import { userSite } from '../modules/_site/userSite/userSite.model';
 
 declare module 'socket.io' {
   interface Socket {
@@ -99,7 +100,7 @@ async function getConversationById(conversationId: string) {
 }
 
 // Helper function to handle user disconnection
-const handleUserDisconnection = (
+const handleUserDisconnection = async(
   userId: string,
   socketId: string,
   onlineUsers: Set<string>,
@@ -114,11 +115,33 @@ const handleUserDisconnection = (
   userSocketMap.delete(userId);
   socketUserMap.delete(socketId);
 
-  /***********
-   * 
-   *  
-   * 
-   * ****** */
+  /******************************************************* START */
+
+  const conversations = await ConversationParticipents.find({
+        userId
+      }).select('conversationId');  
+
+      const relatedUsersByConversationIds = await ConversationParticipents.find({
+        conversationId: { $in: conversations.map(conversation => conversation.conversationId) }
+      }).select('userId');
+
+      const uniqueUserIds = [...new Set(relatedUsersByConversationIds.map((item)  => {
+        if(item.userId.toString() !== userId.toString()) {
+          
+          return item.userId.toString()
+        }
+      }))];
+
+      uniqueUserIds.forEach((relatedUserId: string) => {
+        // console.log("relatedUserId: ", relatedUserId , "for userId", userId);
+          io.emit(`related-user-online-status::${relatedUserId}`, {
+            userId,
+            isOnline: false,
+            // profileImage: userProfile?.profileImage || null
+          });
+      });
+
+  /******************************************************* END */
   
   // Emit updated online users list
   /************* we dont wanna provide all online users to everyone 🟢
@@ -192,6 +215,40 @@ const socketForChat_V2_Claude = (io: Server) => {
       onlineUsers.add(userId);
       userSocketMap.set(userId, socket.id);
       socketUserMap.set(socket.id, userId);
+
+      /********************************************************* START
+       * 
+       * we dont wanna send all related users to everyone .. we will send only those uses who have conversation with 
+       * also we will send only those users who are online ..
+       * 
+       * ******** */
+
+      const conversations = await ConversationParticipents.find({
+        userId
+      }).select('conversationId');  
+
+      const relatedUsersByConversationIds = await ConversationParticipents.find({
+        conversationId: { $in: conversations.map(conversation => conversation.conversationId) }
+      }).select('userId');
+
+      const uniqueUserIds = [...new Set(relatedUsersByConversationIds.map((item)  => {
+        if(item.userId.toString() !== userId.toString()) {
+          
+          return item.userId.toString()
+        }
+      }))];
+
+      uniqueUserIds.forEach((relatedUserId: string) => {
+        // console.log("relatedUserId: ", relatedUserId , "for userId", userId);
+          io.emit(`related-user-online-status::${relatedUserId}`, {
+            userId,
+            isOnline: true,
+            userName: userProfile?.name || user.name,
+            // profileImage: userProfile?.profileImage || null
+          });
+      });
+
+      /********************************************************* END */
 
       // Emit updated online users list
       io.emit('all-online-users', Array.from(onlineUsers)); // 🟢 this will return all user of system 
@@ -443,9 +500,9 @@ const socketForChat_V2_Claude = (io: Server) => {
          *  conversation er lastMessage update korte hobe ..
          * 
          * ******* */
-          await Conversation.findByIdAndUpdate(messageData.conversationId, {
+          const updatedConversation = await Conversation.findByIdAndUpdate(messageData.conversationId, {
             lastMessage: newMessage._id,
-          });
+          }); // .populate('lastMessage').exec()
 
           // Prepare message data for emission
           const messageToEmit = {
@@ -458,24 +515,57 @@ const socketForChat_V2_Claude = (io: Server) => {
 
           // Emit to chat room
           const eventName = `new-message-received::${messageData.conversationId}`; // ${messageData.conversationId}
-          
-
-          console.log(`Emitting event: ${eventName}`, messageToEmit);
-          /***************
-          // Emit to recipient if online
-          if (onlineUsers.has(to)) {
-            const sockeId = onlineUsers.get(to);
-            io?.to(to).emit('private-message', messageResult);
-          }
-          ********* */
-          
-          // when you send everyone include the sender//💡
-          //io.to(messageData.conversationId).emit(eventName, messageToEmit);//💡
-          
+         
           // when you send everyone exclude the sender
           socket.to(messageData.conversationId).emit(eventName, messageToEmit);
           
           // socket.emit(eventName, messageToEmit);
+
+          //************************************************* */
+
+          // 🟢 NEW: Notify all conversation participants about conversation list update
+        
+          // Notify each participant (except the sender if excludeUserId is provided)
+          conversationParticipants.forEach((participant: any) => {
+            const participantId = participant.userId?.toString();
+            
+            console.log(`1️⃣ .forEach Participant ID: ${participantId}, User ID: ${userId}`);
+            
+            // Skip the sender if excludeUserId is provided
+            if (userId && participantId == userId) {
+              return;
+            }
+
+            // onlineUsers.has(participantId)
+
+            // Check if participant is online
+            if (Array.from(onlineUsers).some(id => id.toString() === participantId)) {
+
+              // Emit to participant's personal room  .to(participantId)
+              io.emit(`conversation-list-updated::${participantId}`, {
+                creatorId : updatedConversation?.creatorId,
+                type: updatedConversation?.type,
+                siteId: updatedConversation?.siteId,
+                canConversate: updatedConversation?.canConversate,
+                lastMessage: {
+                  _id: newMessage._id,
+                  text: messageData.text,
+                  senderId: userId,
+                  conversationId: messageData.conversationId,
+                },
+                isDeleted: false,
+                createdAt: "2025-07-19T12:06:00.287Z",
+                _conversationId: updatedConversation?._id,
+              });
+              
+            }else{
+              // .... push notification .. 
+            }
+          });
+
+
+
+          //************************************************* */
 
           /// / Emit to sender's personal room 
           callback?.({
@@ -672,48 +762,3 @@ const socketForChat_V2_Claude = (io: Server) => {
 };
 
 export const socketHelper = { socketForChat_V2_Claude };
-
-
-const notifyConversationListUpdate = async (conversationId: string, lastMessage: any, excludeUserId?: string) => {
-  try {
-    // Get all participants of this conversation
-    const conversationParticipants = await new ConversationParticipentsService()
-      .getParticipantsByConversationId(conversationId);
-    
-    // Prepare the conversation update data
-    const conversationUpdate = {
-      conversationId,
-      lastMessage: {
-        _id: lastMessage._id,
-        text: lastMessage.text,
-        senderId: lastMessage.senderId,
-        senderName: lastMessage.name,
-        senderImage: lastMessage.image,
-        createdAt: lastMessage.createdAt,
-        timestamp: lastMessage.timestamp
-      },
-      updatedAt: new Date()
-    };
-
-    // Notify each participant (except the sender if excludeUserId is provided)
-    conversationParticipants.forEach((participant: any) => {
-      const participantId = participant.userId?.toString();
-      
-      // Skip the sender if excludeUserId is provided
-      if (excludeUserId && participantId === excludeUserId) {
-        return;
-      }
-
-      // Check if participant is online
-      if (onlineUsers.has(participantId)) {
-        // Emit to participant's personal room
-        io.to(participantId).emit('conversation-list-updated', conversationUpdate);
-        
-        console.log(`📱 Notified user ${participantId} about conversation list update`);
-      }
-    });
-
-  } catch (error) {
-    console.error('Error notifying conversation list update:', error);
-  }
-};

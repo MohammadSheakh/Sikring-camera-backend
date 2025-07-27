@@ -367,5 +367,39 @@ export class ConversationController extends GenericController<typeof Conversatio
     }
   );
 
+  /**********
+   * requirement by : Sayed Vai
+   * details : Sayed vai wants to change the status of a conversation by conversationId
+   * he dont want to give any other data .. just conversationId
+   * ********* */
+  changeConversationStatus = catchAsync(
+    async (req: Request, res: Response) => {
+      const { id } = req.params;
+
+      if (!id) {
+        throw new ApiError(
+          StatusCodes.BAD_REQUEST,
+          'Without conversationId you can not change status'
+        );
+      }
+
+      const conversation = await this.service.getById(id);
+      if (!conversation) {
+        throw new ApiError(StatusCodes.NOT_FOUND, 'Conversation not found');
+      }
+
+      // toggle the status
+      conversation.canConversate = !conversation.canConversate;
+      const result = await this.service.updateById(id, conversation);
+
+      sendResponse(res, {
+        code: StatusCodes.OK,
+        data: result,
+        message: `Conversation status changed successfully`,
+        success: true,
+      });
+    }
+  );
+
   // add more methods here if needed or override the existing ones
 }

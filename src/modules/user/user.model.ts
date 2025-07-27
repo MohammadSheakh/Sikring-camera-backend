@@ -28,6 +28,10 @@ const userSchema = new Schema<TUser, UserModal>(
       trim: true,
     },
 
+    siteId: {
+      type: String,
+      required: [false, 'Site ID is not required'], // Its just for showing value
+    },
 
     conversation_restrict_with: {
       type: [String],

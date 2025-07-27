@@ -142,6 +142,20 @@ router.route('/conversation/admin/paginate').get(
   controller.getAllWithPaginationForAdminConversation
 );
 
+/***********
+ * 
+ * (Dashboard) (Admin) : As per Sayed Vai suggestion,  when admin search for a person.. 
+ * i should show that persons name , image, id, and siteId .. 
+ * 
+ * *********** */
+router.route('/conversation/admin/paginate/updated').get(
+  auth('common'), 
+  validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role', 'siteId', 'name', ...paginationOptions])),
+  controller.getAllWithPaginationForAdminConversationUpdated
+);
+
+
+
 /**************
  * 
  *  (App) (Customer | User) : Show all Related User For Create Conversation
@@ -154,8 +168,6 @@ router.route('/conversation/person/paginate').get(
   validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role', 'siteId', ...paginationOptions])),
   controller.getAllWithPaginationForPersonConversation
 );
-
-
 
 router.route('/:id').get(
   // auth('common'),

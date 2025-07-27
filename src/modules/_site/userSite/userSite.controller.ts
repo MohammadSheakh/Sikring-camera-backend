@@ -389,7 +389,7 @@ export class userSiteController extends GenericController<
       'personId siteId' // Select only the 'personId' field
     ).populate({
       path: 'personId',
-      select: 'name role canMessage',
+      select: 'name role profileImage',
     });
 
 
@@ -539,6 +539,80 @@ export class userSiteController extends GenericController<
       success: true,
     });
   });
+
+  
+/***********
+ * 
+ * (Dashboard) (Admin) : As per Sayed Vai suggestion,  when admin search for a person.. 
+ * i should show that persons name , image, id, and siteId .. 
+ * 
+ * *********** */
+
+  getAllWithPaginationForAdminConversationUpdated = catchAsync(async (req: Request, res: Response) => {
+    const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']);
+    const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+    const query: Record<string, any> = {};
+    options.limit = 20000;
+
+    if (filters.name) {
+      query['name'] = { $regex: filters.name, $options: 'i' };
+    }
+    
+    const populateOptions = [ // : (string | {path: string, select: string}[])
+    // {
+    //   path: 'cameraId',
+    //   select: ''
+    // },
+    ];
+
+    const dontWantToInclude = 'name profileImage' ; // -role // name address phoneNumber status
+  
+
+    const users = await User.paginate(query, options, populateOptions, dontWantToInclude);
+
+
+    if (!users) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'No users found');
+    }
+
+    // console.log('users::', users);
+
+    // if(users.results.length > 0){
+      
+    //   users.results.map(async (user) => {
+    //     // console.log('hit 🟢', user);
+    //     // for user._id .. we need to get siteId from userSite model
+        
+    //     const site  = await userSite.findOne({ personId: user._id }).select('siteId'); // Assuming userSite has siteId field
+    //      console.log('site::', site);
+    //      user?.siteId = site.siteId; // Convert ObjectId to string for consistency
+      
+    //   })
+    // }
+
+
+    if (users.results.length > 0) {
+  await Promise.all(
+    users.results.map(async (user) => {
+      const site = await userSite.findOne({ personId: user._id }).select('siteId');
+      if (site) {
+        user.siteId = site.siteId;
+      }
+    })
+  );
+}
+
+    console.log('users after adding siteId::', users);
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: users,
+      message: `All ${this.modelName} with pagination`,
+      success: true,
+    });
+  });
+
+  
 
   /*********
    * 

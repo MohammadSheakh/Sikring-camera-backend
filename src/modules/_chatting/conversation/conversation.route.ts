@@ -34,6 +34,14 @@ router.route('/paginate').get(
 );
 
 
+router.route('/change-status/:id').put(
+  //auth('common'),
+  validateFiltersForQuery(optionValidationChecking(['_id', ...paginationOptions])),
+  controller.changeConversationStatus
+);
+
+
+
 router.route('/:id').get(
   // auth('common'),
   controller.getById

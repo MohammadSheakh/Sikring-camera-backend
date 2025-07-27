@@ -38,6 +38,7 @@ export class CameraPersonService extends GenericService<
         cameraId,
         personId: personIdToEnableAccess,
         siteId,
+        isDeleted: false,
         //status: 'enable', // Check if the person already has 'enable' status
       });
 
@@ -54,7 +55,7 @@ export class CameraPersonService extends GenericService<
       }else{
         // lets update the status 
         await CameraPerson.findOneAndUpdate(
-          { cameraId, personId: personIdToEnableAccess, siteId },
+          { cameraId, personId: personIdToEnableAccess, siteId, isDeleted: false },
           { status: 'enable' }, // Update status to 'enable'
           { upsert: true } // Create a new document if it doesn't exist
         );
@@ -70,7 +71,7 @@ export class CameraPersonService extends GenericService<
           // let user = await User.findById(personIdToEnableAccess);
 
           await CameraPerson.findOneAndUpdate(
-            { cameraId, personId: personIdToEnableAccess, siteId },
+            { cameraId, personId: personIdToEnableAccess, siteId, isDeleted: false },
             { status: 'disable' }, // Update status to 'disable'
             { upsert: true } // Create a new document if it doesn't exist
           );
@@ -94,6 +95,7 @@ export class CameraPersonService extends GenericService<
     
     const cameraPersons = await CameraPerson.find({
       cameraId,
+      isDeleted: false
     })
 
     /***
@@ -154,6 +156,7 @@ export class CameraPersonService extends GenericService<
     
     const cameraPersons = await CameraPerson.find({
       cameraId,
+      isDeleted: false
     })
 
     /***
@@ -218,6 +221,7 @@ export class CameraPersonService extends GenericService<
       personId,
       siteId,
       status: 'enable', // Only consider enabled access
+      isDeleted: false
     }).select('cameraId').populate({
       path: 'cameraId',
       select: 'rtspUrl cameraName',

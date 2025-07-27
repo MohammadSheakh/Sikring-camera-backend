@@ -136,6 +136,7 @@ export class userSiteController extends GenericController<
     if(req.query.siteId){
       userInfo = await userSite.find({
         siteId : req.query.siteId,
+        isDeleted: false,
         role: TRole.manager
       }).select('personId').populate(
         {

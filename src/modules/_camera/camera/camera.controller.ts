@@ -111,6 +111,7 @@ export class cameraController extends GenericController<
         const managerIdForSite : IuserSite | null = await userSite.findOne({
           siteId: req.body.siteId,
           role: 'manager',
+          isDeleted: false,
         }).select('personId role').session(session);
 
         if(managerIdForSite && managerIdForSite.personId){
@@ -217,6 +218,8 @@ export class cameraController extends GenericController<
         const managerIdForSite : IuserSite | null = await userSite.findOne({
           siteId: req.body.siteId,
           role: 'manager',
+          
+          isDeleted: false,
         }).select('personId role').session(session);
 
         if(managerIdForSite && managerIdForSite.personId){

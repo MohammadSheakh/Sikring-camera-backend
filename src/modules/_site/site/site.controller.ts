@@ -296,7 +296,6 @@ export class SiteController extends GenericController<
     });
   });
 
-
   //[🚧][🧑‍💻][🧪] // ✅🆗
   getAllWithPaginationWithUsersAndManagers = catchAsync(async (req: Request, res: Response) => {
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']);
@@ -356,11 +355,13 @@ export class SiteController extends GenericController<
     
     const userForThisSite = await userSite.find({
       siteId: id,
+      isDeleted: false,
       role: { $in: [TRole.user] } // Only get managers and users
     })
 
     const managerForThisSite = await userSite.find({
       siteId: id,
+      isDeleted: false,
       role: { $in: [TRole.manager] } // Only get managers and users
     })
 
@@ -384,5 +385,31 @@ export class SiteController extends GenericController<
       message: `${this.modelName} retrieved successfully`,
     });
   });
+
+  softDeleteById = catchAsync(async (req: Request, res: Response) => {
+    if (!req.params.id) {
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        `id is required for delete ${this.modelName}`
+      );
+    }
+
+    const id = req.params.id;
+    const deletedObject = await new siteService().softDeleteById(id);
+    if (!deletedObject) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        `Object with ID ${id} not found`
+      );
+    }
+
+    //   return res.status(StatusCodes.NO_CONTENT).json({});
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: deletedObject,
+      message: `${this.modelName} soft deleted successfully`,
+    });
+  });
+
   // add more methods here if needed or override the existing ones 
 }

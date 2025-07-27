@@ -117,6 +117,7 @@ const updateUserProfile = catchAsync(async (req, res) => {
     // or we create a new userSite collection
     const existingUserSite = await userSite.findOne({
       personId: userId,
+      isDeleted: false,
       siteId: payload.siteId,
     })
 

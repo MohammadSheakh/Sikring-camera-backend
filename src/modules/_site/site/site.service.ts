@@ -4,6 +4,8 @@ import { ISite } from './site.interface';
 import { GenericService } from '../../__Generic/generic.services';
 import { userSite } from '../userSite/userSite.model';
 import { PaginateOptions } from '../../../types/paginate';
+import ApiError from '../../../errors/ApiError';
+import { cameraSite } from '../cameraSite/cameraSite.model';
 
 export class siteService extends GenericService<
   typeof Site,
@@ -85,5 +87,46 @@ export class siteService extends GenericService<
     }
     
     return sites; 
+  }
+
+
+  async softDeleteById(id: string) {
+
+    const object = await this.model.findById(id).select('-__v');
+
+    if (!object) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'No Object Found');
+      //   return null;
+    }
+
+    if (object.isDeleted === true) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Item already deleted');
+    }
+
+
+    /********
+     * 
+     * UserSite
+     * 
+     * CameraSite gulao remove korte hobe .. 🧪 logic gula test korte hobe .. 
+     * 
+     * ******* */
+
+    // Soft delete logic
+    await cameraSite.updateMany(
+      { siteId: id },
+      { isDeleted: true }
+    );
+
+    await userSite.updateMany(
+      { siteId: id },
+      { isDeleted: true }
+    );
+
+    return await this.model.findByIdAndUpdate(
+      id,
+      { isDeleted: true },
+      { new: true }
+    );
   }
 }

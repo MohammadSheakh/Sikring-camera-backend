@@ -46,7 +46,7 @@ export class AttachmentService extends GenericService<typeof Attachment, IAttach
 
   async deleteAttachment(string: string) {
     try {
-      await deleteAttachment(string);
+      await deleteFileFromSpace(string);
     } catch (error) {
       // Error handling for file deletion or DB deletion failure
       console.error('Error during file deletion:', error);

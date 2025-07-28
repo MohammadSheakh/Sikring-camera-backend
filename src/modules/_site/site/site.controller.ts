@@ -17,6 +17,7 @@ import { userSite } from '../userSite/userSite.model';
 import omit from '../../../shared/omit';
 import pick from '../../../shared/pick';
 import ApiError from '../../../errors/ApiError';
+import { Attachment } from '../../attachments/attachment.model';
 
 const attachmentService = new AttachmentService();
 const userSiteService = new UserSiteService();
@@ -156,7 +157,7 @@ export class SiteController extends GenericController<
         );
         }
 
-    req.body.attachments =  attachments ? attachments  : [...site.attachments, ...attachments];
+      req.body.attachments =  [...site.attachments, ...attachments];
 
     const updatedData = {
       name: req.body.name,
@@ -242,9 +243,8 @@ export class SiteController extends GenericController<
    * 
    * *********** */
 
-  deleteSiteCoverPhotosByCoverPhotoUrl = catchAsync(async (req, res) => {
-  const { siteId, coverPhotoUrl:string } = req.query;
-  const {coverPhotoUrl} = req.body;
+  deleteSiteCoverPhotosByCoverPhotoIdAndSiteId = catchAsync(async (req, res) => {
+  const {coverPhotoId, siteId} = req.body;
 
   const site = await Site.findById(siteId);
   if (!site) {
@@ -255,17 +255,23 @@ export class SiteController extends GenericController<
       message: `site is not found by siteId`,
       success: true,
     });
+    }
 
-    
+    const coverPhotoAttachment = await Attachment.findById(coverPhotoId);
+
+    if(!coverPhotoAttachment){
+      throw new ApiError(StatusCodes.NOT_FOUND, "Image not found");
     }
-    if(!coverPhotoUrl){
-      throw new ApiError(StatusCodes.NOT_FOUND, "coverPhotoUrl not found");
-    }
+
+    console.log('coverPhotoAttachment 🟢', coverPhotoAttachment);
+
+    const coverPhotoUrl = coverPhotoAttachment.attachment;
 
     await attachmentService.deleteAttachment(coverPhotoUrl);
 
-    site.attachments = site?.attachments.filter(
-      (url) => url !== coverPhotoUrl
+    // Remove by ObjectId instead of URL
+    site.attachments = site.attachments.filter(
+      (attachmentId) => !attachmentId.equals(coverPhotoAttachment._id)
     );
 
     await site?.save();
@@ -396,11 +402,6 @@ export class SiteController extends GenericController<
             path: 'attachments',
             select: 'attachment'
         },
-        //'siteId' // This will populate all fields for siteId
-        // {
-        //   path: 'siteId',
-        //   select: 'name address'
-        // }
       ];
 
     // we have to pull this sites manager and user id .. 

@@ -129,7 +129,6 @@ export class cameraSiteController extends GenericController<
         path: 'attachments',
         select: 'attachment',
       });
-      
     }
     
     const result = await this.service.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);

@@ -139,4 +139,14 @@ router.route('/update-site-for-manager/:id').put(
 )
 
 
+/*************
+ * 
+ * ( Dashboard)  (Admin) : delete cover photo of a site by siteId and attachmentId 
+ * 
+ * ************* */
+router.route('/delete-cover-photo').delete(
+  auth('admin'),
+  controller.deleteSiteCoverPhotosByCoverPhotoIdAndSiteId
+)
+
 export const siteRoute = router;

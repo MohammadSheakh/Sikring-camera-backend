@@ -5,7 +5,7 @@ import { Attachment } from './attachment.model';
 import { AttachmentType } from './attachment.constant';
 import { GenericService } from '../__Generic/generic.services';
 import { IAttachment } from './attachment.interface';
-import { uploadFileToSpace } from '../../middlewares/digitalOcean';
+import { deleteFileFromSpace, uploadFileToSpace } from '../../middlewares/digitalOcean';
 
 export class AttachmentService extends GenericService<typeof Attachment, IAttachment> {
   constructor() {
@@ -46,7 +46,7 @@ export class AttachmentService extends GenericService<typeof Attachment, IAttach
 
   async deleteAttachment(string: string) {
     try {
-      await deleteFileFromSpace(string);
+      await deleteAttachment(string);
     } catch (error) {
       // Error handling for file deletion or DB deletion failure
       console.error('Error during file deletion:', error);

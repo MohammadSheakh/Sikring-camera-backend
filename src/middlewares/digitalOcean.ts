@@ -100,7 +100,7 @@ const uploadFileToSpaceMohammadSheakh = async (
 
 
 // Delete a specific file from DigitalOcean Space
-const deleteFileFromSpace = async (fileUrl : string) => {
+export const deleteFileFromSpace = async (fileUrl : string) => {
   // : string  : Promise<void>
   const fileKey = fileUrl.split(
     `${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/`

@@ -136,6 +136,8 @@ export class SiteController extends GenericController<
       throw new Error(`id is required for update ${this.modelName}`);
     }
 
+    const site = await Site.findById(id);
+
     let attachments = [];
   
         if (req.files && req.files.attachments) {
@@ -154,7 +156,7 @@ export class SiteController extends GenericController<
         );
         }
 
-    req.body.attachments = attachments;
+    req.body.attachments =  attachments ? attachments  : [...site.attachments, ...attachments];
 
     const updatedData = {
       name: req.body.name,
@@ -174,7 +176,10 @@ export class SiteController extends GenericController<
       id,
       updatedData, 
       { new: true }
-    ).select('-isDeleted -updatedAt -createdAt -__v');
+    ).select('-isDeleted -updatedAt -createdAt -__v').populate({
+      path: 'attachments',
+      select: 'attachment'
+    });
     
     actionPerformed = `Updated ${this.modelName} with id ${id} | `;
 
@@ -183,10 +188,14 @@ export class SiteController extends GenericController<
       // need to check if the manager exist or not  
 
       const updatedManagerForSite = await userSite.findOneAndUpdate(
-        { siteId: result._id },
+        { siteId: result._id , role: TRole.manager },
         { role: TRole.manager, personId: req.body.assignedManagerId , siteId: result._id  },
         { new: true, upsert: true } // upsert to create if not exists
       )
+
+      console.log('updatedManagerForSite 🟢', updatedManagerForSite);
+
+      // console.log('req.body.assignedManagerId 🟢', req.body.assignedManagerId);
 
       // TODO : issue hoile fix korte hobe 
       result.assignedManagerId = req?.body?.assignedManagerId ? req.body.assignedManagerId : result.assignedManagerId;
@@ -198,7 +207,7 @@ export class SiteController extends GenericController<
       // need to check if the user exist or not  
 
       const updatedUserForSite = await userSite.findOneAndUpdate(
-        {  siteId: result._id },
+        {  siteId: result._id , role: TRole.user },
         { role: TRole.user , personId: req.body.assignedUserId , siteId: result._id },
         { new: true, upsert: true } // upsert to create if not exists
       )
@@ -226,6 +235,49 @@ export class SiteController extends GenericController<
       success: true,
     });
   });
+
+  /*************
+   * 
+   *  As per sayed vai's con
+   * 
+   * *********** */
+
+  deleteSiteCoverPhotosByCoverPhotoUrl = catchAsync(async (req, res) => {
+  const { siteId, coverPhotoUrl:string } = req.query;
+  const {coverPhotoUrl} = req.body;
+
+  const site = await Site.findById(siteId);
+  if (!site) {
+    // throw new ApiError(httpStatus.NOT_FOUND, "Site not found");
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: null,
+      message: `site is not found by siteId`,
+      success: true,
+    });
+
+    
+    }
+    if(!coverPhotoUrl){
+      throw new ApiError(StatusCodes.NOT_FOUND, "coverPhotoUrl not found");
+    }
+
+    await attachmentService.deleteAttachment(coverPhotoUrl);
+
+    site.attachments = site?.attachments.filter(
+      (url) => url !== coverPhotoUrl
+    );
+
+    await site?.save();
+
+    res.status(200).json({
+      message: "Image Deleted Successfully",
+      status: "OK",
+      statusCode: 200,
+      data: site,
+    });
+  });
+
 
   /*************
    * 

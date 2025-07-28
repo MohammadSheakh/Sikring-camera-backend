@@ -44,6 +44,20 @@ router
   controller.getRelatedUsers
 );
 
+/*********
+ *  ( Dashboard ) | (Admin) 
+ * 
+ *  as Sayed Vai dont want to show conversations with socket .. 
+ *  so, we will provide rest api to get conversationsParticipant
+ * 
+ * 
+ * ******** */
+
+router.route('/getConversationsParticipents').get(
+  auth('common'),
+  controller.getAllConversationByUserIdWithPagination
+);
+
 /**********
  * 
  * (req.query.otherUserId) otherUserId

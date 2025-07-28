@@ -273,6 +273,18 @@ export class ConversationParticipentsController extends GenericController<typeof
   });
 
 
+  /*********
+   * 
+   * 
+   * 
+   * ******* */
+  getAllConversationByUserIdWithPagination = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user.userId;
+
+    
+
+  })
+
 
     // add more methods here if needed or override the existing ones
 }

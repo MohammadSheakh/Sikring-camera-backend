@@ -386,7 +386,7 @@ export class userSiteController extends GenericController<
     // Step 2: Retrieve all personIds related to the retrieved siteIds
     const personIdsRelatedToSites = await userSite.find(
       { siteId: { $in: siteIds }, isDeleted: false },
-      'personId siteId' // Select only the 'personId' field
+      'personId siteId isDeleted' // Select only the 'personId' field
     ).populate({
       path: 'personId',
       select: 'name role profileImage',
@@ -396,14 +396,15 @@ export class userSiteController extends GenericController<
      // Step 3: Use Map to ensure unique personIds
       const uniquePersonsMap = new Map();
 
-
       personIdsRelatedToSites.forEach(person => {
   
         const personIdStr = person.personId._id.toString();
         
         // Filter conditions
         if (personIdStr !== req.user.userId.toString() && 
-            person.personId.role === req.query.role) {
+            person.personId.role === req.query.role && person.isDeleted === false) {
+
+              console.log('person🟡🟡:', person);
           
           // If person not already in map, add them
           if (!uniquePersonsMap.has(personIdStr)) {
@@ -415,7 +416,7 @@ export class userSiteController extends GenericController<
         }
       });
 
-      console.log('uniquePersonsMap::', uniquePersonsMap);
+      // console.log('uniquePersonsMap::', uniquePersonsMap);
 
     /*****************
 

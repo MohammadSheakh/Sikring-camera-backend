@@ -63,7 +63,7 @@ router.route('/create').post(
   // ],
   auth('common'),
   validateRequest(validation.createConversationValidationSchema),
-  controller.create // 2️⃣
+  controller.createV2 // 2️⃣
 );
 
 router.route('/update/:id').put(

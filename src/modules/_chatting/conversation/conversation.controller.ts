@@ -16,6 +16,7 @@ import omit from '../../../shared/omit';
 import pick from '../../../shared/pick';
 import { populate } from 'dotenv';
 import mongoose from 'mongoose';
+import { ConversationParticipents } from '../conversationParticipents/conversationParticipents.model';
 
 let conversationParticipantsService = new ConversationParticipentsService();
 let messageService = new MessagerService();
@@ -97,6 +98,7 @@ export class ConversationController extends GenericController<typeof Conversatio
     }
   );
 
+  // Not Updated Code .. Updated code is createV2
   create = catchAsync(async (req: Request, res: Response) => {
     let type;
     let result: IConversation;
@@ -129,10 +131,29 @@ export class ConversationController extends GenericController<typeof Conversatio
         siteId: req.body.siteId,
       };
 
+      /********************
       // check if the conversation already exists
       const existingConversation = await Conversation.findOne({
         creatorId: conversationData.creatorId,
       }).select('-isDeleted -updatedAt -createdAt -__v');
+
+      *******************/
+
+
+      // For direct conversations, check if these 2 participants already have a conversation
+      const  existingConversation = await Conversation.findOne({
+          type: ConversationType.direct,
+          siteId: req.body.siteId,
+          _id: {
+            $in: await ConversationParticipents.find({
+              userId: { $in: participants }
+            }).distinct('conversationId')
+          }
+        }).populate({
+          path: 'participants',
+          match: { userId: { $in: participants } }
+        });
+
 
       if (!existingConversation){
 
@@ -223,6 +244,234 @@ export class ConversationController extends GenericController<typeof Conversatio
       });
     }
   });
+
+
+  /***********
+   * 
+   * This code is from Claude 
+   * 
+   * Sayed Vai face an issue ..
+   * 
+   * we try to solve that issue here .. 
+   * 
+   * ********** */
+  createV2 = catchAsync(async (req: Request, res: Response) => {
+    let type;
+    let result: IConversation;
+    
+    let { participants, message } = req.body;
+
+    if (!participants || participants.length === 0) {
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        'Without participants you can not create a conversation'
+      );
+    }
+
+    // Add yourself to the participants list
+    participants = [...participants, req.user.userId];
+    
+    // Remove duplicates in case user included themselves
+    participants = [...new Set(participants.map(p => p.toString()))];
+
+    // Determine conversation type
+    type = participants.length > 2 ? ConversationType.group : ConversationType.direct;
+
+    const conversationData: IConversation = {
+      creatorId: req.user.userId,
+      type,
+      siteId: req.body.siteId,
+    };
+
+    // ✅ FIXED: Check if conversation exists with SAME PARTICIPANTS
+    let existingConversation = null;
+    
+    if (type === ConversationType.direct) {
+      // For direct conversations, find conversations where exactly these 2 participants exist
+      const conversationsWithParticipants = await ConversationParticipents.aggregate([
+        {
+          $match: {
+            userId: { $in: participants.map(p => new mongoose.Types.ObjectId(p)) },
+            isDeleted: false
+          }
+        },
+        {
+          $group: {
+            _id: "$conversationId",
+            participantCount: { $sum: 1 },
+            participantIds: { $push: "$userId" }
+          }
+        },
+        {
+          $match: {
+            participantCount: participants.length // Exact participant count
+          }
+        }
+      ]);
+
+      if (conversationsWithParticipants.length > 0) {
+        for (const conv of conversationsWithParticipants) {
+          // Check if participant IDs match exactly
+          const existingIds = conv.participantIds.map(id => id.toString()).sort();
+          const newIds = participants.map(p => p.toString()).sort();
+          
+          if (JSON.stringify(existingIds) === JSON.stringify(newIds)) {
+            // Found exact match, get the conversation
+            existingConversation = await Conversation.findOne({
+              _id: conv._id,
+              type: ConversationType.direct,
+              siteId: req.body.siteId,
+              isDeleted: false
+            }).select('-isDeleted -updatedAt -createdAt -__v');
+            break;
+          }
+        }
+      }
+    } else {
+      // For group conversations, you might want different logic
+      // Option 1: Always create new groups (most common)
+      // Option 2: Check for groups with same participants and same creator
+      // For now, let's always create new groups
+      existingConversation = null;
+      
+      // Uncomment below if you want to prevent duplicate groups with same participants
+      /*
+      const conversationsWithParticipants = await ConversationParticipant.aggregate([
+        {
+          $match: {
+            userId: { $in: participants.map(p => new mongoose.Types.ObjectId(p)) },
+            isDeleted: false
+          }
+        },
+        {
+          $group: {
+            _id: "$conversationId",
+            participantCount: { $sum: 1 },
+            participantIds: { $push: "$userId" }
+          }
+        },
+        {
+          $match: {
+            participantCount: participants.length
+          }
+        }
+      ]);
+
+      if (conversationsWithParticipants.length > 0) {
+        for (const conv of conversationsWithParticipants) {
+          const existingIds = conv.participantIds.map(id => id.toString()).sort();
+          const newIds = participants.map(p => p.toString()).sort();
+          
+          if (JSON.stringify(existingIds) === JSON.stringify(newIds)) {
+            existingConversation = await Conversation.findOne({
+              _id: conv._id,
+              type: ConversationType.group,
+              siteId: req.body.siteId,
+              creatorId: req.user.userId, // Same creator
+              isDeleted: false
+            }).select('-isDeleted -updatedAt -createdAt -__v');
+            break;
+          }
+        }
+      }
+      */
+    }
+
+    if (!existingConversation) {
+      /***********
+       * Create a new conversation
+       ***********/
+      
+      result = await this.service.create(conversationData);
+
+      if (!result) {
+        throw new ApiError(
+          StatusCodes.BAD_REQUEST,
+          'Unable to create conversation'
+        );
+      }
+
+      // Add participants
+      for (const participant of participants) {
+        const user = await User.findById(participant).select('role');
+
+        if (!user) {
+          throw new ApiError(
+            StatusCodes.NOT_FOUND,
+            `User with id ${participant} not found`
+          );
+        }
+
+        const participantResult = await conversationParticipantsService.create({
+          userId: participant,
+          conversationId: result._id,
+          // joinedAt will be set automatically by schema default
+        });
+
+        if (!participantResult) {
+          throw new ApiError(
+            StatusCodes.BAD_REQUEST,
+            'Unable to create conversation participant'
+          );
+        }
+      }
+
+      // Add initial message if provided
+      if (message && result._id) {
+        const messageResult: IMessage | null = await messageService.create({
+          text: message,
+          senderId: req.user.userId,
+          conversationId: result._id,
+        });
+        
+        if (!messageResult) {
+          throw new ApiError(
+            StatusCodes.BAD_REQUEST,
+            'Unable to create initial message'
+          );
+        }
+
+        // Update lastMessage in conversation
+        await Conversation.findByIdAndUpdate(result._id, {
+          lastMessage: messageResult._id
+        });
+      }
+
+    } else {
+      // Conversation exists, just add message if provided
+      result = existingConversation;
+      
+      if (message && existingConversation._id && existingConversation.canConversate) {
+        const messageResult: IMessage | null = await messageService.create({
+          text: message,
+          senderId: req.user.userId,
+          conversationId: existingConversation._id,
+        });
+        
+        if (!messageResult) {
+          throw new ApiError(
+            StatusCodes.BAD_REQUEST,
+            'Unable to send message'
+          );
+        }
+
+        // Update lastMessage in conversation
+        await Conversation.findByIdAndUpdate(existingConversation._id, {
+          lastMessage: messageResult._id
+        });
+      }
+    }
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: existingConversation 
+        ? `Conversation already exists` 
+        : `${this.modelName} created successfully`,
+      success: true,
+    });
+  });
+
 
   addParticipantsToExistingConversation = catchAsync(
     async (req: Request, res: Response) => {

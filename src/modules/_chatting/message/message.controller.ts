@@ -13,6 +13,10 @@ import omit from "../../../shared/omit";
 import pick from "../../../shared/pick";
 import { Conversation } from "../conversation/conversation.model";
 import { ConversationParticipents } from "../conversationParticipents/conversationParticipents.model";
+// Import the io instance from your socket setup
+
+// Adjust the path as needed to where your io instance is exported
+
 
 const attachmentService = new AttachmentService();
 const conversationService = new ConversationService();
@@ -82,7 +86,17 @@ export class MessageController extends GenericController<typeof Message, IMessag
         await Conversation.findByIdAndUpdate(result.conversationId, {
         lastMessage: result._id,
         });
-    
+        const eventName = `new-message-received::${result.conversationId.toString()}`;
+        
+        console.log('eventName 🟢', eventName);
+        console.log('result.conversationId 🟢', typeof  result.conversationId,"🟢 string----", typeof result.conversationId.toString());
+
+        
+        //@ts-ignore
+        io.to(result.conversationId.toString()).emit(eventName, {
+            message: result,
+        });
+
         sendResponse(res, {
           code: StatusCodes.OK,
           data: result,

@@ -94,7 +94,7 @@ process.on('uncaughtException', error => {
       global.socketUtils = socketUtils;
 
       // @ts-ignore
-      //global.io = io;
+      global.io = io;
       // TODO : global.io is not a good practice, consider using a better approach to manage socket connections
     } catch (error) {
       errorLogger.error(colors.red('🤢 Failed to connect Database'));

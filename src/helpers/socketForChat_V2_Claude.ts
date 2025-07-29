@@ -372,11 +372,12 @@ const socketForChat_V2_Claude = (io: Server) => {
           console.error('Error fetching conversations:', error);
           callback?.({ success: false, message: 'Failed to fetch conversations' });
         }
-      })
+      }) 
+      
 
       /***********
        * 
-       *   Handle fetching all conversations with pagination 🟢 working perfectly
+       *   Handle fetching all conversations with pagination 🟢 working perfectly 
        * 
        * ********** */
       socket.on('get-all-conversations-with-pagination', async( conversationData: {page: number, limit: number}, callback) =>{

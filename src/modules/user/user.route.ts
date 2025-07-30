@@ -132,6 +132,17 @@ router.route('/get-profile-info').get(
   UserController.getMyProfile
 );
 
+/*************************
+ *  
+ * (Dashboard) | Admin , SuperAdmin | get profile Details... 
+ * 
+ * ********************* */
+router.route('/get-profile-info/admin').get(
+  auth('common'),
+  UserController.getMyProfileForAdmin
+);
+
+
 router.get('/get-user-info/:userId', 
   auth('common'), 
   UserController.getSingleUser);

@@ -111,6 +111,14 @@ const getMyProfile = async (userId: string): Promise<TUser | null> => {
   return result;
 };
 
+const getMyProfileForAdmin = async (userId: string): Promise<TUser | null> => {
+  const result = await User.findById(userId).select('-password');
+  if (!result) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'User not found');
+  }
+  return result;
+};
+
 //[🚧][🧑‍💻✅][🧪🆗]
 const getMyProfileOnlyRequiredField = async (userId: string): Promise<TUser | null> => {
   const result = await User.findById(userId).select('name subscriptionType profileImage userId');
@@ -162,5 +170,6 @@ export const UserService = {
   
 
   //////////////////////////////////////
-  getMyProfileOnlyRequiredField
+  getMyProfileOnlyRequiredField,
+  getMyProfileForAdmin // as per sayed vais concern
 };

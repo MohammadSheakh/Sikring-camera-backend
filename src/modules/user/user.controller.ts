@@ -467,6 +467,26 @@ const getMyProfile = catchAsync(async (req, res) => {
   });
 });
 
+
+/**************
+ * 
+ * As per Sayed vais request
+ * 
+ * ************ */
+const getMyProfileForAdmin = catchAsync(async (req, res) => {
+  const userId = req.user.userId;
+  if (!userId) {
+    throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are unauthenticated.');
+  }
+  const result = await UserService.getMyProfileForAdmin(userId);
+  sendResponse(res, {
+    code: StatusCodes.OK,
+    data: result,
+    message: 'User fetched successfully',
+  });
+});
+
+
 //get my profile //[🚧][🧑‍💻✅][🧪🆗]
 const getMyProfileOnlyRequiredField = catchAsync(async (req, res) => {
   const userId = req.user.userId;
@@ -709,5 +729,6 @@ export const UserController = {
 
   getMyProfileOnlyRequiredField,
 
-  getAllManagerAndUserForAdminDashboard
+  getAllManagerAndUserForAdminDashboard,
+  getMyProfileForAdmin // For Admin Dashboard // As per sayed vais request
 };

@@ -1,9 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
 import ApiError from '../../errors/ApiError';
 import { PaginateOptions } from '../../types/paginate';
-import { Model, Mongoose } from 'mongoose';
 
-export class GenericService<  ModelType , InterfaceType> {
+export class GenericService<ModelType , InterfaceType> {
   model: ModelType | any; 
 
   constructor(model: ModelType ) {
@@ -123,7 +122,6 @@ export class GenericService<  ModelType , InterfaceType> {
 
   }
 
-  
   async updateById(id: string, data: InterfaceType) {
     const object = await this.model.findById(id).select('-__v');
     if (!object) {

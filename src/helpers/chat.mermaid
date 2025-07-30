@@ -6,6 +6,7 @@ flowchart LR
          Ad[To Join a conversation]
          Cd[To send a new message in a conversation]
          Bd[To leave a conversation]
+         Dd[Get all conversations with pagination]
         
   end
 
@@ -16,4 +17,5 @@ flowchart LR
         A[join] --pass {conversationId}--> Ad
         C[send-new-message] --pass {conversationId, message}-->Cd
         B[leave] --pass {conversationId}--> Bd    
+        D[get-all-conversations-with-pagination] --pass {page, limit}--> Dd
   end

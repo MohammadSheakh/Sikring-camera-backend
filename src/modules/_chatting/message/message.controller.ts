@@ -83,19 +83,69 @@ export class MessageController extends GenericController<typeof Message, IMessag
          *  conversation er lastMessage update korte hobe ..
          * 
          * ******* */
-        await Conversation.findByIdAndUpdate(result.conversationId, {
+        const updatedConversation = await Conversation.findByIdAndUpdate(result.conversationId, {
         lastMessage: result._id,
         });
-        const eventName = `new-message-received::${result.conversationId.toString()}`;
-        
-        console.log('eventName 🟢', eventName);
-        console.log('result.conversationId 🟢', typeof  result.conversationId,"🟢 string----", typeof result.conversationId.toString());
 
-        
+
+        /***********
+         * 
+         * As per sayed vais suggestion, we will emit the event to the specific conversation room
+         * 
+         * as when a user send attachments via chat, we need to notify all the participants of that conversation
+         * 
+         * ********** */
+        const eventName = `new-message-received::${result.conversationId.toString()}`;
+      
         //@ts-ignore
         io.to(result.conversationId.toString()).emit(eventName, {
             message: result,
         });
+
+        /**********
+         * 
+         * We also need to emit to participants personal room
+         * to update their conversation list .. 
+         * 
+         * ********** */
+
+        conversationParticipants.forEach((participant: any) => {
+            const participantId = participant.userId?.toString();
+            
+            console.log(`1️⃣ .forEach Participant ID: ${participantId}, User ID: ${req.user.userId}`);
+            
+            // Skip the sender if excludeUserId is provided
+            if (req.user.userId && participantId == req.user.userId) {
+              return;
+            }
+
+            // @ts-ignore
+            // Check if participant is online
+            if (global.socketUtils.getOnlineUsers().some(id => id.toString() === participantId)) {
+
+              //@ts-ignore
+              // Emit to participant's personal room  .to(participantId)
+              io.emit(`conversation-list-updated::${participantId}`, {
+                creatorId : updatedConversation?.creatorId,
+                type: updatedConversation?.type,
+                siteId: updatedConversation?.siteId,
+                canConversate: updatedConversation?.canConversate,
+                lastMessage: {
+                  _id: result._id,
+                  text: result.text,
+                  senderId: req.user.userId,
+                  conversationId: result.conversationId,
+                },
+                isDeleted: false,
+                createdAt: "2025-07-19T12:06:00.287Z",
+                _conversationId: updatedConversation?._id,
+              });
+              
+            }else{
+              // .... TODO: push notification .. Suggested by Abu Bokor Vai ..
+            }
+          });
+
 
         sendResponse(res, {
           code: StatusCodes.OK,

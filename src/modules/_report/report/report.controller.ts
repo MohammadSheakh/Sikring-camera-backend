@@ -149,9 +149,20 @@ export class reportController extends GenericController<
       );
     }
 
+    /**********
+     * 
+     * As result.person returns multiple person who is related to this report
+     * 
+     * but we need to show only the person who is submitting this report
+     * 
+     * so, we will filter the person based on the reportId
+     * 
+     * ********** */
+
     // let find out who is submitting this report .. 
     const customerReportRes = await customerReport.find({
-      reportId: id
+      reportId: id,
+      personId: req.user.userId, // only the person who is submitting this report
     }).select('personId role').populate({
       path: 'personId',
       select: 'name email phoneNumber profileImage',

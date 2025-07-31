@@ -40,7 +40,7 @@ router.route('/paginate').get(
 
 // get report details by id 💡
 router.route('/:id').get(
-  // auth('common'),
+  auth('common'),
   controller.getById
 );
 

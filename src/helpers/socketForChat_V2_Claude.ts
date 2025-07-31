@@ -190,7 +190,7 @@ const socketForChat_V2_Claude = (io: Server) => {
 
     try {
       // Get user profile once at connection
-      const userProfile = await User.findById(userId, 'name profileImage'); // TODO : profileImage userModel theke check korte hobe .. 
+      const userProfile = await User.findById(userId, 'id name profileImage'); // TODO : profileImage userModel theke check korte hobe .. 
       socket.data.userProfile = userProfile;
 
       /***********
@@ -435,6 +435,8 @@ const socketForChat_V2_Claude = (io: Server) => {
        * ********** */
 
       socket.on('send-new-message', async (messageData: MessageData, callback) => {
+
+        console.log("requested user Id 🟡🟡",  userId)
         try {
           console.log('New message received:', messageData);
 
@@ -464,12 +466,35 @@ const socketForChat_V2_Claude = (io: Server) => {
             return emitError(socket, error);
           }
 
+          /*************
+           * 
+           * here we will check if the sender is a participant in the conversation or not
+           * if not then we will send an error message
+           * 
+           * ********** */
+          let isExist = false;
+          conversationParticipants.forEach((participant: any) => {
+            const participantId = participant.userId?.toString();
+            
+            if (participantId == userId.toString()) {
+                isExist = true;
+                return;
+            }
+          });
+
+          console.log("isExist: 🟡", isExist);
+
+        if(!isExist){
+            emitError(socket, `You are not a participant in this conversation`);
+        }
+
+
           // Check if user is blocked
-          if (conversationData.blockedUsers?.includes(userId)) {
-            const error = "You have been blocked. You can't send messages.";
-            callback?.({ success: false, message: error });
-            return emitError(socket, error);
-          }
+          // if (conversationData.blockedUsers?.includes(userId)) {
+          //   const error = "You have been blocked. You can't send messages.";
+          //   callback?.({ success: false, message: error });
+          //   return emitError(socket, error);
+          // }
 
           // Create message
           const newMessage = await Message.create({

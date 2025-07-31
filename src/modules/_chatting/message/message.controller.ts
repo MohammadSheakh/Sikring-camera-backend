@@ -48,7 +48,28 @@ export class MessageController extends GenericController<typeof Message, IMessag
                 success: false,
             });
         }
-        
+
+
+        let isExist = false;
+        conversationParticipants.forEach((participant: any) => {
+          const participantId = participant.userId?.toString();
+          
+          // console.log(`1️⃣ .forEach Participant ID: ${participantId}, User ID: ${req.user.userId}`);
+          
+          if (req.user.userId && participantId == req.user.userId) {
+              isExist = true;
+              return;
+          }
+        });
+
+        if(!isExist){
+            return sendResponse(res, {
+                code: StatusCodes.FORBIDDEN,
+                message: `You are not a participant in this conversation`,
+                success: false,
+            });
+        }
+
         let attachments = [];
     
         if (req.files && req.files.attachments) {

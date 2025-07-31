@@ -163,21 +163,26 @@ export class MessageController extends GenericController<typeof Message, IMessag
         const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
         const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
 
-         const populateOptions: (string | {path: string, select: string}[]) = [
-            {
-              path: 'senderId',
-              select: 'name role profileImage' // name 
-            },
-            {
-              path: 'conversationId',
-              select: 'canConversate siteId' // name 
-            },
-            {
-              path: 'attachments',
-              select: 'attachment'
-            }
-            ];
+        //  if(options.limit == undefined || options.page == undefined){
+           // Error Show korte hobe 
+        //  }
 
+        options.sortBy = '-createdAt'; // Default sort by createdAt in descending order
+
+        const populateOptions: (string | {path: string, select: string}[]) = [
+          {
+            path: 'senderId',
+            select: 'name role profileImage' // name 
+          },
+          {
+            path: 'conversationId',
+            select: 'canConversate siteId' // name 
+          },
+          {
+            path: 'attachments',
+            select: 'attachment'
+          }
+        ];
 
         let select = ''; // Specify fields to exclude from the result
         // -createdAt

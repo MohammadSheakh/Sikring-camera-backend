@@ -10,6 +10,8 @@ import catchAsync from '../../../shared/catchAsync';
 import omit from '../../../shared/omit';
 import pick from '../../../shared/pick';
 import { Site } from '../site/site.model';
+import { userSite } from '../userSite/userSite.model';
+import { TRole } from '../../user/user.constant';
 
 
 export class cameraSiteController extends GenericController<
@@ -81,14 +83,42 @@ export class cameraSiteController extends GenericController<
     
     let siteRes;
 
+    let userForThisSite
+    let managerForThisSite
+
     if(req.query.siteId){
       siteRes = await Site.findById(req.query.siteId).select('name createdAt');
+
+      // we have to pull this sites manager and user id .. 
+          
+          userForThisSite = await userSite.find({
+            siteId: req.query.siteId,
+            isDeleted: false,
+            role: { $in: [TRole.user] } // Only get managers and users
+          }).populate({
+            path: 'personId',
+            select: 'name  profileImage role'
+          });
+
+          managerForThisSite = await userSite.find({
+            siteId: req.query.siteId,
+            isDeleted: false,
+            role: { $in: [TRole.manager] } // Only get managers and users
+          }).populate({
+            path: 'personId',
+            select: 'name  profileImage role'
+          });
+
+          // siteRes.assignedUserId = userForThisSite[0]?.personId ? userForThisSite[0].personId : null;
+          // siteRes.assignedManagerId = managerForThisSite[0]?.personId ? managerForThisSite[0].personId : null;
     }
     
     const result = await this.service.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
 
     if(siteRes){
       result.siteInfo  = siteRes;
+      result.assignedUser = userForThisSite[0].personId,
+      result.assignedManager = managerForThisSite[0].personId
     }
 
     sendResponse(res, {

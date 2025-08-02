@@ -131,8 +131,8 @@ export class ConversationParticipentsService extends GenericService<
     // Step 1: Find all conversations the logged-in user participates in
     const userConversations = await ConversationParticipents.find({
       userId: loggedInUserId,
-      isDeleted: false
-    }).select('conversationId');
+      isDeleted: false,
+    }).sort({ createdAt: -1 }).select('conversationId');
 
     const conversationIds = userConversations.map(conv => conv.conversationId);
 
@@ -164,7 +164,7 @@ export class ConversationParticipentsService extends GenericService<
     filter,
     {
       ...options, 
-      sortBy: options.sortBy ?? 'updatedAt', // Sort by most recent conversations
+      sortBy: 'updatedAt', // Sort by most recent conversations // options.sortBy ??
     },
     populateOptions,
     dontWantToInclude

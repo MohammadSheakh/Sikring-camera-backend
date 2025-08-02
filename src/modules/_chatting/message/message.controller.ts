@@ -136,9 +136,9 @@ export class MessageController extends GenericController<typeof Message, IMessag
             console.log(`1️⃣ .forEach Participant ID: ${participantId}, User ID: ${req.user.userId}`);
             
             // Skip the sender if excludeUserId is provided
-            if (req.user.userId && participantId == req.user.userId) {
-              return;
-            }
+            // if (req.user.userId && participantId == req.user.userId) {
+            //   return;
+            // }
 
             // @ts-ignore
             // Check if participant is online

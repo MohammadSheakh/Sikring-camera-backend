@@ -541,9 +541,9 @@ const socketForChat_V2_Claude = (io: Server) => {
             console.log(`1️⃣ .forEach Participant ID: ${participantId}, User ID: ${userId}`);
             
             // Skip the sender if excludeUserId is provided
-            if (userId && participantId == userId) {
-              return;
-            }
+            // if (userId && participantId == userId) {
+            //   return;
+            // }
 
             // onlineUsers.has(participantId)
 

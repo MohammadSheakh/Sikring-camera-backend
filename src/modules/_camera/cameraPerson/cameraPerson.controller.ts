@@ -32,7 +32,9 @@ export class CameraPersonController extends GenericController<
     const { cameraId, siteId, personIdsToEnableAccess , personIdsToDisableAccess } = req.body;
 
     // Call service method
-    const result = await this.CameraPersonService.assignMultiplePersonForViewAccess(cameraId,siteId, personIdsToEnableAccess, personIdsToDisableAccess);
+    // const result = await this.CameraPersonService.assignMultiplePersonForViewAccess(cameraId,siteId, personIdsToEnableAccess, personIdsToDisableAccess);
+
+    const result = await this.CameraPersonService.assignMultiplePersonForViewAccessV2(cameraId,siteId, personIdsToEnableAccess); // , personIdsToDisableAccess
 
     sendResponse(res, {
       code: StatusCodes.OK,

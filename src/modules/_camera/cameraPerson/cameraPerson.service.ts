@@ -18,6 +18,9 @@ export class CameraPersonService extends GenericService<
    *  Admin > Site Management > (Give View Access to Customer) assign multiple persons for view access to camera
    *  Manager > 
    * 
+   * BackDated Code .. 
+   * New Updated Service found ... V2
+   * 
    * ************* */
   assignMultiplePersonForViewAccess = async (
     cameraId: string,
@@ -82,6 +85,93 @@ export class CameraPersonService extends GenericService<
       console.error('Error assigning multiple persons for view access to camera:', error);
       throw error; // Re-throw the error to be handled by the caller
     }
+
+    return null;
+  }
+
+/**************
+ * 
+ *  Updated Code .. 
+ *  
+ * ************ */
+  assignMultiplePersonForViewAccessV2 = async (
+    cameraId: string,
+    siteId: string,
+    personIdsToEnableAccess: string[],
+    // personIdsToDisableAccess: string[]
+  ) => {
+
+  try{
+
+    personIdsToEnableAccess.forEach(async(personIdToEnableAccess) => {
+      
+      let alreadyEnables = await CameraPerson.findOne({
+        cameraId,
+        personId: personIdToEnableAccess,
+        siteId,
+        isDeleted: false,
+        //status: 'enable', // Check if the person already has 'enable' status
+      });
+
+      const userRole = await User.findById(personIdToEnableAccess).select('role');
+
+      if(!alreadyEnables){
+        await CameraPerson.insertOne({
+          cameraId,
+          personId : personIdToEnableAccess,
+          siteId,
+          status: 'enable', // default status
+          role: userRole?.role , // default role if not specified
+        })
+      }else{
+        // lets update the status 
+        await CameraPerson.findOneAndUpdate(
+          { cameraId, personId: personIdToEnableAccess, siteId, isDeleted: false },
+          { status: 'enable' }, // Update status to 'enable'
+          { upsert: true } // Create a new document if it doesn't exist
+        );
+      }
+    });
+
+    /*
+    if(personIdsToDisableAccess.length !== 0){
+
+      personIdsToDisableAccess.forEach(async(personIdToEnableAccess) => {
+        // if (typeof personIdToEnableAccess !== 'string') {
+        //   throw new Error('Invalid personId in personIds array');
+        // }
+
+        // let user = await User.findById(personIdToEnableAccess);
+
+        await CameraPerson.findOneAndUpdate(
+          { cameraId, personId: personIdToEnableAccess, siteId, isDeleted: false },
+          { status: 'disable' }, // Update status to 'disable'
+          { upsert: true } // Create a new document if it doesn't exist
+        );
+      })
+    }
+    */
+
+    // Disable all other camera-person relationships for this camera and site
+    // that are not in the personIdsToEnableAccess array
+    await CameraPerson.updateMany(
+      {
+        cameraId,
+        siteId,
+        isDeleted: false,
+        personId: { $nin: personIdsToEnableAccess }, // personId NOT IN the array
+        status: { $ne: 'disable' } // Only update if status is not already 'disable' (optional optimization)
+      },
+      {
+        status: 'disable'
+      }
+    );
+
+    }
+  catch(error){
+    console.error('Error assigning multiple persons for view access to camera:', error);
+    throw error; // Re-throw the error to be handled by the caller
+  }
 
     return null;
   }

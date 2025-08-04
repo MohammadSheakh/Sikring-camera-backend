@@ -81,6 +81,7 @@ process.on('uncaughtException', error => {
         },
         // Disable compression to avoid RSV1 issues
         compression: false,
+        perMessageDeflate: false
       });
 
       // // Use Redis adapter for socket communication between workers

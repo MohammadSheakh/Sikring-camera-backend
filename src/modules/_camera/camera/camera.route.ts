@@ -78,6 +78,16 @@ router.route('/softDelete/:id').put(
   controller.softDeleteById
 );
 
+/*********
+ * 
+ * as per sayed vai's concern .. Start Steaming a camera's RTSP as HLS
+ * 
+ * ********** */
+
+router.route('/stream/:cameraId/start').get(
+  controller.startStreaming
+)
+
 ////////////
 //[🚧][🧑‍💻✅][🧪] // 🆗
 // TODO : get camera preview by camera id

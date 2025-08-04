@@ -3,4 +3,5 @@ dist
 /winston
 .env
 src/config/firebaseSDK.json
-src/public/hls
+src/modules/public/hls
+public/hls

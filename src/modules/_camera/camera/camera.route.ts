@@ -88,6 +88,11 @@ router.route('/stream/:cameraId/start').get(
   controller.startStreaming
 )
 
+router.route('/stream/:cameraId/stop').get(
+  controller.stopStreaming
+)
+
+
 ////////////
 //[🚧][🧑‍💻✅][🧪] // 🆗
 // TODO : get camera preview by camera id

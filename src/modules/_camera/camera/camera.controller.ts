@@ -62,14 +62,17 @@ export class cameraController extends GenericController<
     if (!camera) return res.status(404).json({ error: 'Camera not found' });
 
     const rtspUrl = camera.rtspUrl;
-    const outputPath = path.join(hlsDir, `${cameraId}.m3u8`);
-    const segmentPath = path.join(hlsDir, `${cameraId}_%d.ts`);
 
     // Directory to store HLS segments
     const hlsDir = path.join(__dirname, 'public', 'hls');
     if (!fs.existsSync(hlsDir)) {
       fs.mkdirSync(hlsDir, { recursive: true });
     }
+
+    const outputPath = path.join(hlsDir, `${cameraId}.m3u8`);
+    const segmentPath = path.join(hlsDir, `${cameraId}_%d.ts`);
+
+    
 
 
     // Clear old HLS files
@@ -115,6 +118,17 @@ export class cameraController extends GenericController<
     });
   });
 
+  stopStreaming = catchAsync(async (req: Request, res: Response) => {
+    const cameraId = req.params.cameraId;
+    const ffmpeg = activeStreams[cameraId];
+    if (ffmpeg) {
+      ffmpeg.kill();
+      delete activeStreams[cameraId];
+      res.json({ message: 'Streaming stopped' });
+    } else {
+      res.status(404).json({ error: 'Stream not found' });
+    }
+  });
 
     /*************
      * 

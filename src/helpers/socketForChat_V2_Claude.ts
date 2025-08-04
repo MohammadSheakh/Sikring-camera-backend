@@ -416,7 +416,7 @@ const socketForChat_V2_Claude = (io: Server) => {
         try{
           const messages = await new MessagerService().getAllWithPagination(
             { conversationId: conversationData.conversationId, isDeleted: false }, // filters
-            { page: conversationData.page, limit: conversationData.limit ||  Number.MAX_SAFE_INTEGER }, // options
+            { page: conversationData.page, limit: conversationData.limit ||  Number.MAX_SAFE_INTEGER, sortBy: '-createdAt'  }, // options
             populateOptions, 
             '' // select
           );

@@ -1,7 +1,7 @@
-import { Map } from 'immutable';
+// import { Map } from 'immutable';
 
 // cameraId → Set of userIds currently watching
-let activeViewers: Map<string, Set<string>> = Map();
+let activeViewers: Map<string, Set<string>> = new Map();
 
 // Increment viewer count
 export const addViewer = (cameraId: string, userId: string) => {

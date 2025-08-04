@@ -21,7 +21,7 @@ app.use(Morgan.errorHandler);
 app.use(
   cors({
     origin: "*",
-    credentials: true,
+    //credentials: true,
   })
 );
 app.use(express.json());
@@ -41,6 +41,8 @@ app.use(cookieParser());
 
 // file retrieve
 app.use('/uploads', express.static(path.join(__dirname, '../uploads/')));
+
+app.use('/hls', express.static(path.join(__dirname, '..', 'public', 'hls')));
 
 // Use i18next middleware
 app.use(i18nextMiddleware.handle(i18next));

@@ -3,3 +3,4 @@ dist
 /winston
 .env
 src/config/firebaseSDK.json
+src/modules/_camera/camera/public/hls

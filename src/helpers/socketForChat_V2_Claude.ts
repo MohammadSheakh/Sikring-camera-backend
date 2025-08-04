@@ -517,6 +517,7 @@ const socketForChat_V2_Claude = (io: Server) => {
           const messageToEmit = {
             ...messageData,
             _id: newMessage._id,
+            senderId: userId, // senderId should be the userId
             name: userProfile?.name || user.name,
             image: userProfile?.profileImage,
             createdAt: newMessage.createdAt || new Date()

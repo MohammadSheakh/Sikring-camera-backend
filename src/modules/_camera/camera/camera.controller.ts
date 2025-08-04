@@ -22,6 +22,8 @@ import { cameraSite } from '../../_site/cameraSite/cameraSite.model';
 import mongoose from 'mongoose';
 import { addViewer, getViewerCount, removeViewer } from './viewerTracker.utils';
 import { hasViewers } from './viewerTracker.utils';
+import { getActiveViewers } from './viewerTracker.utils';
+import { config } from '../../../config';
 
 const { spawn, ChildProcess } = require('child_process');
 const path = require('path');
@@ -78,8 +80,6 @@ export class cameraController extends GenericController<
     const outputPath = path.join(hlsDir, `${cameraId}.m3u8`);
     const segmentPath = path.join(hlsDir, `${cameraId}_%d.ts`);
 
-    
-
 
     // Clear old HLS files
     fs.readdirSync(hlsDir)
@@ -91,25 +91,75 @@ export class cameraController extends GenericController<
     if (activeStreams[cameraId]) {
       return res.json({
         message: 'Stream already running',
-        hlsUrl: `http://localhost:${PORT}/hls/${cameraId}.m3u8`,
+        hlsUrl: `${config.backend.ip}/hls/${cameraId}.m3u8`,
       });
     }    
 
 
 
     // FFmpeg command to convert RTSP → HLS
+    // const ffmpeg = spawn('ffmpeg', [
+    //   '-rtsp_transport', 'tcp',           // More stable
+    //   '-i', rtspUrl,                      // Input RTSP
+    //   '-c:v', 'libx264',                  // Video codec
+    //   '-preset', 'ultrafast',
+    //   '-tune', 'zerolatency',
+    //   '-b:v', '800k',                     // Bitrate
+    //   '-f', 'hls',                        // Output format
+    //   '-hls_time', '4',                   // Segment duration (seconds)
+    //   '-hls_list_size', '5',              // Max number of segments
+    //   '-hls_flags', 'delete_segments',    // Auto-delete old segments
+    //   '-y',                               // Overwrite
+    //   outputPath
+    // ]);
+
+    // FFmpeg command to convert RTSP → HLS
     const ffmpeg = spawn('ffmpeg', [
-      '-rtsp_transport', 'tcp',           // More stable
-      '-i', rtspUrl,                      // Input RTSP
-      '-c:v', 'libx264',                  // Video codec
+      // '-rtsp_transport', 'tcp',           // More stable
+      // '-i', rtspUrl,                      // Input RTSP
+      // '-c:v', 'libx264',                  // Video codec
+      // '-preset', 'ultrafast',
+      // '-tune', 'zerolatency',
+      // '-b:v', '800k',                     // Bitrate
+      // '-f', 'hls',                        // Output format
+      // '-hls_time', '4',                   // Segment duration (seconds)
+      // '-hls_list_size', '5',              // Max number of segments
+      // '-hls_flags', 'delete_segments',    // Auto-delete old segments
+      // '-y',                               // Overwrite
+/////////////////////////////////////////////////////////////
+      '-rtsp_transport', 'tcp',
+      '-allowed_media_types', 'video+audio',
+      '-rtsp_flags', 'prefer_tcp',
+      '-buffer_size', '1024000',
+      '-max_delay', '500000',
+      '-i', rtspUrl,
+      
+      // Video encoding
+      '-c:v', 'libx264',
       '-preset', 'ultrafast',
       '-tune', 'zerolatency',
-      '-b:v', '800k',                     // Bitrate
-      '-f', 'hls',                        // Output format
-      '-hls_time', '4',                   // Segment duration (seconds)
-      '-hls_list_size', '5',              // Max number of segments
-      '-hls_flags', 'delete_segments',    // Auto-delete old segments
-      '-y',                               // Overwrite
+      '-profile:v', 'baseline',
+      '-level', '3.0',
+      '-b:v', '1000k',
+      '-maxrate', '1200k',
+      '-bufsize', '2000k',
+      '-g', '60', // Keyframe interval
+      '-sc_threshold', '0',
+      
+      // Audio encoding
+      '-c:a', 'aac',
+      '-b:a', '128k',
+      '-ar', '48000',
+      
+      // HLS settings
+      '-f', 'hls',
+      '-hls_time', '2',
+      '-hls_list_size', '6',
+      '-hls_flags', 'delete_segments+append_list',
+      '-hls_segment_filename', path.join(hlsDir, `${cameraId}_%d.ts`),
+      '-avoid_negative_ts', 'make_zero',
+      '-fflags', '+genpts',
+      '-y',
       outputPath
     ]);
 
@@ -131,7 +181,7 @@ export class cameraController extends GenericController<
     // Return HLS URL
     res.json({
       message: 'Streaming started',
-      hlsUrl: `http://localhost:${PORT}/hls/${cameraId}.m3u8`,
+      hlsUrl: `${config.backend.ip}/hls/${cameraId}.m3u8`,
     });
   });
 
@@ -173,7 +223,8 @@ export class cameraController extends GenericController<
     const rtspUrl = camera.rtspUrl;
 
     // Directory to store HLS segments
-    const hlsDir = path.join(__dirname, 'public', 'hls');
+    // const hlsDir = path.join(__dirname, 'public', 'hls');
+    const hlsDir = path.join(__dirname, '..', '..', 'public', 'hls');
     if (!fs.existsSync(hlsDir)) {
       fs.mkdirSync(hlsDir, { recursive: true });
     }
@@ -190,8 +241,8 @@ export class cameraController extends GenericController<
     if (activeStreams[cameraId]) {
       return res.json({
         message: 'Stream already running',
-        viewerCount: getViewerCount(cameraId)
-        //hlsUrl: `http://localhost:${PORT}/hls/${cameraId}.m3u8`,
+        viewerCount: getViewerCount(cameraId),
+        hlsUrl: `${config.backend.ip}/hls/${cameraId}.m3u8`,
       });
     }  
 
@@ -230,7 +281,7 @@ export class cameraController extends GenericController<
     // Return HLS URL
     res.json({
       message: 'Streaming started',
-      // hlsUrl: `http://localhost:${PORT}/hls/${cameraId}.m3u8`,
+      hlsUrl: `${config.backend.ip}/hls/${cameraId}.m3u8`,
       viewerCount: getViewerCount(cameraId)
     });
   });
@@ -245,17 +296,18 @@ export class cameraController extends GenericController<
     
     // ffmpeg &&
     
-    if (getViewerCount(cameraId) < 2) {
+    if (getViewerCount(cameraId) < 2 && getViewerCount(cameraId) > -1) {
       if(ffmpeg){
         ffmpeg.kill();
         delete activeStreams[cameraId];
         res.json({ message: 'Streaming stopped', viewerCount: getViewerCount(cameraId) });
       }
+      delete activeStreams[cameraId];
       res.json({ message: 'No stream found to stop', viewerCount: getViewerCount(cameraId) });
     } else {
       res.status(404).json({ error: 'Has Multiple Viewers ... ', viewerCount: getViewerCount(cameraId) });
     }
-  }); 
+  });
 
   getStreamingStatus = catchAsync(async (req: Request, res: Response) => {
     const cameraId = req.params.cameraId;

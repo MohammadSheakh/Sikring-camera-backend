@@ -52,7 +52,7 @@ app.use(require('express-status-monitor')());
 
 // live response
 app.get('/test', (req: Request, res: Response) => {
-  res.status(201).json({ message: req.t('welcome to the fertie backend') });
+  res.status(201).json({ message: req.t('welcome to the sikring camera backend - Linux') });
 });
 
 app.get('/test/:lang', (req: Request, res: Response) => {

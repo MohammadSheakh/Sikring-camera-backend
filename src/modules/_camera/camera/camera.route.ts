@@ -65,7 +65,7 @@ router.route('/create').post(
   // ],
   auth('admin'),
   validateRequest(validation.createCameraValidationSchema),
-  controller.createV2//create
+  controller.create //createV2//create
 );
 
 router.route('/delete/:id').delete(
@@ -86,12 +86,17 @@ router.route('/softDelete/:id').put(
 
 router.route('/stream/:cameraId/start').get(
   auth('common'),
-  controller.startStreaming
+  controller.startStreamingV2
 )
 
 router.route('/stream/:cameraId/stop').get(
   auth('common'),
-  controller.stopStreaming
+  controller.stopStreamingV2
+)
+
+router.route('/stream/:cameraId/get').get(
+  auth('common'),
+  controller.getStreamingStatus
 )
 
 

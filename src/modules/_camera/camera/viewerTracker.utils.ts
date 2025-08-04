@@ -7,7 +7,7 @@ let activeViewers: Map<string, Set<string>> = new Map();
 export const addViewer = (cameraId: string, userId: string) => {
   const viewers = activeViewers.get(cameraId) || new Set<string>();
   viewers.add(userId);
-  activeViewers = activeViewers.set(cameraId, viewers);
+  activeViewers.set(cameraId, viewers);
   console.log(`Viewer added: ${userId} → Camera ${cameraId}`, `Total: ${viewers.size}`);
 };
 
@@ -17,9 +17,9 @@ export const removeViewer = (cameraId: string, userId: string) => {
   if (viewers) {
     viewers.delete(userId);
     if (viewers.size === 0) {
-      activeViewers = activeViewers.remove(cameraId);
+      activeViewers.delete(cameraId);
     } else {
-      activeViewers = activeViewers.set(cameraId, viewers);
+      activeViewers.set(cameraId, viewers);
     }
   }
   console.log(`Viewer removed: ${userId} ← Camera ${cameraId}`);

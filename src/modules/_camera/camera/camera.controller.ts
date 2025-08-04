@@ -21,6 +21,7 @@ import { IuserSite } from '../../_site/userSite/userSite.interface';
 import { cameraSite } from '../../_site/cameraSite/cameraSite.model';
 import mongoose from 'mongoose';
 import { addViewer, getViewerCount, removeViewer } from './viewerTracker.utils';
+import { hasViewers } from './viewerTracker.utils';
 
 const { spawn, ChildProcess } = require('child_process');
 const path = require('path');
@@ -189,7 +190,8 @@ export class cameraController extends GenericController<
     if (activeStreams[cameraId]) {
       return res.json({
         message: 'Stream already running',
-        hlsUrl: `http://localhost:${PORT}/hls/${cameraId}.m3u8`,
+        viewerCount: getViewerCount(cameraId)
+        //hlsUrl: `http://localhost:${PORT}/hls/${cameraId}.m3u8`,
       });
     }  
 
@@ -228,7 +230,7 @@ export class cameraController extends GenericController<
     // Return HLS URL
     res.json({
       message: 'Streaming started',
-      hlsUrl: `http://localhost:${PORT}/hls/${cameraId}.m3u8`,
+      // hlsUrl: `http://localhost:${PORT}/hls/${cameraId}.m3u8`,
       viewerCount: getViewerCount(cameraId)
     });
   });
@@ -239,13 +241,35 @@ export class cameraController extends GenericController<
 
     removeViewer(cameraId, req.user.userId.toString());
 
-    if (ffmpeg) {
-      ffmpeg.kill();
-      delete activeStreams[cameraId];
-      res.json({ message: 'Streaming stopped', viewerCount: getViewerCount(cameraId) });
+    console.log('🚧', getViewerCount(cameraId), "🚧", typeof getViewerCount(cameraId)); 
+    
+    // ffmpeg &&
+    
+    if (getViewerCount(cameraId) < 2) {
+      if(ffmpeg){
+        ffmpeg.kill();
+        delete activeStreams[cameraId];
+        res.json({ message: 'Streaming stopped', viewerCount: getViewerCount(cameraId) });
+      }
+      res.json({ message: 'No stream found to stop', viewerCount: getViewerCount(cameraId) });
     } else {
-      res.status(404).json({ error: 'Stream not found' });
+      res.status(404).json({ error: 'Has Multiple Viewers ... ', viewerCount: getViewerCount(cameraId) });
     }
+  }); 
+
+  getStreamingStatus = catchAsync(async (req: Request, res: Response) => {
+    const cameraId = req.params.cameraId;
+    const ffmpeg = activeStreams[cameraId];
+    const isStreaming = !!ffmpeg;
+    const viewerCount = getViewerCount(cameraId);
+    const activeViewersList = hasViewers(cameraId) ? getActiveViewers(cameraId) : [];
+
+    res.json({
+      isStreaming,
+      viewerCount,
+      activeViewers: activeViewersList,
+      message: isStreaming ? 'Camera is currently streaming' : 'Camera is not streaming',
+    });
   });
 
     /*************

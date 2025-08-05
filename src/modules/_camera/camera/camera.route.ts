@@ -86,7 +86,7 @@ router.route('/softDelete/:id').put(
 
 router.route('/stream/:cameraId/start').get(
   auth('common'),
-  controller.startStreaming
+  controller.startStreamingV222222
 )
 
 router.route('/stream/:cameraId/stop').get(

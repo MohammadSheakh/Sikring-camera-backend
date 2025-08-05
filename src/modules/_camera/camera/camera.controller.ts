@@ -215,7 +215,9 @@ export class cameraController extends GenericController<
   if (activeStreams[cameraId]) {
     return res.json({
       message: 'Stream already running',
-      hlsUrl: `${config.backend.ip}/hls/${cameraId}.m3u8`,
+      hlsUrl: `${config.backend.shobHoyUrl}/hls/${cameraId}.m3u8`, 
+      // ${config.backend.shobHoyUrl} //  ${config.backend.ip}
+      status: 'success'
     });
   }
 
@@ -248,6 +250,7 @@ export class cameraController extends GenericController<
 
   // FFmpeg command to convert RTSP → HLS
   const ffmpeg = spawn('ffmpeg', [
+    
     // Input settings
     '-rtsp_transport', 'tcp',
     '-allowed_media_types', 'video+audio',
@@ -331,7 +334,7 @@ export class cameraController extends GenericController<
       // Return HLS URL
       res.json({
         message: 'Streaming started',
-        hlsUrl: `${config.backend.ip}/hls/${cameraId}.m3u8`,
+        hlsUrl: `${config.backend.shobHoyUrl}/hls/${cameraId}.m3u8`, // shobHoyUrl // config.backend.ip
         status: 'success'
       });
     } else {
@@ -343,6 +346,95 @@ export class cameraController extends GenericController<
   }, 2000);
 });
 
+
+startStreamingV222222 = catchAsync(async (req: Request, res: Response) => {
+  const cameraId = req.params.cameraId;
+  const camera = await this.cameraService.getById(cameraId);
+  
+  if (!camera) {
+    return sendResponse(res, {
+      code: StatusCodes.NOT_FOUND,
+      message: 'Camera not found',
+      success: false,
+    });
+  }
+
+  // Check if stream is already running
+  if (activeStreams[cameraId]) {
+    return res.json({
+      message: 'Stream already running',
+      hlsUrl: `${config.backend.shobHoyUrl}/hls/${cameraId}.m3u8`,
+      status: 'success'
+    });
+  }
+
+  const rtspUrl = camera.rtspUrl;
+  const hlsDir = path.join(__dirname, '..', '..', 'public', 'hls');
+  
+  if (!fs.existsSync(hlsDir)) {
+    fs.mkdirSync(hlsDir, { recursive: true });
+  }
+
+  const outputPath = path.join(hlsDir, `${cameraId}.m3u8`);
+
+  // Clear old files
+  try {
+    fs.readdirSync(hlsDir)
+      .filter(f => f.startsWith(`${cameraId}_`) || f === `${cameraId}.m3u8`)
+      .forEach(f => fs.unlinkSync(path.join(hlsDir, f)));
+  } catch (err) {}
+
+  // Fixed FFmpeg command
+  const ffmpeg = spawn('ffmpeg', [
+  
+    '-rtsp_transport', 'tcp',
+    '-i', rtspUrl,
+    '-c:v', 'libx264',
+    '-preset', 'veryfast',
+    '-tune', 'zerolatency',
+    '-g', '30',
+    '-c:a', 'aac',
+    '-f', 'hls',
+    '-hls_time', '4',
+    '-hls_list_size', '0', // Retain 15 segments (60 seconds of footage)
+    '-hls_flags', 'append_list', // Key fix: Avoid deleting old segments prematurely
+    //////////// +omit_endlist
+    '-hls_segment_filename', path.join(hlsDir, `${cameraId}_%d.ts`),
+    '-y',
+
+    outputPath
+  ]);
+
+  ffmpeg.stderr.on('data', (data) => {
+    console.log(`FFmpeg [${cameraId}]: ${data}`);
+  });
+
+  setInterval(() => {
+  console.log(`➿ [${cameraId}] Stream is running:`, !!activeStreams[cameraId]);
+  }, 5000);
+
+
+  ffmpeg.on('close', (code) => {
+    console.log(`FFmpeg closed with code ${code}`);
+    delete activeStreams[cameraId];
+  });
+
+  activeStreams[cameraId] = ffmpeg;
+
+  setTimeout(() => {
+    if (activeStreams[cameraId] && !activeStreams[cameraId].killed) {
+      res.json({
+        message: 'Streaming started',
+        hlsUrl: `${config.backend.shobHoyUrl}/hls/${cameraId}.m3u8`,
+        status: 'success'
+      });
+    } else {
+      res.status(500).json({
+        error: 'Failed to start streaming'
+      });
+    }
+  }, 3000);
+});
 
   stopStreamingV2 = catchAsync(async (req: Request, res: Response) => {
     const cameraId = req.params.cameraId;

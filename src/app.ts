@@ -34,7 +34,11 @@ if (!fs.existsSync(hlsDir)) {
 }
 
 // Serve static HLS files
-app.use('/hls', express.static(hlsDir));
+app.use('/hls', express.static(hlsDir,{
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'no-cache');
+  }
+}));
 
 // Use cookie-parser to parse cookies
 app.use(cookieParser());

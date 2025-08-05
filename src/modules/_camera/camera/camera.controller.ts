@@ -46,159 +46,7 @@ export class cameraController extends GenericController<
     super(new cameraService(), 'camera');
   }
 
-  /*******
-   * 
-   * As per sayed vai's concern .. Start Steaming a camera's RTSP as HLS
-   * 
-   * ********* */
-//   startStreaming = catchAsync(async (req: Request, res: Response) => {
-//     const cameraId = req.params.cameraId;
-//     const camera = await this.cameraService.getById(cameraId);
-//     if (!camera) {
-//       return sendResponse(res, {
-//         code: StatusCodes.NOT_FOUND,
-//         message: 'Camera not found',
-//         success: false,
-//       });
-//     }
-//     // Assuming you have a method to start streaming
-
-
-//     // In real app: fetch camera from DB using cameraId
-//     // Example mock data:
-    
-//     if (!camera) return res.status(404).json({ error: 'Camera not found' });
-
-//     const rtspUrl = camera.rtspUrl;
-
-//     // Directory to store HLS segments
-//     const hlsDir = path.join(__dirname, 'public', 'hls');
-//     if (!fs.existsSync(hlsDir)) {
-//       fs.mkdirSync(hlsDir, { recursive: true });
-//     }
-
-//     const outputPath = path.join(hlsDir, `${cameraId}.m3u8`);
-//     const segmentPath = path.join(hlsDir, `${cameraId}_%d.ts`);
-
-
-//     // Clear old HLS files
-//     fs.readdirSync(hlsDir)
-//       .filter(f => f.startsWith(`${cameraId}_`) || f === `${cameraId}.m3u8`)
-//       .forEach(f => fs.unlinkSync(path.join(hlsDir, f)));
-
-
-//     // Before spawning FFmpeg
-//     if (activeStreams[cameraId]) {
-//       return res.json({
-//         message: 'Stream already running',
-//         hlsUrl: `${config.backend.ip}/hls/${cameraId}.m3u8`,
-//       });
-//     }    
-
-
-
-//     // FFmpeg command to convert RTSP → HLS
-//     // const ffmpeg = spawn('ffmpeg', [
-//     //   '-rtsp_transport', 'tcp',           // More stable
-//     //   '-i', rtspUrl,                      // Input RTSP
-//     //   '-c:v', 'libx264',                  // Video codec
-//     //   '-preset', 'ultrafast',
-//     //   '-tune', 'zerolatency',
-//     //   '-b:v', '800k',                     // Bitrate
-//     //   '-f', 'hls',                        // Output format
-//     //   '-hls_time', '4',                   // Segment duration (seconds)
-//     //   '-hls_list_size', '5',              // Max number of segments
-//     //   '-hls_flags', 'delete_segments',    // Auto-delete old segments
-//     //   '-y',                               // Overwrite
-//     //   outputPath
-//     // ]);
-
-//     // FFmpeg command to convert RTSP → HLS
-//     const ffmpeg = spawn('ffmpeg', [
-//       // '-rtsp_transport', 'tcp',           // More stable
-//       // '-i', rtspUrl,                      // Input RTSP
-//       // '-c:v', 'libx264',                  // Video codec
-//       // '-preset', 'ultrafast',
-//       // '-tune', 'zerolatency',
-//       // '-b:v', '800k',                     // Bitrate
-//       // '-f', 'hls',                        // Output format
-//       // '-hls_time', '4',                   // Segment duration (seconds)
-//       // '-hls_list_size', '5',              // Max number of segments
-//       // '-hls_flags', 'delete_segments',    // Auto-delete old segments
-//       // '-y',                               // Overwrite
-// /////////////////////////////////////////////////////////////
-//       '-rtsp_transport', 'tcp',
-//       '-allowed_media_types', 'video+audio',
-//       '-rtsp_flags', 'prefer_tcp',
-//       '-buffer_size', '1024000',
-//       '-max_delay', '500000',
-//       '-i', rtspUrl,
-      
-//       // Video encoding
-//       '-c:v', 'libx264',
-//       '-preset', 'ultrafast',
-//       '-tune', 'zerolatency',
-//       '-profile:v', 'baseline',
-//       '-level', '3.0',
-//       '-b:v', '1000k',
-//       '-maxrate', '1200k',
-//       '-bufsize', '2000k',
-//       '-g', '60', // Keyframe interval
-//       '-sc_threshold', '0',
-      
-//       // Audio encoding
-//       '-c:a', 'aac',
-//       '-b:a', '128k',
-//       '-ar', '48000',
-      
-//       // HLS settings
-//       '-f', 'hls',
-//       '-hls_time', '2',
-//       '-hls_list_size', '6',
-//       '-hls_flags', 'delete_segments+append_list',
-//       '-hls_segment_filename', path.join(hlsDir, `${cameraId}_%d.ts`),
-//       '-avoid_negative_ts', 'make_zero',
-//       '-fflags', '+genpts',
-//       '-y',
-//       outputPath
-//     ]);
-
-//     ffmpeg.stdout.on('data', (data) => {
-//       console.log(`FFmpeg stdout: ${data}`);
-//     });
-
-//     ffmpeg.stderr.on('data', (data) => {
-//       console.error(`FFmpeg stderr: ${data}`);
-//     });
-
-//     ffmpeg.on('close', (code) => {
-//       console.log(`FFmpeg exited with code ${code}`);
-//     });
-
-//     // Store ffmpeg process if you want to stop it later
-//     activeStreams[cameraId] = ffmpeg;
-
-//     // Return HLS URL
-//     res.json({
-//       message: 'Streaming started',
-//       hlsUrl: `${config.backend.ip}/hls/${cameraId}.m3u8`,
-//     });
-//   });
-
-//   stopStreaming = catchAsync(async (req: Request, res: Response) => {
-//     const cameraId = req.params.cameraId;
-//     const ffmpeg = activeStreams[cameraId];
-//     if (ffmpeg) {
-//       ffmpeg.kill();
-//       delete activeStreams[cameraId];
-//       res.json({ message: 'Streaming stopped' });
-//     } else {
-//       res.status(404).json({ error: 'Stream not found' });
-//     }
-//   });
-
-
-  
+/***********************************  START START  
   startStreaming = catchAsync(async (req: Request, res: Response) => {
   const cameraId = req.params.cameraId;
   const camera = await this.cameraService.getById(cameraId);
@@ -346,7 +194,9 @@ export class cameraController extends GenericController<
   }, 2000);
 });
 
+************************************** START END  ***/
 
+/***********************************  startStreamingV222222 START  
 startStreamingV222222 = catchAsync(async (req: Request, res: Response) => {
   const cameraId = req.params.cameraId;
   const camera = await this.cameraService.getById(cameraId);
@@ -435,8 +285,13 @@ startStreamingV222222 = catchAsync(async (req: Request, res: Response) => {
     }
   }, 3000);
 });
+************************************** START END  ***/
 
-
+/*********
+ * 
+ * With The help of bipul vai .. this is working fine ..
+ * 
+ * ********* */
 startStreamingBipulVai = catchAsync(async (req: Request, res: Response) => {
   const cameraId = req.params.cameraId;
   const camera = await this.cameraService.getById(cameraId);
@@ -449,14 +304,18 @@ startStreamingBipulVai = catchAsync(async (req: Request, res: Response) => {
     });
   }
 
-  // Check if stream is already running
-  // if (activeStreams[cameraId]) {
-  //   return res.json({
-  //     message: 'Stream already running',
-  //     hlsUrl: `${config.backend.shobHoyUrl}/hls/${cameraId}.m3u8`,
-  //     status: 'success'
-  //   });
-  // }
+  addViewer(cameraId, req.user.userId.toString());
+
+  // Check if stream is already running 🟢
+  if (activeStreams[cameraId]) {
+
+    return res.json({
+      message: 'Stream already running',
+      hlsUrl: `${config.backend.shobHoyUrl}/hls/${cameraId}.m3u8`,
+      viewerCount: getViewerCount(cameraId),
+      status: 'success'
+    });
+  }
 
   const rtspUrl = camera.rtspUrl;
 
@@ -503,6 +362,11 @@ startStreamingBipulVai = catchAsync(async (req: Request, res: Response) => {
     outputPath
   ]);
 
+
+  // Store the ffmpeg process with camera ID as key
+   activeStreams[cameraId] = ffmpeg; // 🟢
+   addViewer(cameraId, req.user.userId.toString());
+
   ffmpeg.stdout.on('data', (data) => {
     console.log(`FFmpeg stdout [${cameraId}]: 🟢🟢🟢 ${data}`);
   });
@@ -527,11 +391,9 @@ startStreamingBipulVai = catchAsync(async (req: Request, res: Response) => {
   res.json({
     message: 'Streaming started',
     hlsUrl: `${config.backend.shobHoyUrl}/hls/${cameraId}.m3u8`,
+    viewerCount: getViewerCount(cameraId),
     status: 'success'
-  });
-
-  // Store the ffmpeg process with camera ID as key
-  // activeStreams[cameraId] = ffmpeg;
+  });  
 });
 
 
@@ -544,8 +406,10 @@ startStreamingBipulVai = catchAsync(async (req: Request, res: Response) => {
     console.log('🚧', getViewerCount(cameraId), "🚧", typeof getViewerCount(cameraId)); 
     
     // ffmpeg &&
+
+    console.log("😵😵💎💎", getViewerCount(cameraId))
     
-    if (getViewerCount(cameraId) < 2 && getViewerCount(cameraId) > -1) {
+    if (getViewerCount(cameraId) < 1) {
       if(ffmpeg){
         ffmpeg.kill();
         delete activeStreams[cameraId];
@@ -553,7 +417,10 @@ startStreamingBipulVai = catchAsync(async (req: Request, res: Response) => {
       }
       delete activeStreams[cameraId];
       res.json({ message: 'No stream found to stop', viewerCount: getViewerCount(cameraId) });
-    } else {
+    }else if ( getViewerCount(cameraId) > 1 ) {
+      removeViewer(cameraId, req.user.userId.toString());
+      res.json({ message: 'One Viewer Removed', viewerCount: getViewerCount(cameraId) });
+    }else {
       res.status(404).json({ error: 'Has Multiple Viewers ... ', viewerCount: getViewerCount(cameraId) });
     }
   });

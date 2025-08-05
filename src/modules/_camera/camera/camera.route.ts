@@ -91,7 +91,7 @@ router.route('/stream/:cameraId/start').get(
 
 router.route('/stream/:cameraId/stop').get(
   auth('common'),
-  controller.stopStreamingV2
+  controller.stopStreamingV3
 )
 
 router.route('/stream/:cameraId/get').get(

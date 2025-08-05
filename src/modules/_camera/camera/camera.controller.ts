@@ -396,7 +396,12 @@ startStreamingBipulVai = catchAsync(async (req: Request, res: Response) => {
   });  
 });
 
-
+  /************
+   * This code is not updated ... 
+   * 
+   * Updated V3 is found .. 
+   * 
+   * ************* */
   stopStreamingV2 = catchAsync(async (req: Request, res: Response) => {
     const cameraId = req.params.cameraId;
     const ffmpeg = activeStreams[cameraId];
@@ -406,6 +411,15 @@ startStreamingBipulVai = catchAsync(async (req: Request, res: Response) => {
     console.log('🚧', getViewerCount(cameraId), "🚧", typeof getViewerCount(cameraId)); 
     
     // ffmpeg &&
+    /**************
+     * 
+     * 
+     *  if one viewer is found .. and he is request to stop the stream .. then stop that stream .. 
+     * 
+     * if more viewers are found .. then remove that viewer from the list .. but do not stop the stream ..
+     * 
+     * 
+     * ******************** */
 
     console.log("😵😵💎💎", getViewerCount(cameraId))
     
@@ -424,6 +438,31 @@ startStreamingBipulVai = catchAsync(async (req: Request, res: Response) => {
       res.status(404).json({ error: 'Has Multiple Viewers ... ', viewerCount: getViewerCount(cameraId) });
     }
   });
+
+
+  stopStreamingV3 = catchAsync(async (req: Request, res: Response) => {
+  const cameraId = req.params.cameraId;
+
+  // Remove the viewer first
+  removeViewer(cameraId, req.user.userId.toString());
+
+  const viewerCount = getViewerCount(cameraId);
+  console.log('🚧 Viewer Count:', viewerCount, 'Type:', typeof viewerCount);
+
+  const ffmpeg = activeStreams[cameraId];
+
+  if (viewerCount < 1) {
+    // No viewers left → stop the stream
+    if (ffmpeg) {
+      ffmpeg.kill();
+      delete activeStreams[cameraId];
+    }
+    return res.json({ message: 'Streaming stopped', viewerCount: 0 });
+  } else {
+    // One or more viewers still watching → just remove this one
+    return res.json({ message: 'Viewer removed', viewerCount });
+  }
+});
 
   getStreamingStatus = catchAsync(async (req: Request, res: Response) => {
     const cameraId = req.params.cameraId;

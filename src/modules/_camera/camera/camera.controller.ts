@@ -436,6 +436,105 @@ startStreamingV222222 = catchAsync(async (req: Request, res: Response) => {
   }, 3000);
 });
 
+
+startStreamingBipulVai = catchAsync(async (req: Request, res: Response) => {
+  const cameraId = req.params.cameraId;
+  const camera = await this.cameraService.getById(cameraId);
+  
+  if (!camera) {
+    return sendResponse(res, {
+      code: StatusCodes.NOT_FOUND,
+      message: 'Camera not found',
+      success: false,
+    });
+  }
+
+  // Check if stream is already running
+  // if (activeStreams[cameraId]) {
+  //   return res.json({
+  //     message: 'Stream already running',
+  //     hlsUrl: `${config.backend.shobHoyUrl}/hls/${cameraId}.m3u8`,
+  //     status: 'success'
+  //   });
+  // }
+
+  const rtspUrl = camera.rtspUrl;
+
+  // Create HLS directory with proper path
+  const hlsDir = path.join(__dirname, '..', '..', '..', '..', 'public', 'hls');
+  if (!fs.existsSync(hlsDir)) {
+    fs.mkdirSync(hlsDir, { recursive: true });
+  }
+
+  // Create camera-specific output path
+  const outputPath = path.join(hlsDir, `${cameraId}.m3u8`);
+
+  const ffmpeg = spawn('ffmpeg', [
+    // Input options to better handle problematic streams
+    '-analyzeduration', '10000000', // Increase analyze duration
+    '-probesize', '10000000', // Increase probe size
+    '-rtsp_transport', 'tcp', // Use TCP for more reliable RTSP
+    '-i', rtspUrl,
+    
+    // Video encoding options
+    '-c:v', 'libx264',
+    '-preset', 'ultrafast',
+    '-tune', 'zerolatency',
+    '-r', '25', // Set frame rate
+    '-s', '1280x720', // Set resolution (adjust as needed)
+    '-pix_fmt', 'yuv420p', // Set pixel format
+    
+    // Audio encoding options
+    '-c:a', 'aac',
+    '-ar', '48000', // Set audio sample rate
+    '-ac', '2', // Set audio channels
+    
+    // HLS options
+    '-hls_time', '2',
+    '-hls_list_size', '3',
+    '-hls_flags', 'delete_segments',
+    '-hls_segment_filename', path.join(hlsDir, `${cameraId}_%03d.ts`),
+    
+    // Force format and handle errors
+    '-f', 'hls',
+    '-avoid_negative_ts', 'make_zero',
+    '-fflags', '+genpts',
+    
+    outputPath
+  ]);
+
+  ffmpeg.stdout.on('data', (data) => {
+    console.log(`FFmpeg stdout [${cameraId}]: 🟢🟢🟢 ${data}`);
+  });
+
+  ffmpeg.stderr.on('data', (data) => {
+    console.log(`FFmpeg stderr [${cameraId}]: 🔴🔴🔴 ${data}`);
+  });
+
+  ffmpeg.on('close', (code) => {
+    console.log(`FFmpeg [${cameraId}] 🟢🟢🟢 process exited with code ${code}`);
+    // Clean up activeStreams if you're using it
+    // delete activeStreams[cameraId];
+    // Restart FFmpeg if it crashes
+    // setTimeout(() => startFFmpeg(cameraId), 5000);
+  });
+
+  ffmpeg.on('error', (err) => {
+    console.error(`FFmpeg [${cameraId}] error: 🔴🔴🔴`, err);
+    // delete activeStreams[cameraId];
+  });
+
+  res.json({
+    message: 'Streaming started',
+    hlsUrl: `${config.backend.shobHoyUrl}/hls/${cameraId}.m3u8`,
+    status: 'success'
+  });
+
+  // Store the ffmpeg process with camera ID as key
+  // activeStreams[cameraId] = ffmpeg;
+});
+
+
   stopStreamingV2 = catchAsync(async (req: Request, res: Response) => {
     const cameraId = req.params.cameraId;
     const ffmpeg = activeStreams[cameraId];

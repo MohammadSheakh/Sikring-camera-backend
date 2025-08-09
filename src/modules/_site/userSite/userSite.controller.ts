@@ -196,7 +196,11 @@ export class userSiteController extends GenericController<
     });
   });
 
-
+  /********
+   * 
+   * This is Ok
+   * 
+   * **** */
   getAllWithPaginationForManager = catchAsync(async (req: Request, res: Response) => {
     //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
@@ -217,6 +221,47 @@ export class userSiteController extends GenericController<
           select: 'attachment'
         }
       }
+    ];
+
+    const dontWantToInclude = '-role -workHours -isDeleted -updatedAt -createdAt -__v';
+  
+    let userInfo;
+
+    const result = await this.userSiteService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
+   
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `All ${this.modelName} with pagination`,
+      success: true,
+    });
+  });
+
+   /********
+   * 
+   * This is also Ok
+   * 
+   * **** */
+  getAllWithPaginationForManagerV2 = catchAsync(async (req: Request, res: Response) => {
+    //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
+    const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
+    const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+
+    filters.isDeleted = false; // only get non-deleted users
+    
+    const populateOptions: (string | {path: string, select: string}[]) = [
+      {
+        path: 'personId',
+        select: 'name role' // name 
+      },
+      // {
+      //   path: 'siteId',
+      //   select: 'name createdAt type attachments',
+      //   populate: {
+      //     path: 'attachments',
+      //     select: 'attachment'
+      //   }
+      // }
     ];
 
     const dontWantToInclude = '-role -workHours -isDeleted -updatedAt -createdAt -__v';

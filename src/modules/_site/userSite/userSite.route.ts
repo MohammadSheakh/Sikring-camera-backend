@@ -101,12 +101,23 @@ router.route('/paginate/for-customer/siteId').get(
 /***********
  * 
  * Web (Manager) : Site Management
- * 
+ * This is Ok
  * *********** */ 
 router.route('/paginate/manager/siteId').get(
   auth('common'),
   validateFiltersForQuery(optionValidationChecking(['_id', 'role', 'siteId', ...paginationOptions])),
   controller.getAllWithPaginationForManager
+);
+
+/********
+ * 
+ * This is also Ok
+ * 
+ * **** */
+router.route('/paginate/manager/siteId/v2').get(
+  auth('common'),
+  validateFiltersForQuery(optionValidationChecking(['_id', 'role', 'siteId', ...paginationOptions])),
+  controller.getAllWithPaginationForManagerV2
 );
 
 /***********

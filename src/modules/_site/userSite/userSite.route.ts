@@ -111,7 +111,7 @@ router.route('/paginate/manager/siteId').get(
 
 /********
  * 
- * This is also Ok
+ * This is also Ok // Role must "customer" send korte hobe 
  * 
  * **** */
 router.route('/paginate/manager/siteId/v2').get(

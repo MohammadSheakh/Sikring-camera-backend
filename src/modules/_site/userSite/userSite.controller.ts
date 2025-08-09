@@ -252,16 +252,16 @@ export class userSiteController extends GenericController<
     const populateOptions: (string | {path: string, select: string}[]) = [
       {
         path: 'personId',
-        select: 'name role' // name 
+        select: 'name role address email' // name 
       },
-      // {
-      //   path: 'siteId',
-      //   select: 'name createdAt type attachments',
-      //   populate: {
-      //     path: 'attachments',
-      //     select: 'attachment'
-      //   }
-      // }
+      {
+        path: 'siteId',
+        select: 'name',
+        // populate: {
+        //   path: 'attachments',
+        //   select: 'attachment'
+        // }
+      }
     ];
 
     const dontWantToInclude = '-role -workHours -isDeleted -updatedAt -createdAt -__v';

@@ -331,12 +331,18 @@ export class userSiteController extends GenericController<
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
 
-    filters.isDeleted = false; // only get non-deleted users
+     filters.personId = req.user.userId; // get only the sites related to the logged in user
+    filters.role = 'manager';
+     filters.isDeleted = false; // only get non-deleted users
 
     const populateOptions: (string | {path: string, select: string}[]) = [
       {
         path: 'siteId',
-        select: 'name address status'
+        select: 'name address status assignedUserId assignedManagerId phoneNumber',
+        populate: {
+          path: 'assignedUserId assignedManagerId',
+          select: 'name',
+        }
       }
     ];
 
@@ -350,13 +356,56 @@ export class userSiteController extends GenericController<
 
     const result = await this.userSiteService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
 
-    if(userInfo){
-      result.userInfo  = userInfo;
+    /******************
+    {
+        "personId": "685a2106cb3b476c53324c10",
+        "siteId": {
+            "name": "Next Level Site update",
+            "address": "Bellmore, Town of Hempstead, Nassau County, New York, 11710, United States",
+            "status": "active",
+            "_siteId": "6868ece6a6f973556b2aea6d"
+        },
+        "_userSiteId": "6868ece6a6f973556b2aea71"
     }
+    ************ */
+
+    /*************** expected response.. 
+     {
+        "siteId": "6881f58fa1eafa56f884f6f9",
+        "siteName": "Next Level Site",
+        "address": "West USA",
+        "phoneNumber": "534545633434",
+        "status": "active",
+        "userName": "user1",
+        "managerName": "man2"
+     }
+     ************* */
+
+    // if(userInfo){
+    //   result.userInfo  = userInfo;
+    // }
+
+     console.log('result::', result);
+
+     const transformedResult = {
+      ...result, // Keep pagination metadata if any
+      data: result.results.map(item => ({
+        siteId: item.siteId.id,
+        siteName: item.siteId.name,
+        address: item.siteId.address,
+        phoneNumber: item.siteId.phoneNumber || "", // Add if available in siteId object
+        status: item.siteId.status,
+        // userName: item.personId.assignedUserId.name || "", // Add if available in the item or populate from personId
+        // managerName: item.personId.assignedManagerId.name || "", // Add if available in the item or needs separate population
+        userSiteId: item._userSiteId // Keep internal ID if needed
+      }))
+    };
+
+    
 
     sendResponse(res, {
       code: StatusCodes.OK,
-      data: result,
+      data: transformedResult, // result, // transformedResult , // result,
       message: `All ${this.modelName} with pagination`,
       success: true,
     });
@@ -564,7 +613,7 @@ export class userSiteController extends GenericController<
       'personId siteId' // Select only the 'personId' field
     ).populate({
       path: 'personId',
-      select: 'name role canMessage',
+      select: 'name role canMessage profileImage',
     });
 
 

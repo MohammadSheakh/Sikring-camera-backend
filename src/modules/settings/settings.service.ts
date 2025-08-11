@@ -73,6 +73,8 @@ export class SettingsService extends GenericService<typeof Settings> {
         `Details not found for type: ${type}..`
       );
     }
+
+    return setting[0];
   }
   
   async getDetails() {

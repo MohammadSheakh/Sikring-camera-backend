@@ -241,6 +241,8 @@ export class userSiteController extends GenericController<
    * 
    * Manager (Dashboard)  This is also Ok
    * 
+   * Note : We need to ensure that .. one manager can have one site or multiple site ?
+   * 
    * **** */
   getAllWithPaginationForManagerV2 = catchAsync(async (req: Request, res: Response) => {
     //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
@@ -248,7 +250,44 @@ export class userSiteController extends GenericController<
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
 
     filters.isDeleted = false; // only get non-deleted users
+
     
+
+    // Get all sites for this manager
+    const siteForThisManager = await userSite.find({
+        personId: req.user.userId,
+        role: 'manager',
+        isDeleted: false
+    }).select('siteId personId');
+    
+    console.log('siteForThisManager:: 🧪', siteForThisManager);  
+
+    // Extract siteIds from the manager's sites
+    const siteIds = siteForThisManager.map(site => site.siteId);
+    
+    console.log('Manager\'s siteIds:: 🧪', siteIds);
+
+    // If manager has no sites, return empty result
+    if (siteIds.length === 0) {
+        return sendResponse(res, {
+            code: StatusCodes.OK,
+            data: {
+                results: [],
+                page: 1,
+                limit: 10,
+                totalPages: 0,
+                totalResults: 0
+            },
+            message: `No sites found for this manager`,
+            success: true,
+        });
+    }
+
+    // Update filters to get customers for manager's sites
+    filters.siteId = { $in: siteIds }; // Get customers from all manager's sites
+    filters.role = 'customer'; // Only get customers
+
+
     const populateOptions: (string | {path: string, select: string}[]) = [
       {
         path: 'personId',

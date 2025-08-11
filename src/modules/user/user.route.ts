@@ -99,7 +99,7 @@ router
 //[🚧][🧑‍💻✅][🧪🆗] // query :: userId  SC
 router.route('/edit-user/:userId')
   .put(
-    auth('admin'),
+    auth('admin', 'manager'),
     [
     upload.fields([
       { name: 'attachments', maxCount: 1 }, // Allow up to 1 cover photos

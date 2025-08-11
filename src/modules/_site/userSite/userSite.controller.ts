@@ -315,7 +315,7 @@ export class userSiteController extends GenericController<
       message: `${this.modelName} soft deleted successfully`,
     });
   });
-}
+
 
 
 

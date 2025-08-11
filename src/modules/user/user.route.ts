@@ -73,7 +73,7 @@ router.post(
  * 
  * ********************* */
 router.post('/delete/:collectionName',
-  auth('admin'),
+  // auth('admin'),
   UserController.deleteAllDataFromCollection
 )
 

@@ -436,22 +436,23 @@ export class ConversationController extends GenericController<typeof Conversatio
           lastMessage: messageResult._id
         });
 
-
+        participants.map(participantId => {
           // Emit to participant's personal room  .to(participantId)
-        io.emit(`conversation-list-updated::${participant}`, {
-          creatorId : result?.creatorId,
-          type: result?.type,
-          siteId: result?.siteId,
-          canConversate: result?.canConversate,
-          lastMessage: {
-            _id: messageResult._id,
-            text: message,
-            senderId: req.user.userId,
-            conversationId: result._id,
-          },
-          isDeleted: false,
-          createdAt: messageResult.createdAt,
-          _conversationId: result?._id,
+          io.emit(`conversation-list-updated::${participantId}`, {
+            creatorId : result?.creatorId,
+            type: result?.type,
+            siteId: result?.siteId,
+            canConversate: result?.canConversate,
+            lastMessage: {
+              _id: messageResult._id,
+              text: message,
+              senderId: req.user.userId,
+              conversationId: result._id,
+            },
+            isDeleted: false,
+            createdAt: messageResult.createdAt,
+            _conversationId: result?._id,
+          });
         });
       }
 

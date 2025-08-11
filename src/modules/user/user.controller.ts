@@ -375,9 +375,9 @@ const deleteAllDataFromCollection = async (req: Request, res: Response) => {
 
     // Validate collectionName - only allow known collections for safety
     const allowedCollections = [
-      'auditLog',
-      // 'Users',
-      // 'Message',
+      'Message',
+      'ConversationParticipents',
+      'Conversation',
       // 'Notification',
       // 'LabTestLog',
     ]; // example allowed list

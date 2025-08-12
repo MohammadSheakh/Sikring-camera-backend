@@ -6,99 +6,144 @@ dotenv.config();
 
 // Sample data for default users
 const usersData = [
+
+  ////////// Super Admin
   {
-    first_name: 'Super',
-    last_name: 'Admin',
-    email: 'superadmin@gmail.com',
-    password: '$2a$08$cUQ3uMdbQjlyDF/dgn5mNuEt9fLJZqq8TaT9aKabrFuG5wND3/mPO', // Hashed password
-    phone: '1234567890',
-    branch: 'Engineering',
-    specialty: 'Software Development',
-    current_status: 'Active Duty',
-    status: 'Active',
-    instagram: 'johndoe',
-    visibility: 'visible',
-    matched_with_instagram: false,
-    description: 'Software engineer with 5 years of experience.',
-    role: 'super_admin',
-    isEmailVerified: true,
-    isDeleted: false,
-    isOnline: false,
-    isResetPassword: false,
-    secondary_email: 'john.doe.secondary@gmail.com',
-    approved: true,
-  },
-  {
-    first_name: 'Testing',
-    last_name: 'admin',
-    email: 'adminh@gmail.com',
-    password: '$2a$08$cUQ3uMdbQjlyDF/dgn5mNuEt9fLJZqq8TaT9aKabrFuG5wND3/mPO', // Hashed password
-    phone: '0987654321',
-    branch: 'Marketing',
-    specialty: 'Digital Marketing',
-    current_status: 'Active Duty',
-    status: 'Active',
-    instagram: 'janesmith',
-    visibility: 'visible',
-    matched_with_instagram: false,
-    description: 'Digital marketer with expertise in SEO and social media.',
-    role: 'admin',
-    isEmailVerified: true,
-    isDeleted: false,
-    isOnline: false,
-    isResetPassword: false,
-    secondary_email: 'jane.smith.secondary@gmail.com',
-    approved: true,
-  },
-  {
-    first_name: 'Testing',
-    last_name: 'Mentor',
-    email: 'mentor@gmail.com',
-    password: '$2a$08$cUQ3uMdbQjlyDF/dgn5mNuEt9fLJZqq8TaT9aKabrFuG5wND3/mPO', // Hashed password
-    phone: '1122334455',
-    profile_image: {
-      imageUrl: 'https://example.com/alice.jpg',
-      file: { filename: 'alice.jpg', size: 1024, mimetype: 'image/jpeg' },
+    name: 'SuperAdmin',
+    email: 'a@gmail.com',
+    password: '$2b$12$cxPF29g99duEaWshhIjW6.TXTEzCccwZaL8jil3gFvhMjogg4HxiW', // Hashed password
+    profileImage: {
+      imageUrl: "/uploads/users/user.png",
+      
     },
-    branch: 'Finance',
-    specialty: 'Investment Banking',
-    current_status: 'Active Duty',
-    status: 'Active',
-    instagram: 'alicejohnson',
-    visibility: 'visible',
-    matched_with_instagram: false,
-    description: 'Investment banker with a focus on mergers and acquisitions.',
-    role: 'mentor',
+    status: "active",
+    role: "admin",
+    subscriptionType: "free",
     isEmailVerified: true,
     isDeleted: false,
-    isOnline: false,
-    isResetPassword: false,
-    secondary_email: 'alice.johnson.secondary@gmail.com',
-    approved: true,
+    isResetPassword: true,
+    failedLoginAttempts: 0,
+    stripe_customer_id: null,
+    authProvider: "local",
+    phoneNumber: "01700000000",
+    address: "West NGong",
+    isGoogleVerified: false,
+    isAppleVerified: false,
+    canMessage: true,
+    companyLogoImage: []
   },
+
+////////// Manager 1
   {
-    first_name: 'Testing',
-    last_name: 'Mentee',
-    email: 'bob.brown@gmail.com',
-    password: '$2a$08$cUQ3uMdbQjlyDF/dgn5mNuEt9fLJZqq8TaT9aKabrFuG5wND3/mPO', // Hashed password
-    phone: '5566778899',
-    branch: 'Human Resources',
-    specialty: 'Talent Acquisition',
-    current_status: 'Active Duty',
-    status: 'Active',
-    instagram: 'bobbrown',
-    visibility: 'visible',
-    matched_with_instagram: false,
-    description:
-      'HR professional specializing in talent acquisition and retention.',
-    role: 'mentee',
-    isEmailVerified: true,
-    isDeleted: false,
-    isOnline: false,
-    isResetPassword: false,
-    secondary_email: 'bob.brown.secondary@gmail.com',
-    approved: true,
+  conversation_restrict_with: [],
+  name: "man1",
+  email: "m1@gmail.com",
+  profileImage: {
+    imageUrl: "https://sheakh-bucket-express.s3.eu-north-1.amazonaws.com/sikring-camera/user/1753094870878-TestImage_Sheakh.png",
   },
+  status: "active",
+  role: "manager",
+  password: "$2b$12$tm/ngsjgTkmubSP5lMfISOOVBuLvts9ri1uxAVlq7Wk/X140leFwK",
+  fcmToken: "cOLKxnGSTQ-WEtJ7kw_q-I:APA91bEVLxsJBq1HO8-4KK5fXvOEUA7ngkkuibIYMKqAbGGcj7SprgjgC1iJqABdECc2rO2ey7d66-ytKunV2ccYoTUYnGQIprGBH-918rbU3zopH3FLwgM",
+  subscriptionType: "free",
+  isEmailVerified: true,
+  isDeleted: false,
+  isResetPassword: false,
+  failedLoginAttempts: 0,
+  stripe_customer_id: null,
+  authProvider: "local",
+  isGoogleVerified: false,
+  isAppleVerified: false,
+  phoneNumber: "01700000000",
+  address: "Dhaka, Bangladesh",
+  
+  canMessage: true,
+  companyLogoImage: []
+},
+
+////////// Manager 2
+  {
+  conversation_restrict_with: [],
+  name: "man2",
+  email: "m2@gmail.com",
+  profileImage: {
+    imageUrl: "/uploads/users/user.png",
+    
+  },
+  status: "active",
+  role: "manager",
+  password: "$2b$12$kqVhLDJvVUJR2qSHZ/eJ/OYWCVUAX9ubU.JXjKzgGoVjqUU5iID0e",
+  fcmToken: "cOLKxnGSTQ-WEtJ7kw_q-I:APA91bEVLxsJBq1HO8-4KK5fXvOEUA7ngkkuibIYMKqAbGGcj7SprgjgC1iJqABdECc2rO2ey7d66-ytKunV2ccYoTUYnGQIprGBH-918rbU3zopH3FLwgM",
+  subscriptionType: "free",
+  isEmailVerified: true,
+  isDeleted: false,
+  isResetPassword: false,
+  failedLoginAttempts: 0,
+  stripe_customer_id: null,
+  authProvider: "local",
+  phoneNumber: "01700000000",
+  address: "Dhaka, Bangladesh",
+  isGoogleVerified: false,
+  isAppleVerified: false,
+  
+},
+
+////////// User 2
+{
+  conversation_restrict_with: [],
+  name: "User 2",
+  email: "us2@gmail.com",
+  profileImage: {
+    imageUrl: "https://sheakh-bucket-express.s3.eu-north-1.amazonaws.com/sikring-camera/user/1754512884750-webp_1754512886366_1000000034.webp",
+  },
+  status: "active",
+  role: "user",
+  password: "$2b$12$vg2FrhHw9nNhBnUzEVl4YuqawJxpJi4N4OoXyvkw26birqH3U18Rm",
+  fcmToken: "cOLKxnGSTQ-WEtJ7kw_q-I:APA91bEVLxsJBq1HO8-4KK5fXvOEUA7ngkkuibIYMKqAbGGcj7SprgjgC1iJqABdECc2rO2ey7d66-ytKunV2ccYoTUYnGQIprGBH-918rbU3zopH3FLwgM",
+  subscriptionType: "free",
+  isEmailVerified: true,
+  isDeleted: false,
+  phoneNumber: "01700000000",
+  address: "Cus 1 Pro Address",
+  isResetPassword: false,
+  failedLoginAttempts: 0,
+  stripe_customer_id: null,
+  authProvider: "local",
+  isGoogleVerified: false,
+  isAppleVerified: false,
+  
+  canMessage: true,
+  companyLogoImage: []
+},
+
+////////// User 1
+
+{
+  
+  conversation_restrict_with: [],
+  name: "user1",
+  email: "us1@gmail.com",
+  profileImage: {
+    imageUrl: "/uploads/users/user.png",
+    
+  },
+  status: "active",
+  role: "user",
+  password: "$2b$12$5/OH4UgBh1oovdSMmWOvO...xOFDGUrl8oMwe3c1PM6xCv7dDgxLi",
+  fcmToken: "cOLKxnGSTQ-WEtJ7kw_q-I:APA91bEVLxsJBq1HO8-4KK5fXvOEUA7ngkkuibIYMKqAbGGcj7SprgjgC1iJqABdECc2rO2ey7d66-ytKunV2ccYoTUYnGQIprGBH-918rbU3zopH3FLwgM",
+  subscriptionType: "free",
+  isEmailVerified: true,
+  isDeleted: false,
+  isResetPassword: false,
+  failedLoginAttempts: 0,
+  stripe_customer_id: null,
+  authProvider: "local",
+  isGoogleVerified: false,
+  isAppleVerified: false,
+  phoneNumber: "01700000000",
+  address: "Dhaka, Bangladesh",
+}
+  
 ];
 
 // Function to drop the entire database

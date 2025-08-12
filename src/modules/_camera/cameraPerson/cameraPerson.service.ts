@@ -116,6 +116,8 @@ export class CameraPersonService extends GenericService<
       const userRole = await User.findById(personIdToEnableAccess).select('role');
 
       if(!alreadyEnables){
+
+        console.log("⚡⚡⚡⚡", "Hit");
         await CameraPerson.insertOne({
           cameraId,
           personId : personIdToEnableAccess,
@@ -124,6 +126,10 @@ export class CameraPersonService extends GenericService<
           role: userRole?.role , // default role if not specified
         })
       }else{
+
+        
+        console.log("⚡⚡⚡⚡", "Miss");
+
         // lets update the status 
         await CameraPerson.findOneAndUpdate(
           { cameraId, personId: personIdToEnableAccess, siteId, isDeleted: false },
@@ -180,6 +186,8 @@ export class CameraPersonService extends GenericService<
    * 
    * Dashboard: (Admin) : Get all users who have access to a specific camera (Best Version)
    * 
+   * // Need to Boost Performance
+   * 
    * *********** */
   getUsersWithAccessToCamera = async (cameraId) =>  {
     
@@ -187,6 +195,8 @@ export class CameraPersonService extends GenericService<
       cameraId,
       isDeleted: false
     })
+
+    console.log('cameraPersons ⚡', cameraPersons);
 
     /***
      * 
@@ -212,18 +222,42 @@ export class CameraPersonService extends GenericService<
       select: 'name'
     });
 
+    console.log('userSites ⚡', userSites);
+
     // console.log('userSites', userSites);
     // console.log('cameraPersons', cameraPersons);
 
     // Combine userSites and cameraPersons
       const result = userSites.map((userSite) => {
         // Find the corresponding entry in cameraPersons
+        /********** Wrong ... not find .. use map
         const cameraPerson = cameraPersons.find(
           (cp) => cp.personId.toString() === userSite.personId.toString()
         );
+        ********* */
+
+        /**********
+        const cameraPerson = cameraPersons.map(
+          (cp) => cp.personId.toString() === userSite.personId.id.toString()
+        );
+
+        ********* */
+
+        const cameraPerson = cameraPersons.map(
+          (cp) =>
+            {
+              if(cp.personId.toString() === userSite.personId.id.toString()){
+                return cp;
+              }
+            } 
+        );
+
+        console.log('cameraPerson ⚡⚡', cameraPerson);
 
         // Determine the status based on cameraPerson existence
-        const status = cameraPerson ? cameraPerson.status : 'disable';
+        const status = cameraPerson[0] ? cameraPerson[0].status : 'disable';
+
+        console.log('status ⚡⚡', status);
 
         // Return the combined user details and status
         return {

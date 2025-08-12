@@ -36,11 +36,11 @@ export const createSiteValidationSchema = z.object({
     .string({
         required_error: 'phoneNumber is required, phoneNumber must be a string.',
         invalid_type_error: 'phoneNumber must be a string.',
-      }).min(10, {
-      message: 'phoneNumber must be at least 10 characters long.',
+      }).min(2, {
+      message: 'phoneNumber must be at least 2 characters long.',
     }).max(15, {
       message: 'phoneNumber must be at most 15 characters long.',
-    }),
+    }).optional(),
     customerName: z
     .string({
         required_error: 'customerName is required, customerName must be a string.',

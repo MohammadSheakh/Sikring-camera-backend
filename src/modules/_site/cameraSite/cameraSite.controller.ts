@@ -12,6 +12,7 @@ import pick from '../../../shared/pick';
 import { Site } from '../site/site.model';
 import { userSite } from '../userSite/userSite.model';
 import { TRole } from '../../user/user.constant';
+import { camera } from '../../_camera/camera/camera.model';
 
 
 export class cameraSiteController extends GenericController<
@@ -140,8 +141,25 @@ export class cameraSiteController extends GenericController<
 
   getAllCameraBySiteIdForAccessWithPagination = catchAsync(async (req: Request, res: Response) => {
     //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
-    const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
-    const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+    const filters =  omit(req.query, ['sortBy', 'cameraName', 'limit', 'page', 'populate']); ;
+    const options = pick(req.query, ['sortBy', 'cameraName', 'limit', 'page', 'populate']);
+
+    /************
+     * 
+     * // Handle cameraName search
+     *  
+     * *********** */
+    
+    if (options.cameraName) {
+      filters.cameraName = options.cameraName;
+        const cameras = await camera.find({ 
+            cameraName: new RegExp(filters.cameraName, 'i') 
+        }).select('_id');
+        
+        const cameraIds = cameras.map(cam => cam._id);
+        filters.cameraId = { $in: cameraIds };
+        delete filters.cameraName;
+    }
     
     const populateOptions: (string | {path: string, select: string}[]) = [
       {

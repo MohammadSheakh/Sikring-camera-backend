@@ -63,7 +63,7 @@ router.route('/preview/paginate').get(
  * ********** */
 router.route('/access/paginate').get(
   //auth('common'),
-  validateFiltersForQuery(optionValidationChecking(['_id', 'siteId', ...paginationOptions])),
+  validateFiltersForQuery(optionValidationChecking(['_id', 'siteId', 'cameraName', ...paginationOptions])),
   controller.getAllCameraBySiteIdForAccessWithPagination
 );
 

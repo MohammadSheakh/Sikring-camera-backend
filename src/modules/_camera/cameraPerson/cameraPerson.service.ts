@@ -207,7 +207,10 @@ export class CameraPersonService extends GenericService<
     const userSites = await userSite.find({
       siteId: siteIdForThisCamera,
       isDeleted: false
-    }).select('-workHours');
+    }).select('-workHours').populate({
+      path: 'personId',
+      select: 'name'
+    });
 
     // console.log('userSites', userSites);
     // console.log('cameraPersons', cameraPersons);
@@ -226,6 +229,7 @@ export class CameraPersonService extends GenericService<
         return {
           _id: userSite._id,
           personId: userSite.personId,
+          // personName: userSite.personId.name,
           // siteId: userSite.siteId,
           role: userSite.role,
           status: status, // Access status: enable or disable

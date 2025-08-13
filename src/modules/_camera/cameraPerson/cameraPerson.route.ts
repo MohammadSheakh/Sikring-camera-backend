@@ -100,7 +100,7 @@ router.route('/assign').post(
 /*************
  * 
  *  Admin > Site Management > (Give View Access to Customer) show all customers who have or have not access to a camera
- * 
+ * ➿➿➿➿➿➿➿➿➿
  * ************* */
 router.route('/all-persons-with-or-without-access-byCameraId/:cameraId').get(
   auth('common'),

@@ -191,8 +191,10 @@ export class CameraPersonService extends GenericService<
    * 
    * Dashboard: (Admin) : Get all users who have access to a specific camera (Best Version)
    * 
-   * //💹📈 Need to Boost Performance
+   * // This code is not working 🔴 has serious issue  .. V2 found 
    * 
+   * //💹📈 Need to Boost Performance
+   * ➿➿➿➿➿➿➿➿➿
    * *********** */
   getUsersWithAccessToCamera = async (cameraId) =>  {
     
@@ -279,6 +281,75 @@ export class CameraPersonService extends GenericService<
 
     return result;
   }
+
+
+  getUsersWithAccessToCameraV2 = async (cameraId) => {
+    
+    const cameraPersons = await CameraPerson.find({
+      cameraId,
+      isDeleted: false
+    })
+
+    console.log('cameraPersons ⚡', cameraPersons);
+
+    /***
+     * 
+     * cameraPersons gives us all users who have access to the camera
+     *  cameraId personId siteId status (disable enable)  role
+     * 
+     ***/
+
+    // Map cameraPersons by personId for quick access
+    const cameraPersonStatusMap = {};
+    
+    // Create a map for faster lookup
+    cameraPersons.forEach(cp => {
+        cameraPersonStatusMap[cp.personId.toString()] = cp;
+    });
+
+    console.log('cameraPersons ⚡⚡', cameraPersons);
+
+    let siteIdForThisCamera;
+
+    if(cameraPersons[0]?.siteId){
+      siteIdForThisCamera = cameraPersons[0].siteId;
+    }
+
+    const userSites = await userSite.find({
+      siteId: siteIdForThisCamera,
+      isDeleted: false
+    }).select('-workHours').populate({
+      path: 'personId',
+      select: 'name'
+    });
+
+    // console.log('userSites ⚡', userSites);
+
+    // Combine userSites and cameraPersons
+    const result = userSites.map((userSite) => {
+        // Use find() instead of map() to get the actual matching cameraPerson
+        const cameraPerson = cameraPersons.find(
+            (cp) => cp.personId.toString() === userSite.personId.id.toString()
+        );
+
+        // console.log('cameraPerson ⚡⚡', cameraPerson);
+
+        // Determine the status based on cameraPerson existence
+        const status = cameraPerson ? cameraPerson.status : 'disable';
+
+        // console.log('status ⚡⚡', status);
+
+        // Return the combined user details and status
+        return {
+          _id: userSite._id,
+          personId: userSite.personId,
+          role: userSite.role,
+          status: status, 
+        };
+    });
+
+    return result;
+}
 
   /************
    * 

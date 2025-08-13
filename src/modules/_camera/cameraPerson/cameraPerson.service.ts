@@ -1,9 +1,14 @@
+
 import { GenericService } from '../../__Generic/generic.services';
 import { cameraSite } from '../../_site/cameraSite/cameraSite.model';
 import { userSite } from '../../_site/userSite/userSite.model';
 import { User } from '../../user/user.model';
+import { ViewPermission } from './cameraPerson.constant';
 import { ICameraPerson } from './cameraPerson.interface';
 import { CameraPerson } from './cameraPerson.model';
+import mongoose from 'mongoose';
+// const { ObjectId } = mongoose.Types; // new ObjectId(personId)
+
 
 export class CameraPersonService extends GenericService<
   typeof CameraPerson,
@@ -186,7 +191,7 @@ export class CameraPersonService extends GenericService<
    * 
    * Dashboard: (Admin) : Get all users who have access to a specific camera (Best Version)
    * 
-   * // Need to Boost Performance
+   * //💹📈 Need to Boost Performance
    * 
    * *********** */
   getUsersWithAccessToCamera = async (cameraId) =>  {
@@ -345,15 +350,30 @@ export class CameraPersonService extends GenericService<
    * ************* */
   getAccessedCameraByPersonId = async (personId: string, siteId:string) => {
     // Find all cameras where the person has access
-    const accessedCameras = await CameraPerson.find({
-      personId,
-      siteId,
+
+     const allCameras = await CameraPerson.find();
+
+     console.log('allCameras ⚡', allCameras);
+    console.log("personId ⚡", new mongoose.Types.ObjectId(siteId),"⚡⚡", "siteId ⚡", siteId)
+    console.log("typeof personId ⚡", typeof new mongoose.Types.ObjectId(siteId),"⚡⚡", "typeof siteId ⚡", typeof siteId)
+
+    const query = {
+      siteId: new mongoose.Types.ObjectId(siteId), // new ObjectId(siteId),
+      personId: new mongoose.Types.ObjectId(personId), // new ObjectId(personId),
       status: 'enable', // Only consider enabled access
       isDeleted: false
-    }).select('cameraId').populate({
+    }
+
+    console.log('query ⚡', query);
+    
+
+    const accessedCameras = await CameraPerson.find(query)
+    .select('cameraId').populate({
       path: 'cameraId',
       select: 'rtspUrl cameraName',
     })
+
+    console.log('accessible camera for person Id ⚡⚡', accessedCameras);
   
     // Return the list of cameras with access
     return accessedCameras;

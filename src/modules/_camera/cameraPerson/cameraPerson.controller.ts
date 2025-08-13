@@ -77,7 +77,7 @@ export class CameraPersonController extends GenericController<
         success: false,
       });
     }
-    
+
     // Call service method
     const result = await this.CameraPersonService.getAccessedCameraByPersonId(personId, siteId);
 

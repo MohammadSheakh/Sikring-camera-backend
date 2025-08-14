@@ -396,48 +396,7 @@ startStreamingBipulVai = catchAsync(async (req: Request, res: Response) => {
   });  
 });
 
-  /************
-   * This code is not updated ... 
-   * 
-   * Updated V3 is found .. 
-   * 
-   * ************* */
-  stopStreamingV2 = catchAsync(async (req: Request, res: Response) => {
-    const cameraId = req.params.cameraId;
-    const ffmpeg = activeStreams[cameraId];
-
-    removeViewer(cameraId, req.user.userId.toString());
-
-    console.log('🚧', getViewerCount(cameraId), "🚧", typeof getViewerCount(cameraId)); 
-    
-    // ffmpeg &&
-    /**************
-     * 
-     * 
-     *  if one viewer is found .. and he is request to stop the stream .. then stop that stream .. 
-     * 
-     * if more viewers are found .. then remove that viewer from the list .. but do not stop the stream ..
-     * 
-     * 
-     * ******************** */
-
-    console.log("😵😵💎💎", getViewerCount(cameraId))
-    
-    if (getViewerCount(cameraId) < 1) {
-      if(ffmpeg){
-        ffmpeg.kill();
-        delete activeStreams[cameraId];
-        res.json({ message: 'Streaming stopped', viewerCount: getViewerCount(cameraId) });
-      }
-      delete activeStreams[cameraId];
-      res.json({ message: 'No stream found to stop', viewerCount: getViewerCount(cameraId) });
-    }else if ( getViewerCount(cameraId) > 1 ) {
-      removeViewer(cameraId, req.user.userId.toString());
-      res.json({ message: 'One Viewer Removed', viewerCount: getViewerCount(cameraId) });
-    }else {
-      res.status(404).json({ error: 'Has Multiple Viewers ... ', viewerCount: getViewerCount(cameraId) });
-    }
-  });
+  
 
 
   stopStreamingV3 = catchAsync(async (req: Request, res: Response) => {
@@ -452,6 +411,7 @@ startStreamingBipulVai = catchAsync(async (req: Request, res: Response) => {
   const ffmpeg = activeStreams[cameraId];
 
   if (viewerCount < 1) {
+    console.log('🚧 No viewers left, stopping stream for camera:');
     // No viewers left → stop the stream
     if (ffmpeg) {
       ffmpeg.kill();
@@ -726,6 +686,52 @@ startStreamingBipulVai = catchAsync(async (req: Request, res: Response) => {
   });
 
 
+
+  /************
+   * This code is not updated ... 
+   * 
+   * Updated V3 is found .. 
+   * 
+   * ************* */
+  stopStreamingV2XXXXXXXXXXXXXXXXXXXX = catchAsync(async (req: Request, res: Response) => {
+    const cameraId = req.params.cameraId;
+    const ffmpeg = activeStreams[cameraId];
+
+    removeViewer(cameraId, req.user.userId.toString());
+
+    console.log('🚧', getViewerCount(cameraId), "🚧", typeof getViewerCount(cameraId)); 
+    
+    // ffmpeg &&
+    /**************
+     * 
+     * 
+     *  if one viewer is found .. and he is request to stop the stream .. then stop that stream .. 
+     * 
+     * if more viewers are found .. then remove that viewer from the list .. but do not stop the stream ..
+     * 
+     * 
+     * ******************** */
+
+    console.log("😵😵💎💎", getViewerCount(cameraId))
+    
+    if (getViewerCount(cameraId) < 1) {
+      if(ffmpeg){
+        ffmpeg.kill();
+        delete activeStreams[cameraId];
+        res.json({ message: 'Streaming stopped', viewerCount: getViewerCount(cameraId) });
+      }
+      delete activeStreams[cameraId];
+      res.json({ message: 'No stream found to stop', viewerCount: getViewerCount(cameraId) });
+    }else if ( getViewerCount(cameraId) > 1 ) {
+      removeViewer(cameraId, req.user.userId.toString());
+      res.json({ message: 'One Viewer Removed', viewerCount: getViewerCount(cameraId) });
+    }else {
+      res.status(404).json({ error: 'Has Multiple Viewers ... ', viewerCount: getViewerCount(cameraId) });
+    }
+  });
+
   // add more methods here if needed or override the existing ones 
+  
+
   
 }

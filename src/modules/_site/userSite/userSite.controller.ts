@@ -430,8 +430,8 @@ export class userSiteController extends GenericController<
      const transformedResult = {
       ...result, // Keep pagination metadata if any
       data: result.results.map(item => ({
-        siteId: item.siteId.id,
-        siteName: item.siteId.name,
+        _siteId: item.siteId.id,
+        name: item.siteId.name,
         address: item.siteId.address,
         phoneNumber: item.siteId.phoneNumber || "", // Add if available in siteId object
         status: item.siteId.status,

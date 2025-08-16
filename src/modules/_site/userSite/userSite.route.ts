@@ -178,6 +178,20 @@ router.route('/conversation/person/paginate').get(
   auth('common'), 
   validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role', 'siteId', ...paginationOptions])),
   controller.getAllWithPaginationForPersonConversation
+  
+);
+
+/**************
+ * 
+ *  (App) (Customer | User) : Show all Related User For Create Conversation
+ * 
+ *  As per Radwanul Abir ... we return only those person with whom user dont have any conversation  
+ * 
+ * ************* */
+router.route('/conversation/person/paginate/without-existing-conv').get(
+  auth('common'), 
+  validateFiltersForQuery(optionValidationChecking(['_id', 'personId', 'role', 'siteId', ...paginationOptions])),
+  controller.getAllWithPaginationForPersonConversationV2
 );
 
 router.route('/:id').get(

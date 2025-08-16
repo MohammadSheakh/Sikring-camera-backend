@@ -313,6 +313,9 @@ startStreamingBipulVai = catchAsync(async (req: Request, res: Response) => {
       message: 'Stream already running',
       hlsUrl: `${config.backend.shobHoyUrl}/hls/${cameraId}.m3u8`,
       viewerCount: getViewerCount(cameraId),
+      cameraId: cameraId,
+      cameraName: camera.cameraName,
+      cameraUserName: camera.cameraUsername,
       status: 'success'
     });
   }

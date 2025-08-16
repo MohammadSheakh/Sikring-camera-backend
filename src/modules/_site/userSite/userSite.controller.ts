@@ -11,6 +11,7 @@ import sendResponse from '../../../shared/sendResponse';
 import { User } from '../../user/user.model';
 import { TRole } from '../../user/user.constant';
 import ApiError from '../../../errors/ApiError';
+import { ConversationParticipents } from '../../_chatting/conversationParticipents/conversationParticipents.model';
 
 export class userSiteController extends GenericController<
   typeof userSite,
@@ -632,6 +633,10 @@ export class userSiteController extends GenericController<
    * 
    * /conversation/person/paginate
    * 
+   * This function is obsolete
+   * 
+   *  getAllWithPaginationForPersonConversationV2 Found .. 
+   * 
    * ************* */
   
   //[🚧][🧑‍💻][🧪] // ✅🆗
@@ -714,6 +719,80 @@ export class userSiteController extends GenericController<
     });
   });
 
+
+  /*********
+   * 
+   *  as per radwan vai's need ...
+   * 
+   * **** */
+
+  getAllWithPaginationForPersonConversationV2 = catchAsync(async (req: Request, res: Response) => {
+
+    // Step 1: Retrieve all siteIds related to the user
+    const sitesRelatedToUser = await userSite.find(
+        { personId: req.user.userId, isDeleted: false },
+        'siteId'
+    );
+    const siteIds = sitesRelatedToUser.map(site => site.siteId);
+
+    // Step 2: Retrieve all personIds related to the retrieved siteIds
+    const personIdsRelatedToSites = await userSite.find(
+        { siteId: { $in: siteIds }, isDeleted: false },
+        'personId siteId'
+    ).populate({
+        path: 'personId',
+        select: 'name role canMessage profileImage',
+    });
+
+    // Step 3: Use Map to ensure unique personIds
+    const uniquePersonsMap = new Map();
+    personIdsRelatedToSites.forEach(person => {
+        const personIdStr = person.personId._id.toString();
+        if (personIdStr !== req.user.userId.toString()) {
+            if (!uniquePersonsMap.has(personIdStr)) {
+                uniquePersonsMap.set(personIdStr, {
+                    personId: person.personId,
+                    siteId: person.siteId
+                });
+            }
+        }
+    });
+
+    // Step 4: Get all conversations where current user is a participant
+    const userConversationParticipants = await ConversationParticipents.find(
+        { userId: req.user.userId, isDeleted: false }
+    ).populate({
+        path: 'conversationId',
+        select: '_id'
+    });
+
+    // Get conversation IDs
+    const conversationIds = userConversationParticipants.map(cp => cp.conversationId._id);
+
+    // Step 5: Find all other participants in these conversations
+    const existingConversationPartners = await ConversationParticipents.find({
+        conversationId: { $in: conversationIds },
+        userId: { $ne: req.user.userId }, // Exclude current user
+        isDeleted: false
+    }).distinct('userId'); // Get unique user IDs
+
+    // Step 6: Filter out people you already have conversations with
+    const peopleWithoutConversations = Array.from(uniquePersonsMap.values()).filter(person => {
+        const personIdStr = person.personId._id.toString();
+        return !existingConversationPartners.some(partnerId => 
+            partnerId.toString() === personIdStr
+        );
+    });
+
+    console.log('People without existing conversations::', peopleWithoutConversations);
+
+    sendResponse(res, {
+        code: StatusCodes.OK,
+        data: peopleWithoutConversations,
+        message: `People from related sites without existing conversations`,
+        success: true,
+    });
+});
   
 /***********
  * 

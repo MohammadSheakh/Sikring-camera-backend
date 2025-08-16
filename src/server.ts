@@ -81,6 +81,7 @@ process.on('uncaughtException', error => {
         },
         // Disable compression to avoid RSV1 issues
         compression: false,
+        httpCompression: false,
         perMessageDeflate: false
       });
 

@@ -89,7 +89,7 @@ router.route('/stream/:cameraId/start').get(
   controller.startStreamingBipulVai
 )
 
-router.route('/stream/:cameraId/stop').get(
+router.route('/stream/:cameraId/stop').post(
   auth('common'),
   controller.stopStreamingV3
 )

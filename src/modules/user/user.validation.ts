@@ -10,7 +10,7 @@ const createUserValidationSchema = z.object({
         required_error: 'name is required.',
         invalid_type_error: 'name must be a string.',
       })
-      .min(1, 'name cannot be empty.'),
+      .min(2, 'name cannot be empty.'),
     email: z
       .string({
         required_error: 'Email is required.',

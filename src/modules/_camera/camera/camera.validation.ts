@@ -8,8 +8,8 @@ export const createCameraValidationSchema = z.object({
     .string({
         required_error: 'cameraName is required, cameraName must be a string.',
         invalid_type_error: 'cameraName must be a string.',
-      }).min(3, {
-      message: 'cameraName must be at least 3 characters long.',
+      }).min(2, {
+      message: 'cameraName must be at least 2 characters long.',
     }).max(200, {
       message: 'cameraName must be at most 200 characters long.',
     }),
@@ -18,8 +18,8 @@ export const createCameraValidationSchema = z.object({
     .string({
         required_error: 'siteName is required, siteName must be a string.',
         invalid_type_error: 'dateOfBirth must be a string.',
-      }).min(5, {
-      message: 'siteName must be at least 5 characters long.',
+      }).min(2, {
+      message: 'siteName must be at least 2 characters long.',
     }).max(500, {
       message: 'siteName must be at most 500 characters long.',
     }),
@@ -36,8 +36,8 @@ export const createCameraValidationSchema = z.object({
     .string({
         required_error: 'cameraIp is required, cameraIp must be a string.',
         invalid_type_error: 'cameraIp must be a string.',   
-      }).min(6, {
-      message: 'cameraIp must be at least 6 characters long.',
+      }).min(2, {
+      message: 'cameraIp must be at least 2 characters long.',
     }).max(100, {
       message: 'cameraIp must be at most 100 characters long.',
     }),
@@ -46,8 +46,8 @@ export const createCameraValidationSchema = z.object({
     .string({
         required_error: 'cameraPassword is required, cameraPassword must be a string.',
         invalid_type_error: 'cameraPassword must be a string.',   
-      }).min(6, {
-      message: 'cameraPassword must be at least 6 characters long.',
+      }).min(2, {
+      message: 'cameraPassword must be at least 2 characters long.',
     }).max(100, {
       message: 'cameraPassword must be at most 100 characters long.',
     }),
@@ -56,8 +56,8 @@ export const createCameraValidationSchema = z.object({
     .string({
         required_error: 'localLocation is required, localLocation must be a string.',
         invalid_type_error: 'localLocation must be a string.',
-      }).min(5, {
-      message: 'localLocation must be at least 5 characters long.',
+      }).min(2, {
+      message: 'localLocation must be at least 2 characters long.',
     }).max(500, {
       message: 'localLocation must be at most 500 characters long.',
     }),

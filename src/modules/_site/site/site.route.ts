@@ -116,7 +116,7 @@ router.route('/update-site-form/:id').put(
       { name: 'attachments', maxCount: 15 }, // Allow up to 5 cover photos
     ]),
   ],
-  auth('admin'),
+  auth('commonAdmin'),
   // TODO : validation must add korte hobe ... 
   controller.updateById
 )

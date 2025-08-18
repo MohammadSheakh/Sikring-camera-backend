@@ -50,7 +50,7 @@ router.post(
       { name: 'companyLogo', maxCount: 1 }, // Allow up to 5 cover photos
     ]),
   ],
-  auth('admin'),
+  auth('commonAdmin'),
   validateRequest(UserValidation.sendInvitationToBeCustomerValidationSchema),
   UserController.sendInvitationLinkToAdminEmail
 );

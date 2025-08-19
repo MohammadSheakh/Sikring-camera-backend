@@ -102,14 +102,15 @@ async function getConversationById(conversationId: string) {
 // Helper function to handle user disconnection
 const handleUserDisconnection = async(
   userId: string,
+  userName: string,
   socketId: string,
   onlineUsers: Set<string>,
   userSocketMap: Map<string, string>,
   socketUserMap: Map<string, string>,
   io: Server
 ) => {
-  logger.info(colors.red(`🔌🔴 User disconnected: :userId: ${userId} :socketId: ${socketId}`));
-  
+  logger.info(colors.red(`🔌🔴 User disconnected: :userId: ${userId} :userName: ${userName} :socketId: ${socketId}`));
+
   // Clean up all data structures
   onlineUsers.delete(userId);
   userSocketMap.delete(userId);
@@ -381,6 +382,8 @@ const socketForChat_V2_Claude = (io: Server) => {
        * 
        * ********** */
       socket.on('get-all-conversations-with-pagination', async( conversationData: {page: number, limit: number}, callback) =>{
+        console.log("Who Requst This 🚧🚧", userId ,"🚧🚧", user.name);
+        
         try{
           const conversations = await new ConversationParticipentsService().getAllConversationByUserIdWithPagination(userId, conversationData);
           callback?.({ success: true, data: conversations});
@@ -734,7 +737,7 @@ const socketForChat_V2_Claude = (io: Server) => {
 
       socket.on('disconnect', () => {
         console.log(`User ${user.name} disconnected`);
-        handleUserDisconnection(userId, socket.id, onlineUsers, userSocketMap, socketUserMap, io);
+        handleUserDisconnection(userId, user.name, socket.id, onlineUsers, userSocketMap, socketUserMap, io);
       });
 
     } catch(error) {

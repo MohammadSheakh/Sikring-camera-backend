@@ -681,9 +681,12 @@ const updateProfile = catchAsync(async (req, res) => {
 //update profile image
 const updateProfileImage = catchAsync(async (req, res) => {
   const userId = req.user.userId;
-  if(!req.file){
-    throw new ApiError(StatusCodes.BAD_REQUEST, 'profileImage is required'); 
-  }
+  // if(!req.file){
+  //   throw new ApiError(StatusCodes.BAD_REQUEST, 'profileImage is required'); 
+  // }
+
+  const user = await User.findById(userId);
+  
   
   if (req.file) {
     const attachmentResult = await attachmentService.uploadSingleAttachment(
@@ -695,6 +698,10 @@ const updateProfileImage = catchAsync(async (req, res) => {
 
     req.body.profileImage = {
       imageUrl: attachmentResult.attachment,
+    };
+  }else{
+    req.body.profileImage = {
+      imageUrl: user.profileImage?.imageUrl || '',
     };
   }
   const result = await UserService.updateUserProfile(userId, req.body);

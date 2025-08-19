@@ -18,6 +18,7 @@ const register = catchAsync(async (req, res) => {
 });
 
 const login = catchAsync(async (req, res) => {
+  console.log("Login request received 🚧" , req.body);
   const { email, password } = req.body; // , fcmToken
   const result = await AuthService.login(email, password); // , fcmToken
 

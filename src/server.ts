@@ -80,9 +80,20 @@ process.on('uncaughtException', error => {
           origin: '*',
         },
         // Disable compression to avoid RSV1 issues
-        // compression: false,
-        // httpCompression: false,
-        // perMessageDeflate: false
+        //compression: true,
+        //httpCompression: true,
+        // Configure at engine level
+        engine: {
+          compression: false,
+          perMessageDeflate: false
+        },
+        perMessageDeflate: false,
+        allowEIO3: true, // This can sometimes help with compatibility
+        transports: ['websocket', 'polling']
+        /*
+         * Bypass Cloudflare proxy (set DNS record to "DNS only", gray cloud)
+         * Or use WebSocket-specific tunneling (like cloudflared)
+         */
       });
 
       // // Use Redis adapter for socket communication between workers

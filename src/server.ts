@@ -13,6 +13,8 @@ import { initConversationCronJobs } from './modules/_chatting/conversation/conve
 import { initUserSubscriptionCron } from './modules/_subscription/userSubscription/userSubscription.cron';
 import { initNotificationCron } from './modules/notification/notification.cron';
 import { socketHelper } from './helpers/socketForChat_V2_Claude';
+import http from "http";
+
 // test 
 // Number of CPU cores
 const numCPUs = os.cpus().length;
@@ -70,8 +72,13 @@ process.on('uncaughtException', error => {
       // const subClient = pubClient.duplicate();
 
 
+      // --- SOCKET.IO ON DIFFERENT PORT ---
+      const socketPort = 4000; // 👈 choose your socket port
+      const socketServer = http.createServer(); // independent HTTP server only for socket.io
+
+
       //socket
-      const io = new Server(server, {
+      const io = new Server(/*server*/ socketServer, {
         // pingTimeout: 60000,
         // pingInterval: 25000,
         // upgradeTimeout: 30000,
@@ -97,6 +104,11 @@ process.on('uncaughtException', error => {
          * Or use WebSocket-specific tunneling (like cloudflared)
          */
       });
+
+      socketServer.listen(socketPort, config.backend.ip as string, () => {
+        logger.info(colors.green(`🔌 Socket.IO listening on http://${config.backend.ip}:${socketPort}`));
+      });
+
 
       // // Use Redis adapter for socket communication between workers
       // io.adapter(socketIORedis({ pubClient, subClient }));

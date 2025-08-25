@@ -72,10 +72,10 @@ process.on('uncaughtException', error => {
 
       //socket
       const io = new Server(server, {
-        pingTimeout: 60000,
-        pingInterval: 25000,
-        upgradeTimeout: 30000,
-        maxHttpBufferSize: 1e6,
+        // pingTimeout: 60000,
+        // pingInterval: 25000,
+        // upgradeTimeout: 30000,
+        // maxHttpBufferSize: 1e6,
         cors: {
           origin: '*',
         },
@@ -83,13 +83,13 @@ process.on('uncaughtException', error => {
         //compression: true,
         //httpCompression: true,
         // Configure at engine level
-        engine: {
-          compression: false,
-          perMessageDeflate: false
-        },
-        perMessageDeflate: false,
-        allowEIO3: true, // This can sometimes help with compatibility
-        transports: ['websocket', 'polling']
+        // engine: {
+        //   compression: false,
+        //   perMessageDeflate: false
+        // },
+        // perMessageDeflate: false,
+        // allowEIO3: true, // This can sometimes help with compatibility
+        // transports: ['websocket', 'polling']
         /*
          * Bypass Cloudflare proxy (set DNS record to "DNS only", gray cloud)
          * Or use WebSocket-specific tunneling (like cloudflared)

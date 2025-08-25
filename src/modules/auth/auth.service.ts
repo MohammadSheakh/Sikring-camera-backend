@@ -206,10 +206,10 @@ const forgotPassword = async (email: string) => {
   }
   //create reset password token
   const resetPasswordToken = await TokenService.createResetPasswordToken(user);
-  await OtpService.createResetPasswordOtp(user.email);
+  const otp =  await OtpService.createResetPasswordOtp(user.email);
   user.isResetPassword = true;
   await user.save();
-  return { resetPasswordToken };
+  return { resetPasswordToken , otp };
 };
 
 const resendOtp = async (email: string) => {

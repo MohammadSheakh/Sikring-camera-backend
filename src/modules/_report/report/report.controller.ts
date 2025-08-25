@@ -208,8 +208,6 @@ export class reportController extends GenericController<
         },
       ]);
 
-
-      console.log('response 🧪🧪🧪', response);
       sendResponse(res, {
         code: StatusCodes.OK,
         data: response,
@@ -263,8 +261,6 @@ export class reportController extends GenericController<
           isDeleted: false // make sure we are not getting deleted users
         }
       );
-
-      console.log('siteUsers 🧪🧪🧪', siteUsers);
 
       /// assign this report to that employee 
 

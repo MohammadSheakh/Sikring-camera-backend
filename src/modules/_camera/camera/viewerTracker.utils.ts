@@ -8,7 +8,7 @@ export const addViewer = (cameraId: string, userId: string) => {
   const viewers = activeViewers.get(cameraId) || new Set<string>();
   viewers.add(userId);
   activeViewers.set(cameraId, viewers);
-  console.log(`Viewer added: ${userId} → Camera ${cameraId}`, `Total: ${viewers.size}`);
+  
 };
 
 // Decrement viewer count
@@ -22,7 +22,7 @@ export const removeViewer = (cameraId: string, userId: string) => {
       activeViewers.set(cameraId, viewers);
     }
   }
-  console.log(`Viewer removed: ${userId} ← Camera ${cameraId}`);
+  
 };
 
 // Get current viewer count

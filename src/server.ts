@@ -88,8 +88,10 @@ process.on('uncaughtException', error => {
         //   perMessageDeflate: false
         // },
         // perMessageDeflate: false,
-        // allowEIO3: true, // This can sometimes help with compatibility
-        // transports: ['websocket', 'polling']
+         allowEIO4: true, // This can sometimes help with compatibility
+         allowEIO3: true,
+        // 
+        transports: ['websocket', 'polling']
         /*
          * Bypass Cloudflare proxy (set DNS record to "DNS only", gray cloud)
          * Or use WebSocket-specific tunneling (like cloudflared)

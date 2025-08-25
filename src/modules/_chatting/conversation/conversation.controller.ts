@@ -197,7 +197,6 @@ export class ConversationController extends GenericController<typeof Conversatio
             );
           }
 
-          // console.log('🔥🔥res1🔥', res1);
           // } catch (error) {
           // console.error("Error creating conversation participant:", error);
           // }
@@ -505,7 +504,7 @@ export class ConversationController extends GenericController<typeof Conversatio
         throw new ApiError(StatusCodes.NOT_FOUND, 'Conversation not found');
       }
       let result;
-      // console.log('') // for testing .. 
+      
 
       if (participants.length > 0) {
         for (const participantId of participants) {
@@ -516,11 +515,6 @@ export class ConversationController extends GenericController<typeof Conversatio
                 conversationId
               );
               
-            // console.log(
-            //   'existingParticipant 🧪🧪',
-            //   existingParticipant,
-            //   existingParticipant.length
-            // );
 
             if (existingParticipant.length == 0) {
               await conversationParticipantsService.create({

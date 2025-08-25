@@ -134,7 +134,7 @@ const handleUserDisconnection = async(
       }))];
 
       uniqueUserIds.forEach((relatedUserId: string) => {
-        // console.log("relatedUserId: ", relatedUserId , "for userId", userId);
+        
           io.emit(`related-user-online-status::${relatedUserId}`, {
             userId,
             isOnline: false,
@@ -168,7 +168,7 @@ const socketForChat_V2_Claude = (io: Server) => {
       }
 
       const user = await getUserDetailsFromToken(token);
-      // console.log("user from socketForChat_V2_Claude -> ", user);
+      
       if (!user) {
         return next(new Error('Invalid authentication token'));
       }
@@ -240,7 +240,7 @@ const socketForChat_V2_Claude = (io: Server) => {
       }))];
 
       uniqueUserIds.forEach((relatedUserId: string) => {
-        // console.log("relatedUserId: ", relatedUserId , "for userId", userId);
+        
           io.emit(`related-user-online-status::${relatedUserId}`, {
             userId,
             isOnline: true,
@@ -271,7 +271,7 @@ const socketForChat_V2_Claude = (io: Server) => {
       socket.on('only-related-online-users', async( userId: {userId: string}, callback) =>{
         try{
           
-          console.log("userId.userId: ", userId.userId);
+          
           let usersWhohaveConversationWithThisUser = await new ConversationParticipentsService().getAllConversationsOnlyPersonInformationByUserId(userId.userId);
 
           /********** Response Structure ... 
@@ -285,9 +285,6 @@ const socketForChat_V2_Claude = (io: Server) => {
           if present then we will keep the userId in the array
           
           ************ */
-
-
-          console.log("online and offline related Users Array 🔊🔊", usersWhohaveConversationWithThisUser)
 
           const filteredOnlineUsers = Array.from(onlineUsers).filter(onlineUserId => 
             usersWhohaveConversationWithThisUser.some(conversationUserId => 
@@ -306,10 +303,6 @@ const socketForChat_V2_Claude = (io: Server) => {
           );
 
           ************ */
-
-          console.log("system onlineUsers: ⚡", onlineUsers);
-          console.log("related online users array: ⚡", filteredOnlineUsers , " ⚡logged in userId⚡ ", userId.userId);
-
           callback?.({ success: true, data: filteredOnlineUsers});
         } catch (error) {
           console.error('Error fetching conversations:', error);
@@ -329,27 +322,16 @@ const socketForChat_V2_Claude = (io: Server) => {
           return emitError(socket, 'conversationId is required');
         }
 
-        console.log('🚮🚮🚮🚮🚮🚮')
-
-        
 
         console.log(`User ${user.name} joining chat ${conversationData.conversationId}`);
         
-        // console.log(`Current userSocketMap: ${Array.from(userSocketMap.entries()).map(([k, v]) => `${k}:${v}`).join(', ')}`);
-        // console.log(`Current socketUserMap: ${Array.from(socketUserMap.entries()).map(([k, v]) => `${k}:${v}`).join(', ')}`);
-        // console.log(`------------------`);
-        // console.log(roomSockets.map((s: any) => `${s.id} (${s.data.user.name})`).join(', '));
-
+        
         socket.join(conversationData.conversationId);
         
 
         // Debug: Check room membership //------- from claude
         const roomSockets = await io.in(conversationData.conversationId).fetchSockets();
-        console.log(`Room 💡 ${conversationData.conversationId} now has ${roomSockets.length} socket or user`); // 💡 how many users are joined in this conversation
-        console.log(roomSockets.map((s: any) => `${s.id} (${s.data.user.name})`).join(', '));
-        console.log(`--------------------- All current online users: ${Array.from(onlineUsers).join(', ')}`); // 💡 how many users are online 
         
-
         // Notify others in the chat
         socket.to(conversationData.conversationId).emit('user-joined-chat', {
           userId,
@@ -367,7 +349,7 @@ const socketForChat_V2_Claude = (io: Server) => {
       socket.on('get-all-conversations', async(conversationData: {conversationId: string}, callback) =>{
         try{
           const conversations = await new ConversationParticipentsService().getAllConversationByUserId(userId);
-          console.log("conversations: 🟢🟢 ", conversations);
+          
           callback?.({ success: true, data: conversations});// 🟡🟡 fix korte hobe .. onlineUsers er part ta .. 
         } catch (error) {
           console.error('Error fetching conversations:', error);
@@ -382,7 +364,6 @@ const socketForChat_V2_Claude = (io: Server) => {
        * 
        * ********** */
       socket.on('get-all-conversations-with-pagination', async( conversationData: {page: number, limit: number}, callback) =>{
-        console.log("Who Requst This 🚧🚧", userId ,"🚧🚧", user.name);
         
         try{
           const conversations = await new ConversationParticipentsService().getAllConversationByUserIdWithPagination(userId, conversationData);
@@ -423,7 +404,7 @@ const socketForChat_V2_Claude = (io: Server) => {
             populateOptions, 
             '' // select
           );
-          console.log("messages: 🟢🟢 ", messages);
+          
           callback?.({ success: true, data: messages});
         } catch (error) {
           console.error('Error fetching conversations:', error);
@@ -439,9 +420,9 @@ const socketForChat_V2_Claude = (io: Server) => {
 
       socket.on('send-new-message', async (messageData: MessageData, callback) => {
 
-        console.log("requested user Id 🟡🟡",  userId)
+        
         try {
-          console.log('New message received:', messageData);
+          
 
           if (!messageData.conversationId || !messageData.text?.trim()) {
             const error = 'Chat ID and message content are required';
@@ -485,7 +466,7 @@ const socketForChat_V2_Claude = (io: Server) => {
             }
           });
 
-          console.log("isExist: 🟡", isExist);
+          
 
         if(!isExist){
             emitError(socket, `You are not a participant in this conversation`);
@@ -736,7 +717,7 @@ const socketForChat_V2_Claude = (io: Server) => {
        * ************* */
 
       socket.on('disconnect', () => {
-        console.log(`User ${user.name} disconnected`);
+        
         handleUserDisconnection(userId, user.name, socket.id, onlineUsers, userSocketMap, socketUserMap, io);
       });
 
@@ -755,10 +736,10 @@ const socketForChat_V2_Claude = (io: Server) => {
   const getOnlineUsers = () => Array.from(onlineUsers);
   const isUserOnline = (userId: string) =>
   {
-    console.log("onlineUsers: ", onlineUsers);
+    
     // let res = onlineUsers.has(new ObjectId(userId));
     const isOnline = Array.from(onlineUsers).some(id => id.toString() === userId);
-    console.log(`User ${userId} online 🟢 status: ${isOnline}`);
+    
     // onlineUsers.has(userId)
     return isOnline;
   }

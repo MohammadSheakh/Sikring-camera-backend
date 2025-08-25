@@ -8,10 +8,10 @@ import Stream from 'node-rtsp-stream';
 const eventEmitForCheckCameraRTSPURL = new EventEmitter(); // functional way
 
 eventEmitForCheckCameraRTSPURL.on('eventEmitForCheckCameraRTSPURL', (rtspUrl: any, cameraId: any) => {
-  console.log('⚡⚡⚡')
+  
   let timeoutMs = 10000; // 5 seconds timeout
   
-    console.log('testing value from request .. 🧪🧪🧪🧪', rtspUrl, cameraId);
+    
     let hasResolved = false;
     
     const timeout = setTimeout(() => {
@@ -35,7 +35,7 @@ eventEmitForCheckCameraRTSPURL.on('eventEmitForCheckCameraRTSPURL', (rtspUrl: an
       stream.on('camdata', () => {
         if (!hasResolved) {
           hasResolved = true;
-          console.log('RTSP stream is working for cameraId: ⚡', cameraId);
+          
           clearTimeout(timeout);
           stream.stop();
           // resolve(true);
@@ -45,7 +45,7 @@ eventEmitForCheckCameraRTSPURL.on('eventEmitForCheckCameraRTSPURL', (rtspUrl: an
       stream.on('error', (err) => {
         if (!hasResolved) {
           hasResolved = true;
-          console.log('RTSP stream error for cameraId: ⚡', cameraId);
+          
           clearTimeout(timeout);
           console.error('RTSP stream error:', err.message);
           // resolve(false);

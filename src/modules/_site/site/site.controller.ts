@@ -194,10 +194,6 @@ export class SiteController extends GenericController<
         { new: true, upsert: true } // upsert to create if not exists
       )
 
-      console.log('updatedManagerForSite 🟢', updatedManagerForSite);
-
-      // console.log('req.body.assignedManagerId 🟢', req.body.assignedManagerId);
-
       // TODO : issue hoile fix korte hobe 
       result.assignedManagerId = req?.body?.assignedManagerId ? req.body.assignedManagerId : result.assignedManagerId;
 
@@ -248,7 +244,7 @@ export class SiteController extends GenericController<
 
   const site = await Site.findById(siteId);
   if (!site) {
-    // throw new ApiError(httpStatus.NOT_FOUND, "Site not found");
+    
     sendResponse(res, {
       code: StatusCodes.OK,
       data: null,
@@ -262,8 +258,6 @@ export class SiteController extends GenericController<
     if(!coverPhotoAttachment){
       throw new ApiError(StatusCodes.NOT_FOUND, "Image not found");
     }
-
-    console.log('coverPhotoAttachment 🟢', coverPhotoAttachment);
 
     const coverPhotoUrl = coverPhotoAttachment.attachment;
 

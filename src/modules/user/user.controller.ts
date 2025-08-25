@@ -92,7 +92,7 @@ const updateUserProfile = catchAsync(async (req, res) => {
 
   const existingUser = await User.findById(userId);
 
-  console.log('existingUser 🌋🌋 :updateUsers:', existingUser);
+  
 
   if (!existingUser) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'User not found');
@@ -121,7 +121,7 @@ const updateUserProfile = catchAsync(async (req, res) => {
       siteId: payload.siteId,
     })
 
-    console.log('existingUserSite 🌋🌋 :updateUsers:', existingUserSite);
+    
 
     if(existingUserSite){
       // update the userSite collection
@@ -233,7 +233,7 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
 
       let attachments = [];
       
-      console.log('req.files 🌋🌋', req.files.companyLogo);
+      
 
       if (req.files && req.files.companyLogo) {
       attachments.push(
@@ -417,7 +417,7 @@ const deleteAllDataFromCollection = async (req: Request, res: Response) => {
     // Get Mongoose model dynamically by collectionName
     // WARNING: Mongoose model names are case-sensitive and usually singular
     const Model = mongoose.models[collectionName];
-    console.log('Model 🌋🌋', Model);
+    
     if (!Model) {
       sendResponse(res, {
         code: StatusCodes.BAD_REQUEST,

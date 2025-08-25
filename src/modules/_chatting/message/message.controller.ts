@@ -54,8 +54,6 @@ export class MessageController extends GenericController<typeof Message, IMessag
         conversationParticipants.forEach((participant: any) => {
           const participantId = participant.userId?.toString();
           
-          // console.log(`1️⃣ .forEach Participant ID: ${participantId}, User ID: ${req.user.userId}`);
-          
           if (req.user.userId && participantId == req.user.userId) {
               isExist = true;
               return;
@@ -132,8 +130,6 @@ export class MessageController extends GenericController<typeof Message, IMessag
 
         conversationParticipants.forEach((participant: any) => {
             const participantId = participant.userId?.toString();
-            
-            console.log(`1️⃣ .forEach Participant ID: ${participantId}, User ID: ${req.user.userId}`);
             
             // Skip the sender if excludeUserId is provided
             // if (req.user.userId && participantId == req.user.userId) {

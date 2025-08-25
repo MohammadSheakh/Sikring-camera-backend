@@ -122,7 +122,7 @@ export class CameraPersonService extends GenericService<
 
       if(!alreadyEnables){
 
-        console.log("⚡⚡⚡⚡", "Hit");
+        
         await CameraPerson.insertOne({
           cameraId,
           personId : personIdToEnableAccess,
@@ -133,7 +133,7 @@ export class CameraPersonService extends GenericService<
       }else{
 
         
-        console.log("⚡⚡⚡⚡", "Miss");
+        
 
         // lets update the status 
         await CameraPerson.findOneAndUpdate(
@@ -203,7 +203,7 @@ export class CameraPersonService extends GenericService<
       isDeleted: false
     })
 
-    console.log('cameraPersons ⚡', cameraPersons);
+    
 
     /***
      * 
@@ -229,11 +229,7 @@ export class CameraPersonService extends GenericService<
       select: 'name'
     });
 
-    console.log('userSites ⚡', userSites);
-
-    // console.log('userSites', userSites);
-    // console.log('cameraPersons', cameraPersons);
-
+  
     // Combine userSites and cameraPersons
       const result = userSites.map((userSite) => {
         // Find the corresponding entry in cameraPersons
@@ -259,12 +255,8 @@ export class CameraPersonService extends GenericService<
             } 
         );
 
-        console.log('cameraPerson ⚡⚡', cameraPerson);
-
         // Determine the status based on cameraPerson existence
         const status = cameraPerson[0] ? cameraPerson[0].status : 'disable';
-
-        console.log('status ⚡⚡', status);
 
         // Return the combined user details and status
         return {
@@ -277,7 +269,7 @@ export class CameraPersonService extends GenericService<
         };
       });
 
-    // console.log('usersWithStatus', result);
+    
 
     return result;
   }
@@ -290,7 +282,7 @@ export class CameraPersonService extends GenericService<
       isDeleted: false
     })
 
-    console.log('cameraPersons ⚡', cameraPersons);
+    
 
     /***
      * 
@@ -307,8 +299,6 @@ export class CameraPersonService extends GenericService<
         cameraPersonStatusMap[cp.personId.toString()] = cp;
     });
 
-    console.log('cameraPersons ⚡⚡', cameraPersons);
-
     let siteIdForThisCamera;
 
     if(cameraPersons[0]?.siteId){
@@ -323,8 +313,6 @@ export class CameraPersonService extends GenericService<
       select: 'name'
     });
 
-    // console.log('userSites ⚡', userSites);
-
     // Combine userSites and cameraPersons
     const result = userSites.map((userSite) => {
         // Use find() instead of map() to get the actual matching cameraPerson
@@ -332,12 +320,8 @@ export class CameraPersonService extends GenericService<
             (cp) => cp.personId.toString() === userSite.personId.id.toString()
         );
 
-        // console.log('cameraPerson ⚡⚡', cameraPerson);
-
         // Determine the status based on cameraPerson existence
         const status = cameraPerson ? cameraPerson.status : 'disable';
-
-        // console.log('status ⚡⚡', status);
 
         // Return the combined user details and status
         return {
@@ -385,9 +369,6 @@ export class CameraPersonService extends GenericService<
       role: { $in: ['customer', 'manager'] } // Only include customers and managers
     }).select('-workHours');
 
-    // console.log('userSites', userSites);
-    // console.log('cameraPersons', cameraPersons);
-
     // Combine userSites and cameraPersons
       const result = userSites.map((userSite) => {
         // Find the corresponding entry in cameraPersons
@@ -408,8 +389,6 @@ export class CameraPersonService extends GenericService<
         };
       });
 
-    // console.log('usersWithStatus', result);
-
     return result;
   }
 
@@ -424,19 +403,13 @@ export class CameraPersonService extends GenericService<
 
      const allCameras = await CameraPerson.find();
 
-     console.log('allCameras ⚡', allCameras);
-    console.log("personId ⚡", new mongoose.Types.ObjectId(siteId),"⚡⚡", "siteId ⚡", siteId)
-    console.log("typeof personId ⚡", typeof new mongoose.Types.ObjectId(siteId),"⚡⚡", "typeof siteId ⚡", typeof siteId)
-
+    
     const query = {
       siteId: new mongoose.Types.ObjectId(siteId), // new ObjectId(siteId),
       personId: new mongoose.Types.ObjectId(personId), // new ObjectId(personId),
       status: 'enable', // Only consider enabled access
       isDeleted: false
     }
-
-    console.log('query ⚡', query);
-    
 
     const accessedCameras = await CameraPerson.find(query)
     .select('cameraId').populate({

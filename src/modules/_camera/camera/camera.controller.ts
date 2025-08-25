@@ -594,7 +594,7 @@ startStreamingBipulVai = catchAsync(async (req: Request, res: Response) => {
        * 
        * ******* */
 
-      console.log('⚡⚡⚡⚡⚡')
+      
       eventEmitForCheckCameraRTSPURL.emit('eventEmitForCheckCameraRTSPURL', {
         /********
          *  we need to pass cameraId .. as if url is not valid then we have to update the camera status .. 
@@ -715,7 +715,7 @@ startStreamingBipulVai = catchAsync(async (req: Request, res: Response) => {
      * 
      * ******************** */
 
-    console.log("😵😵💎💎", getViewerCount(cameraId))
+    
     
     if (getViewerCount(cameraId) < 1) {
       if(ffmpeg){

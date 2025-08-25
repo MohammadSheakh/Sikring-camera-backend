@@ -13,8 +13,6 @@ export class adminService {
 
   getAllKeyMetricsWithReportCountByMonths = async (year) => {
     
-    console.log('year from service 🟢🟢', year)
-
     async function getReportCountOfLastTwentyFourHours () {
       const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
       return await report.countDocuments({
@@ -33,7 +31,7 @@ export class adminService {
     async function getReportCountByMonths(year) {
         
         const targetYear = parseInt(year, 10) || new Date().getFullYear();
-        console.log('🟢targetYear🟢', targetYear)
+        
         const reportsByMonth = await report.aggregate([
             {
                 $match: {

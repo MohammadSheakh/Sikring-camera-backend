@@ -47,13 +47,12 @@ export class PaymentTransactionService extends GenericService<typeof PaymentTran
 
         ////////////// Set Expiry Date ////////////
         const today = new Date();
-        // console.log("today", today);
-
+        
         // Reset time to midnight
         today.setHours(0, 0, 0, 0);
 
         const expiryDate = new Date(today);
-        // console.log("expiryDate before adding month", expiryDate);
+        
 
         // If duration is 'month', add 1 month to today's date
         if (duration === 'month') {
@@ -73,8 +72,6 @@ export class PaymentTransactionService extends GenericService<typeof PaymentTran
         let savedUserSubscription;
         if (existingUserSubscription) {
 
-          // console.log("🎯🎯 if block userSubscription")
-
           existingUserSubscription.status = UserSubscriptionStatusType.active;
           // Update the existing subscription
           existingUserSubscription.subscriptionPlanId = subscriptionPlanId;
@@ -92,8 +89,7 @@ export class PaymentTransactionService extends GenericService<typeof PaymentTran
           savedUserSubscription = await existingUserSubscription.save();
         } else {
 
-          // console.log("🎯🎯 else block userSubscription")
-
+          
           // Create a new subscription
           const newSubscription = new UserSubscription({
             userId: userId,

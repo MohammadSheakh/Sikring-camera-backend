@@ -135,8 +135,6 @@ const addOrRemoveReact = catchAsync(async (req, res) => {
   // FIX ME : FiX korte hobe
   const result = await attachmentService.addOrRemoveReact(attachmentId, userId);
 
-  // console.log('result 🟢', result);
-
   sendResponse(res, {
     code: StatusCodes.OK,
     data: result,

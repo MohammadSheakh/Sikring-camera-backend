@@ -18,7 +18,7 @@ const register = catchAsync(async (req, res) => {
 });
 
 const login = catchAsync(async (req, res) => {
-  console.log("Login request received 🚧" , req.body);
+  
   const { email, password } = req.body; // , fcmToken
   const result = await AuthService.login(email, password); // , fcmToken
 
@@ -115,7 +115,6 @@ const appleLogin = async (req, res) => {
 
 //[🚧][🧑‍💻✅][🧪]  // 🆗
 const verifyEmail = catchAsync(async (req, res) => {
-  // console.log(req.body);
   const { email, token, otp } = req.body;
   const result = await AuthService.verifyEmail(email, token, otp);
   sendResponse(res, {

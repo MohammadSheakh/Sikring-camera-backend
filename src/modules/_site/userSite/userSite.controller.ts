@@ -261,12 +261,12 @@ export class userSiteController extends GenericController<
         isDeleted: false
     }).select('siteId personId');
     
-    console.log('siteForThisManager:: 🧪', siteForThisManager);  
+    
 
     // Extract siteIds from the manager's sites
     const siteIds = siteForThisManager.map(site => site.siteId);
     
-    console.log('Manager\'s siteIds:: 🧪', siteIds);
+    
 
     // If manager has no sites, return empty result
     if (siteIds.length === 0) {
@@ -425,7 +425,7 @@ export class userSiteController extends GenericController<
     //   result.userInfo  = userInfo;
     // }
 
-     console.log('result::', result);
+     
 
      const transformedResult = {
       ...result, // Keep pagination metadata if any
@@ -485,7 +485,7 @@ export class userSiteController extends GenericController<
     const uniquePersonIds = new Set(personIdsRelatedToSites.map(person => 
         // person.personId
         {
-        console.log('person::', person)
+        
           return {
             personId: person.personId,
             siteId: person.siteId
@@ -500,11 +500,6 @@ export class userSiteController extends GenericController<
 
     // Convert the Set to an array if needed
     const uniquePersonIdsArray = Array.from(uniquePersonIds);
-
-    console.log('Unique Person IDs:', uniquePersonIdsArray);
-
-    console.log('req.user.userId', req.user.userId);
-
 
     sendResponse(res, {
       code: StatusCodes.OK,
@@ -578,8 +573,6 @@ export class userSiteController extends GenericController<
         if (personIdStr !== req.user.userId.toString() && 
             person.personId.role === req.query.role && person.isDeleted === false) {
 
-              console.log('person🟡🟡:', person);
-          
           // If person not already in map, add them
           if (!uniquePersonsMap.has(personIdStr)) {
             uniquePersonsMap.set(personIdStr, {
@@ -589,8 +582,6 @@ export class userSiteController extends GenericController<
           }
         }
       });
-
-      // console.log('uniquePersonsMap::', uniquePersonsMap);
 
     /*****************
 
@@ -682,7 +673,7 @@ export class userSiteController extends GenericController<
         }
       });
 
-      console.log('uniquePersonsMap::', uniquePersonsMap);
+      
 
     /*****************
 
@@ -855,7 +846,7 @@ export class userSiteController extends GenericController<
   );
 }
 
-    console.log('users after adding siteId::', users);
+    
 
     sendResponse(res, {
       code: StatusCodes.OK,

@@ -73,7 +73,7 @@ process.on('uncaughtException', error => {
 
 
       // --- SOCKET.IO ON DIFFERENT PORT ---
-      const socketPort = 4000; // 👈 choose your socket port
+      const socketPort = 3000; // 👈 choose your socket port
       const socketServer = http.createServer(); // independent HTTP server only for socket.io
 
 

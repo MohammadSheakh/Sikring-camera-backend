@@ -22,7 +22,6 @@ export const removeViewer = (cameraId: string, userId: string) => {
       activeViewers.set(cameraId, viewers);
     }
   }
-  
 };
 
 // Get current viewer count

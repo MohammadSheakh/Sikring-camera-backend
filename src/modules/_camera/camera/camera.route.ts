@@ -38,6 +38,10 @@ router.route('/paginate').get(
   controller.getAllWithPagination
 );
 
+router.route('/kill-stream').get(
+  auth('admin'),
+  controller.killAllStreams
+)
 router.route('/:id').get(
   // auth('common'),
   controller.getById
@@ -88,6 +92,10 @@ router.route('/stream/:cameraId/start').get(
   auth('common'),
   controller.startStreamingBipulVai
 )
+
+
+
+
 
 router.route('/stream/:cameraId/stop').post(
   auth('common'),

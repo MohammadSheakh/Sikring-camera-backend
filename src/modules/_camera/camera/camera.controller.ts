@@ -399,9 +399,6 @@ startStreamingBipulVai = catchAsync(async (req: Request, res: Response) => {
   });  
 });
 
-  
-
-
   stopStreamingV3 = catchAsync(async (req: Request, res: Response) => {
   const cameraId = req.params.cameraId;
 
@@ -426,6 +423,37 @@ startStreamingBipulVai = catchAsync(async (req: Request, res: Response) => {
     return res.json({ message: 'Viewer removed', viewerCount });
   }
 });
+
+
+killAllStreams = catchAsync(async (req: Request, res: Response) => {
+  const cameraIds = Object.keys(activeStreams);
+
+  if (cameraIds.length === 0) {
+    return sendResponse(res, {
+      code: StatusCodes.OK,
+      data: null,
+      message: "No active streams found",
+      success: true,
+    });
+  }
+
+  for (const cameraId of cameraIds) {
+    try {
+      activeStreams[cameraId].kill();
+      delete activeStreams[cameraId];
+    } catch (err) {
+      console.error(`Failed to kill stream for camera ${cameraId}:`, err);
+    }
+  }
+
+  sendResponse(res, {
+    code: StatusCodes.OK,
+    data: { killedStreams: cameraIds },
+    message: "All active streams have been killed",
+    success: true,
+  });
+});
+
 
   getStreamingStatus = catchAsync(async (req: Request, res: Response) => {
     const cameraId = req.params.cameraId;

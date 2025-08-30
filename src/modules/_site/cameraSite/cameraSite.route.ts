@@ -67,8 +67,6 @@ router.route('/access/paginate').get(
   controller.getAllCameraBySiteIdForAccessWithPagination
 );
 
-
-
 router.route('/:id').get(
   // auth('common'),
   controller.getById

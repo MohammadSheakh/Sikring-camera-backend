@@ -37,8 +37,12 @@ router.route('/paginate').get(
   validateFiltersForQuery(optionValidationChecking(['_id','status','cameraName', ...paginationOptions])),
   controller.getAllWithPagination
 );
-
-router.route('/kill-stream').get(
+/********
+ * 
+ * Admin | Kill all ongoing streams 
+ * 
+ * *** */
+router.route('/kill-stream').post(
   auth('admin'),
   controller.killAllStreams
 )

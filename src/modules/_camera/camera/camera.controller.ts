@@ -454,7 +454,6 @@ killAllStreams = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
   getStreamingStatus = catchAsync(async (req: Request, res: Response) => {
     const cameraId = req.params.cameraId;
     const ffmpeg = activeStreams[cameraId];

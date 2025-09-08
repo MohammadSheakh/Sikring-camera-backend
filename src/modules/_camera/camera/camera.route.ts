@@ -39,7 +39,9 @@ router.route('/paginate').get(
 );
 /********
  * 
- * Admin | Kill all ongoing streams 
+ * Admin | Kill all ongoing streams
+ * 
+ * TODO : make sure to clean up public/hls folder ..  
  * 
  * *** */
 router.route('/kill-stream').post(

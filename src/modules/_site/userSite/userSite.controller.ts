@@ -112,7 +112,13 @@ export class userSiteController extends GenericController<
     });
   });
 
-
+/***********
+ * 
+ * App (Customer) : Home : get all site by siteId And role manager 
+ * Web (Manager) : Site Management
+ * 🆕 now we need to show sites location also 🆕 V2 Found 
+ * 
+ * *********** */ 
   getAllWithPaginationWithManagerInfo = catchAsync(async (req: Request, res: Response) => {
     const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
     const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
@@ -123,6 +129,60 @@ export class userSiteController extends GenericController<
       {
         path: 'siteId',
         select: 'name createdAt type attachments',
+        populate: {
+          path: 'attachments', // deep populate attachments
+          select: 'attachment' // only pick attachmentName
+        }
+      }
+    ];
+
+    const dontWantToInclude = '-role -workHours -isDeleted -updatedAt -createdAt -__v';
+  
+    let userInfo;
+
+    if(req.query.siteId){
+      userInfo = await userSite.find({
+        siteId : req.query.siteId,
+        isDeleted: false,
+        role: TRole.manager
+      }).select('personId').populate(
+        {
+          path: 'personId',
+          select: 'name role profileImage'
+        }
+      );
+    }
+
+    const result = await this.userSiteService.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
+
+    if(userInfo){
+      result.userInfo  = userInfo;
+    }
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `All ${this.modelName} with pagination`,
+      success: true,
+    });
+  });
+
+/***********
+ * 
+ * App (Customer) : Home : get all site by siteId And role manager 
+ * Web (Manager) : Site Management
+ * 🆕 now we need to show sites location also 🆕 This is V2
+ * *********** */ 
+  getAllWithPaginationWithManagerInfoV2 = catchAsync(async (req: Request, res: Response) => {
+    const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
+    const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+    
+    filters.isDeleted = false; // only get non-deleted users
+
+    const populateOptions: (string | {path: string, select: string}[]) = [
+      {
+        path: 'siteId',
+        select: 'name createdAt type attachments address lat long',
         populate: {
           path: 'attachments', // deep populate attachments
           select: 'attachment' // only pick attachmentName

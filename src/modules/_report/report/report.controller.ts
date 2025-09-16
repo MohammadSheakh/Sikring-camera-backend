@@ -271,7 +271,9 @@ export class reportController extends GenericController<
   });
 
   /*********
+   * 
    * 🆕 User(Employee) | Create Report 
+   * -----------------
    * must send customerId in req.body .. 
    * **** */
    createForEmployee = catchAsync(async (req: Request, res: Response) => {
@@ -360,6 +362,7 @@ export class reportController extends GenericController<
 
   /*********
    * 🆕 User(Employee) | Get All Customer For A Site
+   * ----------------
    * **** */
   getAllCustomersForSite= catchAsync(async (req: Request, res: Response) => {
    
@@ -379,10 +382,10 @@ export class reportController extends GenericController<
 
     const getAllCustomerForASite = await userSite.find({
       siteId: siteId,
-      role: TRole.customer, // as we need to get all customers for a site 
+      role: { $in: [TRole.customer, TRole.manager] }, //TRole.customer, // as we need to get all customers for a site 
       isDeleted: false
     })
-    .select('personId')
+    .select('personId role')
     .populate(
       {
         path: 'personId',
@@ -400,8 +403,6 @@ export class reportController extends GenericController<
       success: true,
     });
   });
-
-
 
   getById = catchAsync(async (req: Request, res: Response) => {
     const id = req.params.id;
@@ -459,7 +460,6 @@ export class reportController extends GenericController<
       message: `${this.modelName} retrieved successfully`,
     });
   });
-
 
   /***********
    * 

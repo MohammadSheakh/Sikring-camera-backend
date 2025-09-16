@@ -90,12 +90,25 @@ router.route('/paginate/siteId').get(
  * 
  * App (Customer) : Home : get all site by siteId And role manager 
  * Web (Manager) : Site Management
+ * 🆕 now we need to show sites location also 🆕 V2 Found 
  * 
  * *********** */ 
 router.route('/paginate/for-customer/siteId').get(
   auth('common'), 
   validateFiltersForQuery(optionValidationChecking(['_id', 'role', 'siteId', ...paginationOptions])),
   controller.getAllWithPaginationWithManagerInfo
+);
+
+/***********
+ * 
+ * App (Customer) : Home : get all site by siteId And role manager 
+ * Web (Manager) : Site Management
+ * 🆕 now we need to show sites location also 🆕 This is V2
+ * *********** */ 
+router.route('/paginate/for-customer/siteId/v2').get(
+  auth('common'), 
+  validateFiltersForQuery(optionValidationChecking(['_id', 'role', 'siteId', ...paginationOptions])),
+  controller.getAllWithPaginationWithManagerInfoV2
 );
 
 /***********

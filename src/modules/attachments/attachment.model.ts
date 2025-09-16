@@ -16,6 +16,7 @@ const attachmentSchema = new Schema<IAttachment>(
       enum : [
          AttachmentType.document,
          AttachmentType.image,
+         AttachmentType.unknown,
       ],
       required: [
               false,

@@ -27,7 +27,7 @@ export class AttachmentService extends GenericService<typeof Attachment, IAttach
     } else if (file.mimetype.includes('application')) {
       fileType = AttachmentType.document;
     }else{
-      fileType = AttachmentType.unknown;
+      fileType = AttachmentType.unknown; // we have to fix this for video type
     }
 
     // ekhon amader ke ekta attachment create korte hobe ..

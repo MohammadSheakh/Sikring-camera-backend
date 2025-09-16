@@ -19,6 +19,7 @@ import { userSite } from '../../_site/userSite/userSite.model';
 import mongoose from 'mongoose';
 import { IuserSite } from '../../_site/userSite/userSite.interface';
 import { IcustomerReport } from '../customerReport/customerReport.interface';
+import { TRole } from '../../../middlewares/roles';
 
 let attachmentService = new AttachmentService();
 
@@ -33,6 +34,17 @@ export class reportController extends GenericController<
     super(new ReportService(), 'report');
   }
 
+  /*********
+   * 
+   * 🆕 New Flow Alert  🆕V2 found ... 
+   * previously when customer create a report 
+   * it goes to admin .. 
+   * admin assign a employee to that report 
+   * ----------------------------
+   * now when a customer create a report 
+   * it should go to the customer's site's employee directly
+   * 
+   * ********* */
   create = catchAsync(async (req: Request, res: Response) => {
    
     // INFO : req.body te assignedManager and assignedUser er nam nite hobe abu sayeed vai er kas theke .. 
@@ -103,6 +115,140 @@ export class reportController extends GenericController<
         reportType: req.body.reportType
       });
 
+      actionPerformed+= `A New Review ${result._id} Created by ${req.user.userId} For Site ${req.body.siteId} `
+    }
+    
+    let valueForAuditLog : IauditLog = {
+      userId: req.user.userId,
+      role: req.user.role,
+      actionPerformed: `${actionPerformed}`,
+      status: TStatus.success,
+    }
+
+    eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
+    
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `${this.modelName} created successfully`,
+      success: true,
+    });
+  });
+
+  /*********
+   * 
+   * 🆕 New Flow Alert  🆕This is V2 
+   * previously when customer create a report 
+   * it goes to admin .. 
+   * admin assign a employee to that report 
+   * ----------------------------
+   * now when a customer create a report 
+   * it should go to the customer's site's employee directly
+   * 
+   * ********* */
+   createV2 = catchAsync(async (req: Request, res: Response) => {
+   
+    // INFO : req.body te assignedManager and assignedUser er nam nite hobe abu sayeed vai er kas theke .. 
+    // INFO :  karon shei nam ta audit log e dekhano lagbe .. 
+
+    let attachments = [];
+
+    if (req.files && req.files.attachments) {
+      attachments.push(
+        ...(await Promise.all(
+        req.files.attachments.map(async file => {
+          const attachmenId = await attachmentService.uploadSingleAttachment(
+              file, // file to upload 
+              TFolderName.site, // folderName
+              req.user.userId, // uploadedByUserId
+              TAttachedToType.site
+          );
+          return attachmenId;
+          })
+        ))
+      );
+    }
+
+    req.body.attachments = attachments;
+
+    const populateOptions = [
+        {
+            path: 'attachments',
+            select: 'attachment'
+        },
+      ];
+
+    const result = await this.service.createAndPopulateSpecificFields({
+        title: req.body.title,
+        reportType: req.body.reportType,
+        incidentSevearity: req.body.incidentSevearity,
+        siteId: req.body.siteId,
+        description: req.body.description,
+        status: req.body.status, 
+        attachments: req.body.attachments,
+    }, populateOptions);
+    
+    let actionPerformed = '';
+
+    if(result._id){
+
+      // need to check if the manager exist or not  
+
+      /*******
+       * 🆕 As we need to send this report directly to the customer's site's employee
+       * ****** */
+      // const employeeForThisSite = await userSite.findOne({
+      //   siteId: req.body.siteId,
+      //   role: TRole.user, // as user means employee 
+      //   isDeleted: false
+      // });
+
+      // Create both relations in parallel
+
+      const [customerForReport, employeeForThisSite] = await Promise.all([
+        // create relation between report and customer [person who is creating this report]
+        this.customerReportService.create({
+          personId: req.user.userId,
+          reportId: result._id,
+          role: req.user.role,
+          reportType: req.body.reportType
+        }),
+        // now create relation between report and employee [person who is assigned to this report]
+        userSite.findOne({
+          siteId: req.body.siteId,
+          role: TRole.user, // as user means employee 
+          isDeleted: false
+        })
+      ]);
+
+
+      // now create relation between report and employee [person who is assigned to this report]
+      const employeeForReport = await this.customerReportService.create({
+        personId: employeeForThisSite.personId,
+        reportId: result._id,
+        role: employeeForThisSite.role,
+        reportType: req.body.reportType
+      });
+
+      /*************
+      // create relation between report and customer [person who is creating this report]
+      const customerForReport = await this.customerReportService.create({
+        personId: req.user.userId,
+        reportId: result._id,
+        role: req.user.role,
+        reportType: req.body.reportType
+      });
+
+      // now create relation between report and employee [person who is assigned to this report]
+      const employeeForReport = await this.customerReportService.create({
+        personId: employeeForThisSite.personId,
+        reportId: result._id,
+        role: employeeForThisSite.role,
+        reportType: req.body.reportType
+      });
+      *********** */
+
+      console.log(" 🆕 Flow employeeForThisSite", employeeForReport);
 
       actionPerformed+= `A New Review ${result._id} Created by ${req.user.userId} For Site ${req.body.siteId} `
     }
@@ -123,6 +269,139 @@ export class reportController extends GenericController<
       success: true,
     });
   });
+
+  /*********
+   * 🆕 User(Employee) | Create Report 
+   * must send customerId in req.body .. 
+   * **** */
+   createForEmployee = catchAsync(async (req: Request, res: Response) => {
+   
+    // INFO : req.body te assignedManager and assignedUser er nam nite hobe abu sayeed vai er kas theke .. 
+    // INFO :  karon shei nam ta audit log e dekhano lagbe .. 
+
+    let attachments = [];
+
+    if (req.files && req.files.attachments) {
+      attachments.push(
+        ...(await Promise.all(
+        req.files.attachments.map(async file => {
+          const attachmenId = await attachmentService.uploadSingleAttachment(
+              file, // file to upload 
+              TFolderName.site, // folderName
+              req.user.userId, // uploadedByUserId
+              TAttachedToType.site
+          );
+          return attachmenId;
+          })
+        ))
+      );
+    }
+
+    req.body.attachments = attachments;
+
+    const populateOptions = [
+      {
+          path: 'attachments',
+          select: 'attachment'
+      },
+    ];
+
+    const result = await this.service.createAndPopulateSpecificFields({
+        title: req.body.title,
+        reportType: req.body.reportType,
+        incidentSevearity: req.body.incidentSevearity,
+        siteId: req.body.siteId,
+        description: req.body.description,
+        status: req.body.status, 
+        attachments: req.body.attachments,
+    }, populateOptions);
+    
+    let actionPerformed = '';
+
+    if(result._id){
+    
+      const [customerForReport, employeeForThisSite] = await Promise.all([
+        // create relation between report and customer [person who is creating this report]
+        this.customerReportService.create({
+          personId: req.user.userId, // employeeId .. as he is creating this report
+          reportId: result._id, // report Id
+          role: req.user.role,
+          reportType: req.body.reportType
+        }),
+        // now create relation between report and employee [person who is assigned to this report]
+        await this.customerReportService.create({
+        personId: req.body.customerId, // as customer needs to see this report also
+        reportId: result._id,
+        role: TRole.customer, // as role is customer 
+        reportType: req.body.reportType
+      })
+      ]);
+
+
+      actionPerformed+= `A New Review ${result._id} Created by ${req.user.userId} For Site ${req.body.siteId} `
+    }
+    
+    let valueForAuditLog : IauditLog = {
+      userId: req.user.userId,
+      role: req.user.role,
+      actionPerformed: `${actionPerformed}`,
+      status: TStatus.success,
+    }
+
+    eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
+    
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `${this.modelName} created successfully`,
+      success: true,
+    });
+  });
+
+  /*********
+   * 🆕 User(Employee) | Get All Customer For A Site
+   * **** */
+  getAllCustomersForSite= catchAsync(async (req: Request, res: Response) => {
+   
+    if(req.user.role !== TRole.user){
+      sendResponse(res, {
+      code: StatusCodes.OK,
+      data: {
+        hasCustomers: false,
+        customers: []
+      },
+      message: `No customer found as you are not an employee`,
+      success: true,
+    });
+    }
+
+    const siteId = req.params.siteId;
+
+    const getAllCustomerForASite = await userSite.find({
+      siteId: siteId,
+      role: TRole.customer, // as we need to get all customers for a site 
+      isDeleted: false
+    })
+    .select('personId')
+    .populate(
+      {
+        path: 'personId',
+        select: 'name profileImage'
+      }
+    );
+    
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: {
+        hasCustomers: getAllCustomerForASite.length > 0,
+        customers: getAllCustomerForASite
+      },
+      message: `all customers for site ${siteId}`,
+      success: true,
+    });
+  });
+
+
 
   getById = catchAsync(async (req: Request, res: Response) => {
     const id = req.params.id;

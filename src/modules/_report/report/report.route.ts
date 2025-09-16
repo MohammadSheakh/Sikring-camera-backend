@@ -57,6 +57,17 @@ router.route('/').get(
 );
 
 //[🚧][🧑‍💻✅][🧪] // 🆗
+/*********
+ * 
+ * 🆕 New Flow Alert  🆕V2 found ... 
+ * previously when customer create a report 
+ * it goes to admin .. 
+ * admin assign a employee to that report 
+ * ----------------------------
+ * now when a customer create a report 
+ * it should go to the customer's site's employee directly
+ * 
+ * ********* */
 // customer: user : create report 💡
 router.route('/create').post(
   [
@@ -68,6 +79,51 @@ router.route('/create').post(
   validateRequest(validation.createReportValidationSchema),
   controller.create
 );
+
+/*********
+ * 
+ * 🆕 New Flow Alert  🆕This is V2 ... 
+ * previously when customer create a report 
+ * it goes to admin .. 
+ * admin assign a employee to that report 
+ * ----------------------------
+ * now when a customer create a report 
+ * it should go to the customer's site's employee directly
+ * 
+ * ********* */
+router.route('/create/v2').post(
+  [
+    upload.fields([
+      { name: 'attachments', maxCount: 15 }, // Allow up to 5 cover photos
+    ]),
+  ],
+  auth('common'),
+  validateRequest(validation.createReportValidationSchema),
+  controller.createV2
+);
+/*********
+ * 🆕 User(Employee) | Create Report 
+ * must send customerId in req.body .. 
+ * **** */
+router.route('/create/for-employee').post(
+  [
+    upload.fields([
+      { name: 'attachments', maxCount: 15 }, // Allow up to 5 cover photos
+    ]),
+  ],
+  auth('user'),
+  validateRequest(validation.createReportByEmployeeValidationSchema),
+  controller.createForEmployee
+);
+
+/*********
+ * 🆕 User(Employee) | Get All Customer For A Site
+ * **** */
+router.route('/customers/:siteId').get(
+  auth('user', 'customer'),
+  controller.getAllCustomersForSite
+);
+
 
 router.route('/delete/:id').delete(
   //auth('common'),

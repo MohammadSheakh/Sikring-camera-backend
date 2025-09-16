@@ -76,7 +76,7 @@ router.route('/work-hour/update/:userSiteId').put(
 
 /***********
  * 
- * App (Customer) : Home : get al site by siteId And role manager 
+ * App (Customer) : Home : get all site by siteId And role manager 
  * Web (Manager) : Site Management
  * 
  * *********** */ 
@@ -88,7 +88,7 @@ router.route('/paginate/siteId').get(
 
 /***********
  * 
- * App (Customer) : Home : get al site by siteId And role manager 
+ * App (Customer) : Home : get all site by siteId And role manager 
  * Web (Manager) : Site Management
  * 
  * *********** */ 

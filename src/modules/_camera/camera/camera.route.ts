@@ -100,9 +100,6 @@ router.route('/stream/:cameraId/start').get(
 )
 
 
-
-
-
 router.route('/stream/:cameraId/stop').post(
   auth('common'),
   controller.stopStreamingV3

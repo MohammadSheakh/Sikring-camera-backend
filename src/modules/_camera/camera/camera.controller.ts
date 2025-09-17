@@ -24,6 +24,7 @@ import { addViewer, getViewerCount, removeViewer } from './viewerTracker.utils';
 import { hasViewers } from './viewerTracker.utils';
 import { getActiveViewers } from './viewerTracker.utils';
 import { config } from '../../../config';
+import ApiError from '../../../errors/ApiError';
 
 const { spawn, ChildProcess } = require('child_process');
 const path = require('path');
@@ -759,6 +760,98 @@ killAllStreams = catchAsync(async (req: Request, res: Response) => {
       res.status(404).json({ error: 'Has Multiple Viewers ... ', viewerCount: getViewerCount(cameraId) });
     }
   });
+
+
+  softDeleteById = catchAsync(async (req: Request, res: Response) => {
+    if (!req.params.id) {
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        `id is required for delete ${this.modelName}`
+      );
+    }
+
+    const id = req.params.id;
+    
+    /*******
+     * as we got camera Id ... so we have to stop the streaming if it is streaming now ..
+     * ******* */
+    const ffmpeg = activeStreams[id];
+    if(ffmpeg){
+      ffmpeg.kill();
+      delete activeStreams[id];
+    }
+
+    // camera we want to delete :: 689b1c1c3d41efc732cb6108
+
+    /*********
+     * now soft delete the camera site relation
+     * ******** */
+    const deleteCameraSiteRelation = await cameraSite.findOneAndUpdate(
+      { cameraId: id, isDeleted: false },
+      { isDeleted: true, updatedAt: new Date() },
+      { new: true }
+    );
+
+    console.log("🔎 camera site relation :: ", deleteCameraSiteRelation);
+
+    /********
+     * now soft delete the camera person relation
+     * ******* */
+    const deleteCameraPersonRelation = await CameraPerson.updateMany(
+      { cameraId: id, isDeleted: false },
+      { isDeleted: true, updatedAt: new Date()}
+    );
+
+    console.log("🔎 camera person relation :: ", deleteCameraPersonRelation);
+    
+    /*********
+     * now soft delete the camera 
+     * ******** */
+    
+    const deletedObject = await this.service.softDeleteById(id);
+
+    console.log("🔎 camera delete :: ", deletedObject);
+
+    if (!deletedObject) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        `Object with ID ${id} not found`
+      );
+    }
+    //   return res.status(StatusCodes.NO_CONTENT).json({});
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: deletedObject,
+      message: `${this.modelName} soft deleted successfully`,
+    });
+  });
+
+
+  // Update by ID
+  updateById = catchAsync(async (req: Request, res: Response) => {
+    if (!req.params.id) {
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        `id is required for update ${this.modelName}`
+      );
+    }
+    const id = req.params.id;
+
+    const updatedObject = await this.service.updateById(id, req.body);
+    if (!updatedObject) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        `Object with ID ${id} not found`
+      );
+    }
+    //   return res.status(StatusCodes.OK).json(updatedObject);
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: updatedObject,
+      message: `Camera updated successfully`,
+    });
+  });
+
 
   // add more methods here if needed or override the existing ones 
   

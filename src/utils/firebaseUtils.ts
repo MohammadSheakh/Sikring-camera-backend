@@ -1,29 +1,17 @@
 // We dont need this utils file  in this Fertie Backend 
+//@ts-ignore
 import * as admin from 'firebase-admin';
-
+//@ts-ignore
 import { Schema } from 'mongoose';
 import { Notification } from '../modules/notification/notification.model';
+import { IMessageToEmmit } from '../helpers/socketForChat_V2_Claude_With_Firebase';
 
 // Initialize Firebase Admin SDK (ensure it's only done once)
 let firebaseInitialized = false;
 
-const initializeFirebase = () => {
-  if (!firebaseInitialized) {
-    const serviceAccount = {
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    };
-
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
-    firebaseInitialized = true; // Set flag to true to prevent re-initialization
-  }
-};
-
-// We dont need this function in this Fertie Backend 
-// This function can now be reused in your services or utils as needed
+////////////////////////
+// 💎✨🔍 V2 Found
+////////////////////////
 export const sendPushNotification = async (
   fcmToken: string,
   title: string,
@@ -44,16 +32,175 @@ export const sendPushNotification = async (
     // Send the notification
     await admin.messaging().send(message);
 
-    // Log the notification in the database
-    await Notification.create({
-      title,
-      //  messageBody,
-      receiverId, // INFO : naki  userId hobe eita
-    });
-
-    console.log('Notification sent successfully');
+    console.log('👉🔔👈 Push Notification sent successfully');
   } catch (error) {
     console.error('Error sending notification:', error);
-    throw new Error('Error sending notification');
+    throw new Error(`Error sending push notification  from firebaseUtils.ts ::  ${error}`);
   }
 };
+
+
+/*************
+ * // calling this function from anywhere .. 
+ const registrationToken = req.user?.fcmToken;
+
+    if (registrationToken) {
+      await sendPushNotification(
+        registrationToken,
+        // INFO : amar title, message dorkar nai .. just .. title hoilei hobe ..
+        `A new note of DailyLog ${result.title} has been created by  ${req.user.userName} .`,
+        project.projectManagerId.toString()
+      );
+    }
+ * ********* */
+
+export const sendPushNotificationV2 = async (
+  fcmToken: string,
+  messageData: IMessageToEmmit | string, // Can accept object or stringified JSON
+  receiverId: Schema.Types.ObjectId | string
+): Promise<void> => {
+  try {
+    // Initialize Firebase Admin SDK only once
+    initializeFirebase();
+
+    // Parse messageData if it's a string
+    const parsedMessage: IMessageToEmmit = 
+      typeof messageData === 'string' 
+        ? JSON.parse(messageData) 
+        : messageData;
+
+    // Prepare notification title and body
+    const notificationTitle = parsedMessage.name || 'New Message';
+    const notificationBody = parsedMessage.text 
+      ? (parsedMessage.text.length > 100 
+          ? parsedMessage.text.substring(0, 97) + '...' 
+          : parsedMessage.text)
+      : 'You have a new message';
+
+    // Build the FCM message
+    const message: admin.messaging.Message = {
+      notification: {
+        title: notificationTitle,
+        body: notificationBody,
+        // Add image if available
+        ...(parsedMessage.image && { imageUrl: parsedMessage.image })
+      },
+      data: {
+        // Send all message data as strings (FCM requirement)
+        messageId: parsedMessage._id?.toString() || '',
+        conversationId: parsedMessage.conversationId?.toString() || '',
+        senderId: parsedMessage.senderId?.toString() || '',
+        senderName: parsedMessage.name || '',
+        senderImage: parsedMessage.image || '',
+        messageText: parsedMessage.text || '',
+        createdAt: parsedMessage.createdAt?.toString() || new Date().toString(),
+        type: 'new-message',
+        timestamp: Date.now().toString(),
+        // Include full message as JSON string for client to parse
+        fullMessage: JSON.stringify(parsedMessage)
+      },
+      token: fcmToken,
+      // Android specific configuration
+      android: {
+        priority: 'high',
+        notification: {
+          channelId: 'chat_messages',
+          sound: 'default',
+          priority: 'high',
+          defaultSound: true,
+          defaultVibrateTimings: true,
+        }
+      },
+      // iOS specific configuration
+      apns: {
+        payload: {
+          aps: {
+            alert: {
+              title: notificationTitle,
+              body: notificationBody
+            },
+            sound: 'default',
+            badge: 1, // You might want to track unread count
+            'content-available': 1, // For background data sync
+            'mutable-content': 1 // For notification service extension
+          }
+        },
+        headers: {
+          'apns-priority': '10', // High priority
+          'apns-push-type': 'alert'
+        }
+      }
+    };
+
+    // Send the notification
+    const response = await admin.messaging().send(message);
+    
+    console.log('✅ Push notification sent successfully:', {
+      receiverId,
+      messageId: response,
+      title: notificationTitle
+    });
+
+  } catch (error: any) {
+    // Handle specific FCM errors
+    if (error.code === 'messaging/invalid-registration-token' ||
+        error.code === 'messaging/registration-token-not-registered') {
+      console.error(`❌ Invalid FCM token for receiver ${receiverId}`);
+      console.error('   Token should be removed from database');
+      
+      // TODO: Remove invalid token from user document
+      // await User.findByIdAndUpdate(receiverId, { $unset: { fcmToken: 1 } });
+      
+    } else if (error.code === 'messaging/invalid-argument') {
+      console.error('❌ Invalid message format:', error.message);
+      
+    } else {
+      console.error('❌ Error sending push notification:', error);
+    }
+    
+    // Re-throw for upstream handling
+    throw new Error(`Error sending push notification: ${error.message || error}`);
+  }
+};
+
+// Helper function to initialize Firebase (call this once at app startup)
+// let firebaseInitialized = false;
+
+export const initializeFirebase = (): void => {
+  if (firebaseInitialized) {
+    return;
+  }
+
+  try {
+    // Check if already initialized
+    if (admin.apps.length === 0) {
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        }),
+      });
+      console.log('✅ Firebase Admin SDK initialized');
+    }
+    firebaseInitialized = true;
+  } catch (error) {
+    console.error('❌ Failed to initialize Firebase Admin SDK:', error);
+    throw error;
+  }
+};
+
+// const initializeFirebase = () => {
+//   if (!firebaseInitialized) {
+//     const serviceAccount = {
+//       projectId: process.env.FIREBASE_PROJECT_ID,
+//       privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+//       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+//     };
+
+//     admin.initializeApp({
+//       credential: admin.credential.cert(serviceAccount),
+//     });
+//     firebaseInitialized = true; // Set flag to true to prevent re-initialization
+//   }
+// };

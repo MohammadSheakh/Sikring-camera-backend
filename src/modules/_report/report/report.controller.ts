@@ -1,4 +1,6 @@
+//@ts-ignore
 import { Request, Response } from 'express';
+//@ts-ignore
 import { StatusCodes } from 'http-status-codes';
 
 import { GenericController } from '../../__Generic/generic.controller';
@@ -16,6 +18,7 @@ import sendResponse from '../../../shared/sendResponse';
 import ApiError from '../../../errors/ApiError';
 import { customerReport } from '../customerReport/customerReport.model';
 import { userSite } from '../../_site/userSite/userSite.model';
+//@ts-ignore
 import mongoose from 'mongoose';
 import { IuserSite } from '../../_site/userSite/userSite.interface';
 import { IcustomerReport } from '../customerReport/customerReport.interface';
@@ -156,6 +159,7 @@ export class reportController extends GenericController<
     if (req.files && req.files.attachments) {
       attachments.push(
         ...(await Promise.all(
+        //@ts-ignore
         req.files.attachments.map(async file => {
           const attachmenId = await attachmentService.uploadSingleAttachment(
               file, // file to upload 
@@ -180,6 +184,7 @@ export class reportController extends GenericController<
 
     const result = await this.service.createAndPopulateSpecificFields({
         title: req.body.title,
+        creatorId : req.user.userId,  //////// Who create this report 
         reportType: req.body.reportType,
         incidentSevearity: req.body.incidentSevearity,
         siteId: req.body.siteId,
@@ -311,6 +316,7 @@ export class reportController extends GenericController<
     const result = await this.service.createAndPopulateSpecificFields({
         title: req.body.title,
         reportType: req.body.reportType,
+        creatorId : req.user.userId,
         incidentSevearity: req.body.incidentSevearity,
         siteId: req.body.siteId,
         description: req.body.description,
@@ -322,7 +328,7 @@ export class reportController extends GenericController<
 
     if(result._id){
     
-      const [customerForReport, employeeForThisSite] = await Promise.all([
+      const [customerForReport] = await Promise.all([
         // create relation between report and customer [person who is creating this report]
         this.customerReportService.create({
           personId: req.user.userId, // employeeId .. as he is creating this report
@@ -330,16 +336,18 @@ export class reportController extends GenericController<
           role: req.user.role,
           reportType: req.body.reportType
         }),
-        // now create relation between report and employee [person who is assigned to this report]
-        await this.customerReportService.create({
-        personId: req.body.customerId, // as customer needs to see this report also
-        reportId: result._id,
-        role: TRole.customer, // as role is customer 
-        reportType: req.body.reportType
-      })
       ]);
 
-
+      // now create relation between report and employee [person who is assigned to this report]
+      if(req.body.customerId){
+        const employeeForThisSite =  this.customerReportService.create({
+          personId: req.body.customerId, // as customer needs to see this report also
+          reportId: result._id,
+          role: TRole.customer, // as role is customer 
+          reportType: req.body.reportType
+        })
+      }
+    
       actionPerformed+= `A New Review ${result._id} Created by ${req.user.userId} For Site ${req.body.siteId} `
     }
     
@@ -415,6 +423,10 @@ export class reportController extends GenericController<
       {
         path: 'siteId',
         select: 'name address'
+      },
+      {
+        path: 'creatorId',
+        select: 'name email phoneNumber profileImage'
       }
     ];
   

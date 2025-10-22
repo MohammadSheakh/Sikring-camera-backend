@@ -92,7 +92,7 @@ const handleSocialLogin = async (user, fcmToken) => {
   };
 };
 
-const login = async (email: string, reqpassword: string) => { // , fcmToken : string
+const login = async (email: string, reqpassword: string, fcmToken : string) => { // , fcmToken : string
 
   const user = await User.findOne({ email }).select('+password');
 
@@ -145,7 +145,9 @@ const login = async (email: string, reqpassword: string) => { // , fcmToken : st
       );
     }
     
-    // user.fcmToken = fcmToken;
+    if(fcmToken){
+      user.fcmToken = fcmToken;
+    }
 
     await user.save();
     throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid credentials');

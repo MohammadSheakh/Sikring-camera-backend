@@ -19,8 +19,8 @@ const register = catchAsync(async (req, res) => {
 
 const login = catchAsync(async (req, res) => {
   
-  const { email, password } = req.body; // , fcmToken
-  const result = await AuthService.login(email, password); // , fcmToken
+  const { email, password, fcmToken } = req.body; // , fcmToken
+  const result = await AuthService.login(email, password, fcmToken); // , fcmToken
 
   //set refresh token in cookie
   res.cookie('refreshToken', result.tokens.refreshToken, {

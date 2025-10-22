@@ -423,11 +423,8 @@ const socketForChat_V2_Claude_With_Firebase = (io: Server) => {
        * ********** */
 
       socket.on('send-new-message', async (messageData: MessageData, callback) => {
-
-        
         try {
           
-
           if (!messageData.conversationId || !messageData.text?.trim()) {
             const error = 'Chat ID and message content are required';
             callback?.({ success: false, message: error });
@@ -906,4 +903,4 @@ const socketForChat_V2_Claude_With_Firebase = (io: Server) => {
   };
 };
 
-export const socketHelper = { socketForChat_V2_Claude_With_Firebase };
+export const socketHelperV2 = { socketForChat_V2_Claude_With_Firebase };

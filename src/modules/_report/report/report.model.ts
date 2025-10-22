@@ -15,6 +15,15 @@ const reportSchema = new Schema<Ireport>(
       type: Schema.Types.ObjectId,
       ref: 'Site',
     },
+
+    //------------------------------------
+    // Who create this report .. 
+    //------------------------------------
+    creatorId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: [false, 'creatorId is not required'],
+    },
     
     reportType : {
           type: String,

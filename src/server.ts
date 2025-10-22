@@ -14,6 +14,7 @@ import { initUserSubscriptionCron } from './modules/_subscription/userSubscripti
 import { initNotificationCron } from './modules/notification/notification.cron';
 import { socketHelper } from './helpers/socketForChat_V2_Claude';
 import http from "http";
+import { socketHelperV2 } from './helpers/socketForChat_V2_Claude_With_Firebase';
 
 // test 
 // Number of CPU cores
@@ -72,7 +73,7 @@ process.on('uncaughtException', error => {
       // const subClient = pubClient.duplicate();
 
 
-      // --- SOCKET.IO ON DIFFERENT PORT ---
+      // --- SOCKET.IO ON DIFFERENT PORT --- go to postman and connect  newsheakh3000.sobhoy.com   for socket
       const socketPort = 3000; // 👈 choose your socket port
       const socketServer = http.createServer(); // independent HTTP server only for socket.io
 
@@ -115,7 +116,8 @@ process.on('uncaughtException', error => {
 
       // Setup socket helper for chatting .. 
       
-      socketUtils = socketHelper.socketForChat_V2_Claude(io);
+      // socketUtils = socketHelper.socketForChat_V2_Claude(io);
+      socketUtils = socketHelperV2.socketForChat_V2_Claude_With_Firebase(io);
 
       // Make socket utilities globally accessible
       global.socketUtils = socketUtils;

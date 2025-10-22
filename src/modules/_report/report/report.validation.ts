@@ -91,7 +91,7 @@ export const createReportByEmployeeValidationSchema = z.object({
         invalid_type_error: 'customerId must be a string.',
       }).refine(value => ObjectIdRegex.test(value), {
       message: 'Invalid customerId format. Must be a valid ObjectId.',
-    }),
+    }).optional(),
 
     reportType: z
       .string({

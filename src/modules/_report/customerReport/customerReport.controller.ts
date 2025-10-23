@@ -91,7 +91,7 @@ export class customerReportController extends GenericController<
 
       const result = await this.service.getAllWithPagination(filters, options, populateOptions, dontWantToInclude);
   
-      console.
+      console.log('result 🧲', result);
 
       sendResponse(res, {
         code: StatusCodes.OK,

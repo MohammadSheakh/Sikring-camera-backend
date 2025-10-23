@@ -837,7 +837,26 @@ killAllStreams = catchAsync(async (req: Request, res: Response) => {
     }
     const id = req.params.id;
 
-    const updatedObject = await this.service.updateById(id, req.body);
+    const existingCamera = await this.service.getById(id);
+    if (!existingCamera) {
+      throw new ApiError(StatusCodes.NOT_FOUND, `Camera not found`);
+    }
+
+    let payload = {
+      localLocation: req.body.localLocation ? req.body.localLocation : existingCamera.localLocation,
+      cameraName: req.body.cameraName ? req.body.cameraName : existingCamera.cameraName,
+      cameraUsername : req.body.cameraUsername ? req.body.cameraUsername : existingCamera.cameraUsername,
+      cameraPassword: req.body.cameraPassword ? req.body.cameraPassword : existingCamera.cameraPassword,  
+      cameraIp: req.body.cameraIp ? req.body.cameraIp : existingCamera.cameraIp,
+      cameraPort: req.body.cameraPort ? req.body.cameraPort : existingCamera.cameraPort, 
+      cameraPath: req.body.cameraPath ? req.body.cameraPath : existingCamera.cameraPath,
+      rtspUrl: `rtsp://${req.body.cameraUsername ? req.body.cameraUsername : existingCamera.cameraUsername}:${req.body.cameraPassword ? req.body.cameraPassword : existingCamera.cameraPassword}@${req.body.cameraIp ? req.body.cameraIp.replace("http://", "") : existingCamera.cameraIp.replace("http://", "")}${req.body.cameraPath ? req.body.cameraPath : existingCamera.cameraPath}`,
+      globalLocation: req.body.globalLocation ?? existingCamera.globalLocation,
+      lat: req.body.lat ?? existingCamera.lat,
+      long: req.body.long ?? existingCamera.long,
+    };
+
+    const updatedObject = await this.service.updateById(id, payload);
     if (!updatedObject) {
       throw new ApiError(
         StatusCodes.NOT_FOUND,

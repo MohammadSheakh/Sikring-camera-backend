@@ -426,7 +426,7 @@ export class reportController extends GenericController<
       },
       {
         path: 'creatorId',
-        select: 'name email phoneNumber profileImage'
+        select: 'name email phoneNumber profileImage role'
       }
     ];
   

@@ -426,7 +426,7 @@ export class reportController extends GenericController<
       },
       {
         path: 'creatorId',
-        select: 'name email phoneNumber profileImage role'
+        select: 'name email profileImage role' // phoneNumber 
       }
     ];
   
@@ -457,7 +457,7 @@ export class reportController extends GenericController<
       personId: req.user.userId, // only the person who is submitting this report
     }).select('personId role').populate({
       path: 'personId',
-      select: 'name email phoneNumber profileImage',
+      select: 'name email profileImage', // phoneNumber
     });
 
     if (customerReportRes && customerReportRes.length > 0) {

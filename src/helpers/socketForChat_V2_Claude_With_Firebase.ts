@@ -554,7 +554,7 @@ const socketForChat_V2_Claude_With_Firebase = (io: Server) => {
               continue;
             }
 
-            console.log(`Checking participant: ${participantId}`);
+            console.log(`Checking participant: ${participantId} 1️⃣`);
 
             // Check if user is ONLINE (has active socket connection)
             const isOnline = onlineUsers.has(participantId);
@@ -570,7 +570,7 @@ const socketForChat_V2_Claude_With_Firebase = (io: Server) => {
             
             if (isInConversationRoom) {
               // ✅ User is in the room - already received message via socket.to()
-              console.log(`✅ User ${participantId} is in room, message already sent`);
+              console.log(`✅ User ${participantId} is in room, message already sent 2️⃣`);
               
               // Send conversation list update to their personal room
               io.to(participantId).emit(`conversation-list-updated::${participantId}`, {
@@ -592,13 +592,13 @@ const socketForChat_V2_Claude_With_Firebase = (io: Server) => {
             } else if (isOnline && !isInConversationRoom) {
               // ⚠️ User is online but NOT in this conversation room
               // Send both socket notification AND conversation list update
-              console.log(`⚠️ User ${participantId} is online but not in room, sending notification`);
+              console.log(`⚠️ User ${participantId} is online but not in room, sending notification 3️⃣`);
               
               // Send message notification to personal room
               io.to(participantId).emit(eventName, messageToEmit);
               
-              // Send conversation list update
-              io.to(participantId).emit(`conversation-list-updated::${participantId}`, {
+              // Send conversation list update  .to(participantId)
+              io.emit(`conversation-list-updated::${participantId}`, {
                 creatorId: updatedConversation?.creatorId,
                 type: updatedConversation?.type,
                 siteId: updatedConversation?.siteId,
@@ -616,7 +616,7 @@ const socketForChat_V2_Claude_With_Firebase = (io: Server) => {
 
             } else {
               // 🔴 User is OFFLINE - send push notification
-              console.log(`🔴 User ${participantId} is offline, sending push notification`);
+              console.log(`🔴 User ${participantId} is offline, sending push notification 4️⃣`);
               
               try {
                 // Fetch user's FCM token
@@ -635,12 +635,12 @@ const socketForChat_V2_Claude_With_Firebase = (io: Server) => {
                     participantId
                   );
 
-                  console.log(`✅ 👉🔔👈 Push notification sent to ${participantId}`);
+                  console.log(`✅ 👉🔔👈 Push notification sent to ${participantId} 5️⃣`);
                 } else {
-                  console.log(`⚠️ No FCM token found for user ${participantId}`);
+                  console.log(`⚠️ No FCM token found for user ${participantId} 6️⃣`);
                 }
               } catch (error) {
-                console.error(`❌ Failed to send push notification to ${participantId}:`, error);
+                console.error(`❌ Failed to send push notification to ${participantId}: 7️⃣`, error);
               }
             }
           }

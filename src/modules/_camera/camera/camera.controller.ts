@@ -455,6 +455,27 @@ killAllStreams = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+
+getStreamCount = catchAsync(async (req: Request, res: Response) => {
+  const cameraIds = Object.keys(activeStreams);
+
+  if (cameraIds.length === 0) {
+    return sendResponse(res, {
+      code: StatusCodes.OK,
+      data: { activeStreamscount: cameraIds.length },
+      message: "No active streams found",
+      success: true,
+    });
+  }
+
+  sendResponse(res, {
+    code: StatusCodes.OK,
+    data: { activeStreamscount: cameraIds.length },
+    message: "Stream Count",
+    success: true,
+  });
+});
+
   getStreamingStatus = catchAsync(async (req: Request, res: Response) => {
     const cameraId = req.params.cameraId;
     const ffmpeg = activeStreams[cameraId];

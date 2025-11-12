@@ -48,6 +48,12 @@ router.route('/kill-stream').post(
   auth('admin'),
   controller.killAllStreams
 )
+
+router.route('/stream-count').get(
+  auth('admin'),
+  controller.getStreamCount
+)
+
 router.route('/:id').get(
   // auth('common'),
   controller.getById

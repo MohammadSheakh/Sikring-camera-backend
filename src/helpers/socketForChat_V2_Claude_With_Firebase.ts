@@ -589,7 +589,7 @@ const socketForChat_V2_Claude_With_Firebase = (io: Server) => {
                 _conversationId: updatedConversation?._id,
               });
 
-            } else if (isOnline && !isInConversationRoom) {
+            } else if (!isOnline && isInConversationRoom) {
               // ⚠️ User is online but NOT in this conversation room
               // Send both socket notification AND conversation list update
               console.log(`⚠️ User ${participantId} is online but not in room, sending notification 3️⃣`);

@@ -21,6 +21,8 @@ const register = catchAsync(async (req, res) => {
 const login = catchAsync(async (req, res) => {
   
   const { email, password, fcmToken } = req.body; // , fcmToken
+
+  console.log('req.body at login:', req.body); // Log the received FCM token  
   const result = await AuthService.login(email, password, fcmToken); // , fcmToken
 
   //set refresh token in cookie

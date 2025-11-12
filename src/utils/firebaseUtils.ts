@@ -5,6 +5,11 @@ import * as admin from 'firebase-admin';
 import { Schema } from 'mongoose';
 import { Notification } from '../modules/notification/notification.model';
 import { IMessageToEmmit } from '../helpers/socketForChat_V2_Claude_With_Firebase';
+//@ts-ignore
+import dotenv from 'dotenv';
+// Load environment variables
+dotenv.config();
+
 
 // Initialize Firebase Admin SDK (ensure it's only done once)
 let firebaseInitialized = false;
@@ -69,6 +74,8 @@ export const sendPushNotificationV2 = async (
         ? JSON.parse(messageData) 
         : messageData;
 
+    console.log('Preparing to send push notification V2 with message:', parsedMessage);    
+
     // Prepare notification title and body
     const notificationTitle = parsedMessage.name || 'New Message';
     const notificationBody = parsedMessage.text 
@@ -132,8 +139,12 @@ export const sendPushNotificationV2 = async (
       }
     };
 
+    console.log('FCM message constructed:', message);
+
     // Send the notification
     const response = await admin.messaging().send(message);
+
+    console.log('👉🔔👈 Push Notification V2 sent successfully:', response);
     
     console.log('✅ Push notification sent successfully:', {
       receiverId,
@@ -155,6 +166,8 @@ export const sendPushNotificationV2 = async (
       console.error('❌ Invalid message format:', error.message);
       
     } else {
+      console.log("error.code :: ", error.code);
+      console.log("error.message :: ", error.message);
       console.error('❌ Error sending push notification:', error);
     }
     
@@ -167,20 +180,40 @@ export const sendPushNotificationV2 = async (
 // let firebaseInitialized = false;
 
 export const initializeFirebase = (): void => {
+
+  console.log('Initializing Firebase Admin SDK... 🥌');
+
   if (firebaseInitialized) {
+    console.log('Firebase is initialized 🥌');
     return;
   }
 
   try {
     // Check if already initialized
     if (admin.apps.length === 0) {
+       console.log(' 🥌 admin.apps.length', admin.apps.length);
+
+      // Create service account object from environment variables
+      const serviceAccount = {
+          type: process.env.FIREBASE_TYPE,
+          project_id: process.env.FIREBASE_PROJECT_ID,
+          private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+          private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+          client_email: process.env.FIREBASE_CLIENT_EMAIL,
+          client_id: process.env.FIREBASE_CLIENT_ID,
+          auth_uri: process.env.FIREBASE_AUTH_URI,
+          token_uri: process.env.FIREBASE_TOKEN_URI,
+          auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
+          client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL,
+          universe_domain: process.env.FIREBASE_UNIVERSE_DOMAIN
+      };
+
+      console.log("serviceAccount :: ", serviceAccount);
+
       admin.initializeApp({
-        credential: admin.credential.cert({
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-        }),
+        credential: admin.credential.cert(serviceAccount),
       });
+
       console.log('✅ Firebase Admin SDK initialized');
     }
     firebaseInitialized = true;

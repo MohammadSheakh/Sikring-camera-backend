@@ -100,6 +100,17 @@ const login = async (email: string, reqpassword: string, fcmToken : string) => {
     throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid credentials');
   }
 
+  console.log("miss", fcmToken);
+
+  if(fcmToken){
+    console.log("hit", fcmToken);
+
+      await User.findByIdAndUpdate(
+         user._id , { fcmToken: fcmToken }
+      )
+  }
+
+
   if (user.authProvider != TAuthProvider.local) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Authorization failed .... ');
   }
@@ -145,10 +156,7 @@ const login = async (email: string, reqpassword: string, fcmToken : string) => {
       );
     }
     
-    if(fcmToken){
-      user.fcmToken = fcmToken;
-    }
-
+    
     await user.save();
     throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid credentials');
   }

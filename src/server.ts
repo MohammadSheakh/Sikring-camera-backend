@@ -74,7 +74,7 @@ process.on('uncaughtException', error => {
 
 
       // --- SOCKET.IO ON DIFFERENT PORT --- go to postman and connect  newsheakh3000.sobhoy.com   for socket
-      const socketPort = 3000; // 👈 choose your socket port
+      const socketPort = config.socketPort; // 👈 choose your socket port
       const socketServer = http.createServer(); // independent HTTP server only for socket.io
 
 

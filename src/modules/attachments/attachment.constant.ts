@@ -4,13 +4,13 @@ export enum AttachmentType {
     unknown = 'unknown',
 }
 
-export enum TFolderName {//sikring-camera
-    site = "testing/site",
-    user = "testing/user",
-    conversation = "testing/conversation",
-    camera = "testing/camera",
-    report = "testing/report",
-    review = "testing/review",
+export enum TFolderName {
+    site = "sikring-camera/site",
+    user = "sikring-camera/user",
+    conversation = "sikring-camera/conversation",
+    camera = "sikring-camera/camera",
+    report = "sikring-camera/report",
+    review = "sikring-camera/review",
 }
 
 // INFO : attachment er model eo update korte hobe .. 

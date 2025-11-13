@@ -554,15 +554,41 @@ const socketForChat_V2_Claude_With_Firebase = (io: Server) => {
               continue;
             }
 
-            console.log(`Checking participant: ${participantId} 1️⃣`);
+            // console.log("participantId :: 1️⃣", participantId);
+
+            // console.log(`Checking participant: 2️⃣ ${participantId} `);
+
+            // console.log(`onlineUsers: ${Array.from(onlineUsers)} 3️⃣`);
+
+            // // Check if user is ONLINE (has active socket connection)
+            // const isOnline = onlineUsers.has(participantId.toString());
+            
+            // // Check if user has JOINED this specific conversation room
+            // const isInConversationRoom = userIdsInRoom.has(participantId.toString());
+
+            // console.log(`4️⃣  User ${participantId}: online=${isOnline}, inRoom=${isInConversationRoom}`);
+
+
+            // Convert Sets to arrays for logging and filtering
+
+            
+            const onlineUsersArray = Array.from(onlineUsers).map(id => id.toString());
+            const userIdsInRoomArray = Array.from(userIdsInRoom).map(id => id.toString());
+
+            console.log(`Checking participant: 2️⃣ ${participantId}`);
+            console.log(`onlineUsers: ${onlineUsersArray} 3️⃣`);
+            console.log(`userIdsInRoom: ${userIdsInRoomArray} 3️⃣`);
+
+            // Ensure participantId is a string
+            const participantIdStr = participantId.toString();
 
             // Check if user is ONLINE (has active socket connection)
-            const isOnline = onlineUsers.has(participantId);
-            
-            // Check if user has JOINED this specific conversation room
-            const isInConversationRoom = userIdsInRoom.has(participantId);
+            const isOnline = onlineUsersArray.includes(participantIdStr);
 
-            console.log(`User ${participantId}: online=${isOnline}, inRoom=${isInConversationRoom}`);
+            // Check if user has JOINED this specific conversation room
+            const isInConversationRoom = userIdsInRoomArray.includes(participantIdStr);
+
+
 
             // ============================================
             // DECISION TREE FOR NOTIFICATIONS
@@ -589,7 +615,7 @@ const socketForChat_V2_Claude_With_Firebase = (io: Server) => {
                 _conversationId: updatedConversation?._id,
               });
 
-            } else if (!isOnline && isInConversationRoom) {
+            } else if (isOnline && !isInConversationRoom) {
               // ⚠️ User is online but NOT in this conversation room
               // Send both socket notification AND conversation list update
               console.log(`⚠️ User ${participantId} is online but not in room, sending notification 3️⃣`);

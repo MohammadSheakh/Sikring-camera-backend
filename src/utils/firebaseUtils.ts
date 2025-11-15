@@ -287,8 +287,8 @@ export const buildFCMMessageV2 = async (
   // Build FCM message
   const message: admin.messaging.Message = {
     notification: {
-      title: notificationTitle,
-      body: notificationBody,
+      title: toStringValue(parsedMessage.name),
+      body: notificationBody,// parsedMessage, //notificationBody,
       ...(imageUrl && { imageUrl }),
     },
     data: {

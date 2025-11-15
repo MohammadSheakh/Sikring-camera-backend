@@ -571,7 +571,7 @@ const socketForChat_V2_Claude_With_Firebase = (io: Server) => {
 
             // Convert Sets to arrays for logging and filtering
 
-            
+
             const onlineUsersArray = Array.from(onlineUsers).map(id => id.toString());
             const userIdsInRoomArray = Array.from(userIdsInRoom).map(id => id.toString());
 
@@ -587,8 +587,6 @@ const socketForChat_V2_Claude_With_Firebase = (io: Server) => {
 
             // Check if user has JOINED this specific conversation room
             const isInConversationRoom = userIdsInRoomArray.includes(participantIdStr);
-
-
 
             // ============================================
             // DECISION TREE FOR NOTIFICATIONS

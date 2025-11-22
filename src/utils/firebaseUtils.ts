@@ -154,87 +154,6 @@ export const sendPushNotificationV2 = async (
   }
 };
 
-const buildFCMMessage = async ( messageData : IMessageToEmmit, fcmToken:string ) : Promise<{
-  message: admin.messaging.Message,
-  notificationTitle: string
-}> => {
-  // Parse messageData if it's a string
-    const parsedMessage: IMessageToEmmit = 
-      typeof messageData === 'string' 
-        ? JSON.parse(messageData) 
-        : messageData;
-
-    console.log('Preparing to send push notification V2 with message:', parsedMessage);    
-
-    // Prepare notification title and body
-    const notificationTitle = parsedMessage.name || 'New Message';
-    const notificationBody = parsedMessage.text 
-      ? (parsedMessage.text.length > 100 
-          ? parsedMessage.text.substring(0, 97) + '...' 
-          : parsedMessage.text)
-      : 'You have a new message';
-
-    // Build the FCM message
-    const message: admin.messaging.Message = {
-      notification: {
-        title: notificationTitle,
-        body: notificationBody,
-        // Add image if available
-        ...(parsedMessage.image && { imageUrl: parsedMessage.image })
-      },
-      data: {
-        // Send all message data as strings (FCM requirement)
-        messageId: parsedMessage._id?.toString() || '',
-        conversationId: parsedMessage.conversationId?.toString() || '',
-        senderId: parsedMessage.senderId?.toString() || '',
-        senderName: parsedMessage.name || '',
-        senderImage: parsedMessage.image || '',
-        messageText: parsedMessage.text || '',
-        createdAt: parsedMessage.createdAt?.toString() || new Date().toString(),
-        type: 'new-message',
-        timestamp: Date.now().toString(),
-        // Include full message as JSON string for client to parse
-        fullMessage: JSON.stringify(parsedMessage)
-      },
-      token: fcmToken,
-      // Android specific configuration
-      android: {
-        priority: 'high',
-        notification: {
-          channelId: 'chat_messages',
-          sound: 'default',
-          priority: 'high',
-          defaultSound: true,
-          defaultVibrateTimings: true,
-        }
-      },
-      // iOS specific configuration
-      apns: {
-        payload: {
-          aps: {
-            alert: {
-              title: notificationTitle,
-              body: notificationBody
-            },
-            sound: 'default',
-            badge: 1, // You might want to track unread count
-            'content-available': 1, // For background data sync
-            'mutable-content': 1 // For notification service extension
-          }
-        },
-        headers: {
-          'apns-priority': '10', // High priority
-          'apns-push-type': 'alert'
-        }
-      }
-    };
-
-    return {
-      message,
-      notificationTitle
-    }
-}
-
 
 
 export const buildFCMMessageV2 = async (
@@ -346,3 +265,85 @@ function safeJSONParse(data: any) {
     return null;
   }
 }
+
+const buildFCMMessage = async ( messageData : IMessageToEmmit, fcmToken:string ) : Promise<{
+  message: admin.messaging.Message,
+  notificationTitle: string
+}> => {
+  // Parse messageData if it's a string
+    const parsedMessage: IMessageToEmmit = 
+      typeof messageData === 'string' 
+        ? JSON.parse(messageData) 
+        : messageData;
+
+    console.log('Preparing to send push notification V2 with message:', parsedMessage);    
+
+    // Prepare notification title and body
+    const notificationTitle = parsedMessage.name || 'New Message';
+    const notificationBody = parsedMessage.text 
+      ? (parsedMessage.text.length > 100 
+          ? parsedMessage.text.substring(0, 97) + '...' 
+          : parsedMessage.text)
+      : 'You have a new message';
+
+    // Build the FCM message
+    const message: admin.messaging.Message = {
+      notification: {
+        title: notificationTitle,
+        body: notificationBody,
+        // Add image if available
+        ...(parsedMessage.image && { imageUrl: parsedMessage.image })
+      },
+      data: {
+        // Send all message data as strings (FCM requirement)
+        messageId: parsedMessage._id?.toString() || '',
+        conversationId: parsedMessage.conversationId?.toString() || '',
+        senderId: parsedMessage.senderId?.toString() || '',
+        senderName: parsedMessage.name || '',
+        senderImage: parsedMessage.image || '',
+        messageText: parsedMessage.text || '',
+        createdAt: parsedMessage.createdAt?.toString() || new Date().toString(),
+        type: 'new-message',
+        timestamp: Date.now().toString(),
+        // Include full message as JSON string for client to parse
+        fullMessage: JSON.stringify(parsedMessage)
+      },
+      token: fcmToken,
+      // Android specific configuration
+      android: {
+        priority: 'high',
+        notification: {
+          channelId: 'chat_messages',
+          sound: 'default',
+          priority: 'high',
+          defaultSound: true,
+          defaultVibrateTimings: true,
+        }
+      },
+      // iOS specific configuration
+      apns: {
+        payload: {
+          aps: {
+            alert: {
+              title: notificationTitle,
+              body: notificationBody
+            },
+            sound: 'default',
+            badge: 1, // You might want to track unread count
+            'content-available': 1, // For background data sync
+            'mutable-content': 1 // For notification service extension
+          }
+        },
+        headers: {
+          'apns-priority': '10', // High priority
+          'apns-push-type': 'alert'
+        }
+      }
+    };
+
+    return {
+      message,
+      notificationTitle
+    }
+}
+

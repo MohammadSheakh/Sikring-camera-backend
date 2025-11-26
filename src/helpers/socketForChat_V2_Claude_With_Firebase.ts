@@ -571,13 +571,12 @@ const socketForChat_V2_Claude_With_Firebase = (io: Server) => {
 
             // Convert Sets to arrays for logging and filtering
 
-
             const onlineUsersArray = Array.from(onlineUsers).map(id => id.toString());
             const userIdsInRoomArray = Array.from(userIdsInRoom).map(id => id.toString());
 
-            console.log(`Checking participant: 2️⃣ ${participantId}`);
-            console.log(`onlineUsers: ${onlineUsersArray} 3️⃣`);
-            console.log(`userIdsInRoom: ${userIdsInRoomArray} 3️⃣`);
+            // console.log(`Checking participant: 2️⃣ ${participantId}`);
+            // console.log(`onlineUsers: ${onlineUsersArray} 3️⃣`);
+            // console.log(`userIdsInRoom: ${userIdsInRoomArray} 3️⃣`);
 
             // Ensure participantId is a string
             const participantIdStr = participantId.toString();

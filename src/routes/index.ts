@@ -17,6 +17,7 @@ import { ReviewRoute } from '../modules/review/review.route';
 import { SettingsRoutes } from '../modules/settings/settings.routes';
 import { ConversationParticipentsRoute } from '../modules/_chatting/conversationParticipents/conversationParticipents.route';
 import { PredefinedCustomDescriptionRoute } from '../modules/_report/predefinedCustomDescription/predefinedCustomDescription.route';
+import { CompanyLogoRoute } from '../modules/companyLogo/companyLogo.route';
 
 // import { ChatRoutes } from '../modules/chat/chat.routes';
 // import { MessageRoutes } from '../modules/message/message.routes';
@@ -30,6 +31,10 @@ const apiRoutes = [
   {
     path: '/user',
     route: UserRoutes,
+  },
+  {
+    path: '/company-logo',
+    route: CompanyLogoRoute,
   },
   {
     path: '/admin',

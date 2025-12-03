@@ -69,6 +69,7 @@ const userSchema = new Schema<TUser, UserModal>(
       required: false,
       default: { imageUrl: '/uploads/users/user.png' },
     },
+    
     companyLogoImage: [
       {
         type: Schema.Types.ObjectId,

@@ -79,14 +79,14 @@ export class userSiteController extends GenericController<
       {
         path: 'siteId',
         select: 'name createdAt type ', // attachments
-        // populate: {
-        //   path: 'attachments', // deep populate attachments
-        //   select: 'attachment' // only pick attachmentName
-        // }
       },
       {
         path: 'personId',
-        select: 'name role user_custom_id email address' // only pick name, role and profileImage
+        select: 'name role user_custom_id email address companyLogoImage', // only pick name, role and profileImage
+        populate:{
+            path: 'companyLogoImage', // deep populate attachments
+          select: 'attachment' // only pick attachmentName
+        }
       }
     ];
 

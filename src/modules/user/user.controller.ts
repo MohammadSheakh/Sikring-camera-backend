@@ -312,7 +312,7 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
 
       return sendResponse(res, {
         code: StatusCodes.OK,
-        data: null,
+        data: newUser,
         message: 'New user created and email sent successfully',
       });
     } else if (req.body.role == 'user'){
@@ -346,7 +346,7 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
 
       return sendResponse(res, {
         code: StatusCodes.OK,
-        data: null,
+        data: newUser,
         message: `New ${req.body.role} created and email sent successfully`,
       });
     }else if (req.body.role == 'manager'){
@@ -373,11 +373,10 @@ const sendInvitationLinkToAdminEmail = catchAsync(async (req, res) => {
 
       return sendResponse(res, {
         code: StatusCodes.OK,
-        data: null,
+        data: newUser,
         message: `New ${req.body.role} created and email sent successfully`,
       });
     }
-    
   }
 });
 

@@ -147,14 +147,14 @@ const login = async (email: string, reqpassword: string, fcmToken : string) => {
   const isPasswordValid = await bcryptjs.compare(reqpassword, user.password);
   if (!isPasswordValid) {
     user.failedLoginAttempts = (user.failedLoginAttempts || 0) + 1;
-    if (user.failedLoginAttempts >= config.auth.maxLoginAttempts) {
-      user.lockUntil = moment().add(config.auth.lockTime, 'minutes').toDate();
-      await user.save();
-      throw new ApiError(
-        423,
-        `Account locked for ${config.auth.lockTime} minutes due to too many failed attempts`,
-      );
-    }
+    // if (user.failedLoginAttempts >= config.auth.maxLoginAttempts) {
+    //   user.lockUntil = moment().add(config.auth.lockTime, 'minutes').toDate();
+    //   await user.save();
+    //   throw new ApiError(
+    //     423,
+    //     `Account locked for ${config.auth.lockTime} minutes due to too many failed attempts`,
+    //   );
+    // }
     
     
     await user.save();

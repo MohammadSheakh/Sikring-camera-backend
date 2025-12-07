@@ -83,10 +83,17 @@ export class userSiteController extends GenericController<
       {
         path: 'personId',
         select: 'name role user_custom_id email address companyLogoImage', // only pick name, role and profileImage
-        populate:{
-            path: 'companyLogoImage', // deep populate attachments
-          select: 'attachment' // only pick attachmentName
+        // populate:"companyLogoImage"
+
+        populate: {
+          path: 'companyLogoImage',
+          select: 'attachment'
         }
+
+        // populate:{
+        //     path: 'companyLogoImage', // deep populate attachments
+        //   select: 'attachment' // only pick attachmentName
+        // }
       }
     ];
 

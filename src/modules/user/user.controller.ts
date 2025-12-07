@@ -20,6 +20,7 @@ import { TAttachedToType, TFolderName } from '../attachments/attachment.constant
 import bcryptjs from 'bcryptjs';
 import { config } from '../../config';
 import { userSite } from '../_site/userSite/userSite.model';
+import { IUser } from './user.interface';
 
 const userCustomService = new UserCustomService();
 const attachmentService = new AttachmentService();
@@ -90,7 +91,7 @@ const updateUserProfile = catchAsync(async (req, res) => {
    * 
    * ********** */
 
-  const existingUser = await User.findById(userId);
+  const existingUser:IUser = await User.findById(userId);
 
   
 
@@ -121,8 +122,6 @@ const updateUserProfile = catchAsync(async (req, res) => {
       siteId: payload.siteId,
     })
 
-    
-
     if(existingUserSite){
       // update the userSite collection
       await userSite.findByIdAndUpdate(
@@ -134,6 +133,12 @@ const updateUserProfile = catchAsync(async (req, res) => {
         { new : true } // return the updated document
       );
     }else{
+
+      // this will fix issue of creating another document .. instead of updating existing document
+      await userSite.deleteMany({
+        personId: userId,
+      })
+
       // we create a new userSite collection
       await userSite.create({
         personId: userId,
@@ -143,32 +148,34 @@ const updateUserProfile = catchAsync(async (req, res) => {
     }
   }
 
-  // let attachments = [];
+  let attachments = [];
       
-  // if (req.files && req.files.attachments) {
-  //   attachments.push(
-  //     ...(await Promise.all(
-  //     req.files.attachments.map(async file => {
-  //       const attachmenId = await attachmentService.uploadSingleAttachment(
-  //           file, // file to upload 
-  //           TFolderName.user, // folderName
-  //           req.user.userId, // uploadedByUserId
-  //           TAttachedToType.user
-  //       );
-  //       return attachmenId;
-  //       })
-  //     ))
-  //   );
+  if (req.files && req.files.attachments) {
+    attachments.push(
+      ...(await Promise.all(
+      req.files.attachments.map(async file => {
+        const attachmenId = await attachmentService.uploadSingleAttachment(
+            file, // file to upload 
+            TFolderName.user, // folderName
+            req.user.userId, // uploadedByUserId
+            TAttachedToType.user
+        );
+        return attachmenId;
+        })
+      ))
+    );
+  }
 
   //   if(!req.body.text){
   //     req.body.text = `${attachments.length} attachments uploaded`;
   //   }
   // }
 
-  // payload.profileImage = attachments;
-
-
-
+  if(existingUser.companyLogoImage){
+    // it ensures we only update this for customer .. because only customer has companyLogoImage field
+    payload.companyLogoImage = attachments.length > 0 ? attachments : existingUser.companyLogoImage;
+  }
+  
   const result = await UserService.updateUserProfile(userId, payload);
   sendResponse(res, {
     code: StatusCodes.OK,

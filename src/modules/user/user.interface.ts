@@ -69,6 +69,7 @@ export interface IUser  {
 
   address : string;
   profileImage?: TProfileImage;
+  companyLogoImage : Types.ObjectId[];
   fcmToken : string;
   role: Role;
 

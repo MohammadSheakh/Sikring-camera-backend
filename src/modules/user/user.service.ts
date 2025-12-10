@@ -104,10 +104,16 @@ const updateUserProfile = async (
 
 //[🚧][🧑‍💻✅][🧪🆗]
 const getMyProfile = async (userId: string): Promise<TUser | null> => {
-  const result = await User.findById(userId).select('id name profileImage');
+  
+  const result = await User.findById(userId).select('id name profileImage companyLogoImage').populate({
+    path: 'companyLogoImage',
+    select: 'attachment',
+  });
+
   if (!result) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'User not found');
   }
+
   return result;
 };
 

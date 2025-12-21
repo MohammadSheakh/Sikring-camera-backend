@@ -133,7 +133,7 @@ const getMyProfileOnlyRequiredField = async (userId: string): Promise<TUser | nu
   }
   return result;
 };
-
+  
 const deleteMyProfile = async (userId: string): Promise<TUser | null> => {
   const result = await User.findById(userId);
 

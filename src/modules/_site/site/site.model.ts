@@ -34,11 +34,14 @@ const siteSchema = new Schema<ISite>(
 
     type : {
       type: String,
-      enum:  [TSiteType.liveEvent,
-         TSiteType.construction,
-          TSiteType.residential,
-          TSiteType.commercial,
-          TSiteType.industrial,
+      enum:  [
+          TSiteType.construction,  
+          TSiteType.publicCustomers,
+          TSiteType.industry,
+          TSiteType.safeWater,
+          TSiteType.alarmCustomers,
+          TSiteType.roundingCustomers,
+          TSiteType.privateCustomers,
           TSiteType.other
         ],
       required: [

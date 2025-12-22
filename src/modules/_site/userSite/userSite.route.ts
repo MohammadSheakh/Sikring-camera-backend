@@ -166,6 +166,39 @@ router.route('/conversation/admin/paginate').get(
   controller.getAllWithPaginationForAdminConversation
 );
 
+/************** 🆕
+ * 
+ *  (Dashboard) (Admin) : Show all Related Manager or User For Create Relationship with Site
+ * 
+ * ************* */
+router.route('/related-users/:siteId').get(
+  auth('common'), 
+  validateFiltersForQuery(optionValidationChecking(['_id','role', 'siteId', ...paginationOptions])),
+  controller.showAllUnknowsUser
+);
+//// 🆕
+router.route('/related-managers/:siteId').get(
+  auth('common'), 
+  validateFiltersForQuery(optionValidationChecking(['_id','role', 'siteId', ...paginationOptions])),
+  controller.showAllUnknowsManager
+);
+
+router.route('/related-persons/:siteId').get(
+  auth('common'), 
+  validateFiltersForQuery(optionValidationChecking(['_id','role', 'siteId', ...paginationOptions])),
+  controller.showAllRelatedPersonsForASite
+);
+
+/************** 🆕
+ * 
+ *  (Dashboard) (Admin) : Assign User And Manager to a site
+ * 
+ * ************* */
+router.route('/create-relation/:siteId/:personId').post(
+  auth('admin'),
+  controller.assignPersonToASite // Assign User And Manager to a site 
+)
+
 /***********
  * 
  * (Dashboard) (Admin) : As per Sayed Vai suggestion,  when admin search for a person.. 

@@ -12,6 +12,7 @@ import { User } from '../../user/user.model';
 import { TRole } from '../../user/user.constant';
 import ApiError from '../../../errors/ApiError';
 import { ConversationParticipents } from '../../_chatting/conversationParticipents/conversationParticipents.model';
+import { IUser } from '../../user/user.interface';
 
 export class userSiteController extends GenericController<
   typeof userSite,
@@ -604,12 +605,13 @@ export class userSiteController extends GenericController<
         TRole.customer
       ];
     
-
-      if(!allowedTypes.includes(req.query.role)){
-        throw new ApiError(StatusCodes.BAD_REQUEST, `Invalid type .. Allowed types are ${allowedTypes.join(', ')}`);
+      if(req.query.role){
+        if(!allowedTypes.includes(req.query.role)){
+          throw new ApiError(StatusCodes.BAD_REQUEST, `Invalid type .. Allowed types are ${allowedTypes.join(', ')}`);
+        }
       }
-    
-
+      
+  
     // Step 1: Retrieve all siteIds related to the user
     const sitesRelatedToUser = await userSite.find(
       { personId: req.user.userId, isDeleted: false },
@@ -684,6 +686,87 @@ export class userSiteController extends GenericController<
       success: true,
     });
   });
+
+  /*------------------------
+  (Dashboard)( Admin) : Show all Unknown User / Manager to assign to a Site 
+  -------------------------*/
+  showAllUnknowsUser = catchAsync(async (req: Request, res: Response) => {
+  
+    const result = await this.userSiteService.
+    getUnknownUserForSiteForAssign(req.params.siteId,
+      [], // filters
+      [] // options
+    )
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `Unknown User retrieved successfully`,
+      success: true,
+    });
+  });
+
+  /*------------------------
+  (Dashboard)( Admin) : Show all Unknown User / Manager to assign to a Site 
+  -------------------------*/
+  showAllUnknowsManager = catchAsync(async (req: Request, res: Response) => {
+    
+    const result = await this.userSiteService.
+    getUnknownManagerForSiteForAssign(req.params.siteId,
+      [], // filters
+      [] // options
+    )
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `Unknown manager retrieved successfully`,
+      success: true,
+    });
+  });
+
+  // 🆕
+  assignPersonToASite = catchAsync(async (req: Request, res: Response) => {
+    
+    const user:IUser = await User.findById(req.params.personId).select('role');
+    if(!user){
+      throw new ApiError(StatusCodes.BAD_REQUEST, `This user is not found`);
+    }
+
+    const result = await userSite.create({
+      personId: req.params.personId,
+      siteId: req.params.siteId,
+      role : user.role, // we will use the existing user role
+    });
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `Assigned successfully`,
+      success: true,
+    });
+  });
+
+
+  showAllRelatedPersonsForASite = catchAsync(async (req: Request, res: Response) => {
+  
+    const result = await userSite.find({
+      siteId: req.params.siteId,
+      role: { $nin: ['admin', 'customer'] },
+    });
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `Related Person Retrived Successfully`,
+      success: true,
+    });
+  });
+
+
+  
+
+
 
   /**************
    * 

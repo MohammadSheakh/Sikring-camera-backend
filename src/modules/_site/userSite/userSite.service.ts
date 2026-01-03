@@ -37,7 +37,7 @@ export class UserSiteService extends GenericService<
                 $match: {
                   $expr: {
                     $and: [
-                      { $eq: ['$userId', '$$userId'] },
+                      { $eq: ['$personId', '$$userId'] },
                       { $eq: ['$siteId', new mongoose.Types.ObjectId(siteId)] },
                       { $ne: ['$isDeleted', true] }
                     ]
@@ -108,7 +108,7 @@ export class UserSiteService extends GenericService<
                 $match: {
                   $expr: {
                     $and: [
-                      { $eq: ['$userId', '$$userId'] },
+                      { $eq: ['$personId', '$$userId'] },
                       { $eq: ['$siteId', new mongoose.Types.ObjectId(siteId)] },
                       { $ne: ['$isDeleted', true] }
                     ]
@@ -143,15 +143,6 @@ export class UserSiteService extends GenericService<
 
     return result;
 
-    /************
-    // Use pagination service for aggregation
-    return await PaginationService.aggregationPaginate(User, pipeline,
-      //  {
-      //   page: options.page,
-      //   limit: options.limit
-      // }
-      options
-    );
-    ********* */
+    
   }
 }

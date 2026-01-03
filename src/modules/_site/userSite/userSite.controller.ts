@@ -753,7 +753,8 @@ export class userSiteController extends GenericController<
     const result = await userSite.find({
       siteId: req.params.siteId,
       role: { $nin: ['admin', 'customer'] },
-    });
+      isDeleted: false,
+    }).populate('siteId personId');
 
     sendResponse(res, {
       code: StatusCodes.OK,
@@ -762,11 +763,6 @@ export class userSiteController extends GenericController<
       success: true,
     });
   });
-
-
-  
-
-
 
   /**************
    * 

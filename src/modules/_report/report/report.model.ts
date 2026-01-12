@@ -26,27 +26,27 @@ const reportSchema = new Schema<Ireport>(
     },
     
     reportType : {
-          type: String,
-          enum:  [TReportType.alarmPatrol, TReportType.patrolReport, TReportType.service, TReportType.emergency_call_out],
-          required: [
-            false,
-            `reportType is required it can be ${Object.values(
-              TReportType
-            ).join(', ')}`,
-          ],
-          // default: TReportType.alarmPatrol, // INFO : no default value for reportType
+      type: String,
+      enum:  [TReportType.alarmPatrol, TReportType.patrolReport, TReportType.service, TReportType.emergency_call_out],
+      required: [
+        false,
+        `reportType is required it can be ${Object.values(
+          TReportType
+        ).join(', ')}`,
+      ],
+      // default: TReportType.alarmPatrol, // INFO : no default value for reportType
     },
 
     incidentSevearity : {
-          type: String,
-          enum:  [TIncidentSevearity.low, TIncidentSevearity.medium, TIncidentSevearity.high],
-          required: [
-            false,
-            `incidentSevearity is required it can be ${Object.values(
-              TIncidentSevearity
-            ).join(', ')}`,
-          ],
-          // default: TReportType.alarmPatrol, // INFO : no default value for reportType
+      type: String,
+      enum:  [TIncidentSevearity.low, TIncidentSevearity.medium, TIncidentSevearity.high],
+      required: [
+        false,
+        `incidentSevearity is required it can be ${Object.values(
+          TIncidentSevearity
+        ).join(', ')}`,
+      ],
+      // default: TReportType.alarmPatrol, // INFO : no default value for reportType
     },
 
     title : {
@@ -66,6 +66,18 @@ const reportSchema = new Schema<Ireport>(
       required: [false, 'location is not required'],
     },
 
+    // 🆕 new requirement
+    lat: {
+      type: String,
+      required: [false, 'lat is not required'],
+    },
+
+    // 🆕 new requirement
+    long: {
+      type: String,
+      required: [false, 'long is not required'],
+    },
+
     // INFO : this is just for show in front end who is created the report
     person : {
       type: Object,
@@ -74,15 +86,15 @@ const reportSchema = new Schema<Ireport>(
     },
 
     status : {
-          type: String,
-          enum:  [TStatus.accept, TStatus.deny, TStatus.underReview],
-          required: [
-            false,
-            `status is required it can be ${Object.values(
-              TStatus
-            ).join(', ')}`,
-          ],
-        default: TStatus.underReview,
+      type: String,
+      enum:  [TStatus.accept, TStatus.deny, TStatus.underReview],
+      required: [
+        false,
+        `status is required it can be ${Object.values(
+          TStatus
+        ).join(', ')}`,
+      ],
+      default: TStatus.underReview,
     },
 
     attachments: [

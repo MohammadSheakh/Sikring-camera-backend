@@ -23,6 +23,8 @@ import mongoose from 'mongoose';
 import { IuserSite } from '../../_site/userSite/userSite.interface';
 import { IcustomerReport } from '../customerReport/customerReport.interface';
 import { TRole } from '../../../middlewares/roles';
+import omit from '../../../shared/omit';
+import pick from '../../../shared/pick';
 
 let attachmentService = new AttachmentService();
 
@@ -276,13 +278,142 @@ export class reportController extends GenericController<
     });
   });
 
-  /*********
+  // 🆕 this is V3 .. which send report creators lat and long also .. 
+  createV3 = catchAsync(async (req: Request, res: Response) => {
+   
+    // INFO : req.body te assignedManager and assignedUser er nam nite hobe abu sayeed vai er kas theke .. 
+    // INFO :  karon shei nam ta audit log e dekhano lagbe .. 
+
+    let attachments = [];
+
+    if (req.files && req.files.attachments) {
+      attachments.push(
+        ...(await Promise.all(
+        //@ts-ignore
+        req.files.attachments.map(async file => {
+          const attachmenId = await attachmentService.uploadSingleAttachment(
+              file, // file to upload 
+              TFolderName.site, // folderName
+              req.user.userId, // uploadedByUserId
+              TAttachedToType.site
+          );
+          return attachmenId;
+          })
+        ))
+      );
+    }
+
+    req.body.attachments = attachments;
+
+    const populateOptions = [
+        {
+            path: 'attachments',
+            select: 'attachment'
+        },
+      ];
+
+    const result = await this.service.createAndPopulateSpecificFields({
+        title: req.body.title,
+        creatorId : req.user.userId,  //////// Who create this report 
+        reportType: req.body.reportType,
+        incidentSevearity: req.body.incidentSevearity,
+        siteId: req.body.siteId,
+        description: req.body.description,
+        status: req.body.status, 
+        attachments: req.body.attachments,
+        long: req.body.long, // 🆕 New requirement
+        lat : req.body.lat, // 🆕 New requirement
+    }, populateOptions);
+    
+    let actionPerformed = '';
+
+    if(result._id){
+
+      // need to check if the manager exist or not  
+
+      /*******
+       * 🆕 As we need to send this report directly to the customer's site's employee
+       * ****** */
+      // const employeeForThisSite = await userSite.findOne({
+      //   siteId: req.body.siteId,
+      //   role: TRole.user, // as user means employee 
+      //   isDeleted: false
+      // });
+
+      // Create both relations in parallel
+
+      const [customerForReport, employeeForThisSite] = await Promise.all([
+        // create relation between report and customer [person who is creating this report]
+        this.customerReportService.create({
+          personId: req.user.userId,
+          reportId: result._id,
+          role: req.user.role,
+          reportType: req.body.reportType
+        }),
+        // now create relation between report and employee [person who is assigned to this report]
+        userSite.findOne({
+          siteId: req.body.siteId,
+          role: TRole.user, // as user means employee 
+          isDeleted: false
+        })
+      ]);
+
+
+      // now create relation between report and employee [person who is assigned to this report]
+      const employeeForReport = await this.customerReportService.create({
+        personId: employeeForThisSite.personId,
+        reportId: result._id,
+        role: employeeForThisSite.role,
+        reportType: req.body.reportType
+      });
+
+      /*************
+      // create relation between report and customer [person who is creating this report]
+      const customerForReport = await this.customerReportService.create({
+        personId: req.user.userId,
+        reportId: result._id,
+        role: req.user.role,
+        reportType: req.body.reportType
+      });
+
+      // now create relation between report and employee [person who is assigned to this report]
+      const employeeForReport = await this.customerReportService.create({
+        personId: employeeForThisSite.personId,
+        reportId: result._id,
+        role: employeeForThisSite.role,
+        reportType: req.body.reportType
+      });
+      *********** */
+
+      console.log(" 🆕 Flow employeeForThisSite", employeeForReport);
+
+      actionPerformed+= `A New Review ${result._id} Created by ${req.user.userId} For Site ${req.body.siteId} `
+    }
+    
+    let valueForAuditLog : IauditLog = {
+      userId: req.user.userId,
+      role: req.user.role,
+      actionPerformed: `${actionPerformed}`,
+      status: TStatus.success,
+    }
+
+    eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
+    
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `${this.modelName} created successfully`,
+      success: true,
+    });
+  });
+
+  /*********  ⚠️ V2 Found 
    * 
    * 🆕 User(Employee) | Create Report 
    * -----------------
    * must send customerId in req.body .. 
    * **** */
-   createForEmployee = catchAsync(async (req: Request, res: Response) => {
+  createForEmployee = catchAsync(async (req: Request, res: Response) => {
    
     // INFO : req.body te assignedManager and assignedUser er nam nite hobe abu sayeed vai er kas theke .. 
     // INFO :  karon shei nam ta audit log e dekhano lagbe .. 
@@ -323,6 +454,96 @@ export class reportController extends GenericController<
         description: req.body.description,
         status: req.body.status, 
         attachments: req.body.attachments,
+    }, populateOptions);
+    
+    let actionPerformed = '';
+
+    if(result._id){
+    
+      const [customerForReport] = await Promise.all([
+        // create relation between report and customer [person who is creating this report]
+        this.customerReportService.create({
+          personId: req.user.userId, // employeeId .. as he is creating this report
+          reportId: result._id, // report Id
+          role: req.user.role,
+          reportType: req.body.reportType
+        }),
+      ]);
+
+      // now create relation between report and employee [person who is assigned to this report]
+      if(req.body.customerId){
+        const employeeForThisSite =  this.customerReportService.create({
+          personId: req.body.customerId, // as customer needs to see this report also
+          reportId: result._id,
+          role: TRole.customer, // as role is customer 
+          reportType: req.body.reportType
+        })
+      }
+    
+      actionPerformed+= `A New Review ${result._id} Created by ${req.user.userId} For Site ${req.body.siteId} `
+    }
+    
+    let valueForAuditLog : IauditLog = {
+      userId: req.user.userId,
+      role: req.user.role,
+      actionPerformed: `${actionPerformed}`,
+      status: TStatus.success,
+    }
+
+    eventEmitterForAuditLog.emit('eventEmitForAuditLog', valueForAuditLog);
+    
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `${this.modelName} created successfully`,
+      success: true,
+    });
+  });
+
+  // 🆕 this is V2 .. which send report creators lat and long also .. 
+  createForEmployeeV2 = catchAsync(async (req: Request, res: Response) => {
+   
+    // INFO : req.body te assignedManager and assignedUser er nam nite hobe abu sayeed vai er kas theke .. 
+    // INFO :  karon shei nam ta audit log e dekhano lagbe .. 
+
+    let attachments = [];
+
+    if (req.files && req.files.attachments) {
+      attachments.push(
+        ...(await Promise.all(
+        req.files.attachments.map(async file => {
+          const attachmenId = await attachmentService.uploadSingleAttachment(
+              file, // file to upload 
+              TFolderName.site, // folderName
+              req.user.userId, // uploadedByUserId
+              TAttachedToType.site
+          );
+          return attachmenId;
+          })
+        ))
+      );
+    }
+
+    req.body.attachments = attachments;
+
+    const populateOptions = [
+      {
+          path: 'attachments',
+          select: 'attachment'
+      },
+    ];
+
+    const result = await this.service.createAndPopulateSpecificFields({
+        title: req.body.title,
+        reportType: req.body.reportType,
+        creatorId : req.user.userId,
+        incidentSevearity: req.body.incidentSevearity,
+        siteId: req.body.siteId,
+        description: req.body.description,
+        status: req.body.status, 
+        attachments: req.body.attachments,
+        long: req.body.long, // 🆕 New requirement
+        lat : req.body.lat, // 🆕 New requirement
     }, populateOptions);
     
     let actionPerformed = '';
@@ -660,6 +881,38 @@ export class reportController extends GenericController<
       });
     }
   );
+
+
+  getAllWithPagination = catchAsync(async (req: Request, res: Response) => {
+    //const filters = pick(req.query, ['_id', 'title']); // now this comes from middleware in router
+    const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
+    const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
+    
+    options.sortBy = '-createdAt';
+
+    const populateOptions: (string | {path: string, select: string}[]) = [
+      // {
+      //   path: 'personId',
+      //   select: 'name ' 
+      // },
+      // 'personId'
+      // {
+      //   path: 'siteId',
+      //   select: ''
+      // }
+    ];
+
+    // const select = ''; // -role
+
+    const result = await this.service.getAllWithPagination(filters, options, populateOptions/*, select*/);
+
+    sendResponse(res, {
+      code: StatusCodes.OK,
+      data: result,
+      message: `All ${this.modelName} with pagination`,
+      success: true,
+    });
+  });
 
   // add more methods here if needed or override the existing ones 
 }

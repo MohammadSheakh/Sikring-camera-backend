@@ -101,6 +101,18 @@ router.route('/create/v2').post(
   validateRequest(validation.createReportValidationSchema),
   controller.createV2
 );
+
+router.route('/create/v3').post(
+  [
+    upload.fields([
+      { name: 'attachments', maxCount: 15 }, // Allow up to 5 cover photos
+    ]),
+  ],
+  auth('common'),
+  validateRequest(validation.createReportValidationSchema),
+  controller.createV3
+);
+
 /*********
  * 🆕 User(Employee) | Create Report 
  * must send customerId in req.body .. 
@@ -114,6 +126,17 @@ router.route('/create/for-employee').post(
   auth('user'),
   validateRequest(validation.createReportByEmployeeValidationSchema),
   controller.createForEmployee
+);
+
+router.route('/create/for-employee/v2').post(
+  [
+    upload.fields([
+      { name: 'attachments', maxCount: 15 }, // Allow up to 5 cover photos
+    ]),
+  ],
+  auth('user'),
+  validateRequest(validation.createReportByEmployeeValidationSchema),
+  controller.createForEmployeeV2
 );
 
 /*********

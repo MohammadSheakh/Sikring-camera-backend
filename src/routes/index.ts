@@ -18,6 +18,7 @@ import { SettingsRoutes } from '../modules/settings/settings.routes';
 import { ConversationParticipentsRoute } from '../modules/_chatting/conversationParticipents/conversationParticipents.route';
 import { PredefinedCustomDescriptionRoute } from '../modules/_report/predefinedCustomDescription/predefinedCustomDescription.route';
 import { CompanyLogoRoute } from '../modules/companyLogo/companyLogo.route';
+import { SurveillanceMastLocationRoute } from '../modules/surveillanceMastLocation/surveillanceMastLocation.route';
 
 // import { ChatRoutes } from '../modules/chat/chat.routes';
 // import { MessageRoutes } from '../modules/message/message.routes';
@@ -116,6 +117,13 @@ const apiRoutes = [
     path: '/settings',
     route: SettingsRoutes,
   },
+  {
+    // 🌀🆕🆕
+    path: '/location',
+    route: SurveillanceMastLocationRoute,
+  },
+
+  
 ];
 
 apiRoutes.forEach(route => router.use(route.path, route.route));

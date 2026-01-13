@@ -2,7 +2,6 @@
 import { Request, Response } from 'express';
 //@ts-ignore
 import { StatusCodes } from 'http-status-codes';
-
 import { GenericController } from '../__Generic/generic.controller';
 import { SurveillanceMastLocation } from './surveillanceMastLocation.model';
 import { ISurveillanceMastLocation } from './surveillanceMastLocation.interface';

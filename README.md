@@ -1,6 +1,6 @@
-# Fertie Backend from express-typescript-generic-boilerplate
+# SKT Sikring Camera Backend from express-typescript-generic-boilerplate
 
--------- Written By :  https://github.com/mohammadsheakh 
+-------- Written By :  
 
 
 Template Used :  Typescript Backend Boilerplate  https://github.com/bdCalling-Sdt-hub/typescript-backend-boilerplate

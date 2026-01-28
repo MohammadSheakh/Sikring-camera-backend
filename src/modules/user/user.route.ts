@@ -31,14 +31,14 @@ export const optionValidationChecking = <T extends keyof IUser>(
 
 router.route('/paginate').get(
   auth('commonAdmin'),
- validateFiltersForQuery(optionValidationChecking(['_id', 'role', 'isDeleted'])),
+ validateFiltersForQuery(optionValidationChecking(['_id', 'role', 'isDeleted', 'limit', 'page'])),
   UserController.getAllUserForAdminDashboard
 );
 
 //[🚧][🧑‍💻][🧪] // ✅ 🆗
 router.route('/paginate/admin').get(
   auth('commonAdmin'),
- validateFiltersForQuery(optionValidationChecking(['_id', 'name', 'email', 'role', 'status', 'createdAt'])),
+ validateFiltersForQuery(optionValidationChecking(['_id', 'name', 'email', 'role', 'status', 'createdAt', 'limit', 'page'])),
   UserController.getAllAdminForAdminDashboard
 );
 

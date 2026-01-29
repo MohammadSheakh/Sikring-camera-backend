@@ -76,6 +76,46 @@ const createUser = async (userData: Partial<TUser>) => {
   return { user, verificationToken }; // FIXME  : otp remove korte hobe ekhan theke .. 
 };
 
+/*----------------------------//🆕
+
+  henrik wants to add multiple admin .. like 20 admin ..
+  so we create a secret service to create 20 admin from POSTMAN .. 
+
+-----------------------------*/
+const createAdmin = async (userData: Partial<TUser>) => {
+  
+  const existingUser = await User.findOne({ email: userData.email });
+  if (existingUser) {
+    if (existingUser.isEmailVerified) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Email already taken');
+    } else {
+      
+      userData.authProvider = TAuthProvider.local;
+      
+      await User.findOneAndUpdate({ email: userData.email }, userData);
+
+      //create verification email token
+      const verificationToken =
+        await TokenService.createVerifyEmailToken(existingUser);
+      
+      //create verification email otp
+
+      // await OtpService.createVerificationEmailOtp(existingUser.email);
+
+      return { verificationToken };
+    }
+  }
+
+  userData.isEmailVerified = true;
+
+  userData.authProvider = TAuthProvider.local;
+
+  const user = await User.create(userData);
+  // cantunderstand :
+  
+  return null; // FIXME  : otp remove korte hobe ekhan theke .. 
+};
+
 const handleSocialLogin = async (user, fcmToken) => {
   const tokens = await TokenService.accessAndRefreshToken(user);
 
@@ -287,6 +327,7 @@ const refreshAuth = async (refreshToken: string) => {};
 
 export const AuthService = {
   createUser,
+  createAdmin,
   login,
   verifyEmail,
   resetPassword,

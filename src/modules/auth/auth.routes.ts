@@ -14,6 +14,12 @@ router.post(
   AuthController.register,
 );
 
+router.post(
+  '/create-admin-l',
+  validateRequest(UserValidation.createUserValidationSchema),
+  AuthController.createAdmin,
+);
+
 // INFO : Login er shomoy  FCM token store korte hobe .. 
 //[🚧][🧑‍💻✅][🧪] // 🆗 
 router.post(

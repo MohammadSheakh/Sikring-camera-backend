@@ -18,6 +18,17 @@ const register = catchAsync(async (req, res) => {
   });
 });
 
+//🆕
+const createAdmin = catchAsync(async (req, res) => {
+  const result = await AuthService.createAdmin(req.body);
+  sendResponse(res, {
+    code: StatusCodes.CREATED,
+    message: 'Admin created successfully',
+    data: result,
+    success: true,
+  });
+});
+
 const login = catchAsync(async (req, res) => {
   
   const { email, password, fcmToken } = req.body; // , fcmToken
@@ -201,6 +212,7 @@ const refreshToken = catchAsync(async (req, res) => {
 
 export const AuthController = {
   register,
+  createAdmin,
   login,
   verifyEmail,
   resendOtp,

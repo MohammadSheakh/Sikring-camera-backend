@@ -27,6 +27,8 @@ export class customerReportController extends GenericController<
       const filters =  omit(req.query, ['sortBy', 'limit', 'page', 'populate']); ;
       const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate']);
       
+      options.sortBy = '-createdAt';
+
       const populateOptions = [
         {
           path: 'reportId',

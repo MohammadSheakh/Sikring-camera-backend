@@ -80,6 +80,8 @@ export class customerReportController extends GenericController<
         }
       }
 
+      options.sortBy = '-createdAt';
+
       const populateOptions = [
         {
           path: 'reportId',

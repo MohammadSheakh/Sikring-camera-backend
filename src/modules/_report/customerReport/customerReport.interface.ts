@@ -13,7 +13,7 @@ export interface IcustomerReport {
   reportType : TReportType.alarmPatrol |
               TReportType.patrolReport |
               TReportType.service |
-              TReportType.emergency_call_out;
+              TReportType.mast_relocation_report;
 
   isDeleted? : Boolean;  
   createdAt?: Date;

@@ -27,7 +27,7 @@ const reportSchema = new Schema<Ireport>(
     
     reportType : {
       type: String,
-      enum:  [TReportType.alarmPatrol, TReportType.patrolReport, TReportType.service, TReportType.emergency_call_out],
+      enum:  [TReportType.alarmPatrol, TReportType.patrolReport, TReportType.service, TReportType.mast_relocation_report],
       required: [
         false,
         `reportType is required it can be ${Object.values(

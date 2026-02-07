@@ -7,7 +7,7 @@ export interface Ireport {
   _id?: Types.ObjectId; // undefined |  Types.ObjectId |
   siteId: Types.ObjectId;
   creatorId? : Types.ObjectId;
-  reportType : TReportType.alarmPatrol  | TReportType.patrolReport | TReportType.service | TReportType.emergency_call_out;
+  reportType : TReportType.alarmPatrol  | TReportType.patrolReport | TReportType.service | TReportType.mast_relocation_report;
   incidentSevearity : TIncidentSevearity.low | TIncidentSevearity.medium | TIncidentSevearity.high; 
   title : String;
   description : String;

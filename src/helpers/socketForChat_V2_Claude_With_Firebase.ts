@@ -434,10 +434,7 @@ const socketForChat_V2_Claude_With_Firebase = (io: Server) => {
           // Get chat details
           const {conversationData, conversationParticipants} = await getConversationById(messageData.conversationId);
           
-          // console.log('Conversation data:', conversationData);
-          // console.log('Conversation participants:', conversationParticipants);
-
-
+    
           /********
            * 
            * conversationData.canConversate jodi false hoy .. tahole ekta error send korbo je 
@@ -472,23 +469,6 @@ const socketForChat_V2_Claude_With_Firebase = (io: Server) => {
         if(!isExist){
             emitError(socket, `You are not a participant in this conversation`);
         }
-
-
-          // Check if user is blocked
-          // if (conversationData.blockedUsers?.includes(userId)) {
-          //   const error = "You have been blocked. You can't send messages.";
-          //   callback?.({ success: false, message: error });
-          //   return emitError(socket, error);
-          // }
-
-          // interface MessageData {
-          //   conversationId: string;
-          //   senderId: string;
-          //   text: string;
-          //   timestamp
-          //   senderId
-          // }
-
 
           // Create message
           const newMessage = await Message.create({

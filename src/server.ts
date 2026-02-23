@@ -98,7 +98,7 @@ process.on('uncaughtException', error => {
           // origin: '*',
 
           origin: ["https://dashboard.r4y.dk", "http://localhost:3000"],
-          credentials: true,
+          // credentials: true,
         },
         
          allowEIO4: true, // This can sometimes help with compatibility

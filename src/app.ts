@@ -25,7 +25,7 @@ app.use(
       "https://dashboard.r4y.dk",
       "http://localhost:3000",
     ],
-    //credentials: true,
+    credentials: true,
   })
 );
 app.use(express.json());

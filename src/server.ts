@@ -78,27 +78,29 @@ process.on('uncaughtException', error => {
       const socketServer = http.createServer(); // independent HTTP server only for socket.io
 
 
-      //socket
+      // pingTimeout: 60000,
+      // pingInterval: 25000,
+      // upgradeTimeout: 30000,
+      // maxHttpBufferSize: 1e6,
+      // Disable compression to avoid RSV1 issues
+      //compression: true,
+      //httpCompression: true,
+      // Configure at engine level
+      // engine: {
+      //   compression: false,
+      //   perMessageDeflate: false
+      // },
+      // perMessageDeflate: false,
+      
       const io = new Server(/*server*/ socketServer, {
-        // pingTimeout: 60000,
-        // pingInterval: 25000,
-        // upgradeTimeout: 30000,
-        // maxHttpBufferSize: 1e6,
+        
         cors: {
           // origin: '*',
 
           origin: ["https://dashboard.r4y.dk", "http://localhost:3000"],
           credentials: true,
         },
-        // Disable compression to avoid RSV1 issues
-        //compression: true,
-        //httpCompression: true,
-        // Configure at engine level
-        // engine: {
-        //   compression: false,
-        //   perMessageDeflate: false
-        // },
-        // perMessageDeflate: false,
+        
          allowEIO4: true, // This can sometimes help with compatibility
          allowEIO3: true,
         // 

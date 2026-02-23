@@ -20,7 +20,11 @@ app.use(Morgan.errorHandler);
 // body parser
 app.use(
   cors({
-    origin: "*",
+    // origin: "*",
+     origin:[
+      "https://dashboard.r4y.dk",
+      "http://localhost:3000",
+    ],
     //credentials: true,
   })
 );

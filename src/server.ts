@@ -85,7 +85,10 @@ process.on('uncaughtException', error => {
         // upgradeTimeout: 30000,
         // maxHttpBufferSize: 1e6,
         cors: {
-          origin: '*',
+          // origin: '*',
+
+          origin: ["https://dashboard.r4y.dk", "http://localhost:3000"],
+          credentials: true,
         },
         // Disable compression to avoid RSV1 issues
         //compression: true,

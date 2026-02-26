@@ -610,6 +610,7 @@ const socketForChat_V2_Claude_With_Firebase = (io: Server) => {
                   _id: newMessage._id,
                   text: messageData.text,
                   senderId: userId,
+                  name: userProfile?.name || user.name, //🆕 as per jahidul vai's requirement .. 
                   conversationId: messageData.conversationId,
                 },
                 isDeleted: false,

@@ -24,6 +24,7 @@ app.use(
      origin:[
       "https://dashboard.r4y.dk",
       "http://localhost:3000",
+      "http://10.10.11.118:3070",
     ],
     // credentials: true,
   })
